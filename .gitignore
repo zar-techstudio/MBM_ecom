@@ -43,3 +43,43 @@ next-env.d.ts
 
 # Copy of the original full-size design photos (also in the first local commit)
 /reference/original-images/
+# Dependency directories
+node_modules/
+/.pnp
+.pnp.js
+
+# Environment variables (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# Next.js build outputs
+.next/
+out/
+
+# Production builds & Turbopack cache
+.turbo/
+.vercel
+build/
+
+# Testing & logs
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDEs, Editors, and OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
