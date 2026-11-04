@@ -74,9 +74,3 @@ export async function CatalogueListing({ section, category }: { section: Section
     </main>
   );
 }
-
-/** At least one param is required at build time; "_" renders a 404 when there are no categories yet. */
-export async function categoryParams(section: Section) {
-  const cats = await getCategories(section);
-  return cats.length ? cats.map((c) => ({ category: c.slug })) : [{ category: "_" }];
-}

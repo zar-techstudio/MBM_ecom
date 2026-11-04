@@ -83,3 +83,7 @@ yarn-error.log*
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Cloudflare (OpenNext) build output
+.open-next
+.wrangler

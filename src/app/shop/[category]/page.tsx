@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import { CatalogueListing, categoryParams } from "@/components/CatalogueListing";
+import { CatalogueListing } from "@/components/CatalogueListing";
 import { getCategories } from "@/lib/catalogue";
-
-export function generateStaticParams() {
-  return categoryParams("main");
-}
 
 export async function generateMetadata({ params }: PageProps<"/shop/[category]">): Promise<Metadata> {
   const { category } = await params;

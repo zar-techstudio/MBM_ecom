@@ -1,11 +1,10 @@
 import "server-only";
-import { cacheLife } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 
 /**
  * Read-only access to the shared ERP database through its public storefront
  * functions (see STOREFRONT_RULES.md). Public key only; no table access.
- * Product content is cached for a minute; availability is read live.
+ * Product content is kept in memory for a minute (settings for an hour); availability is read live.
  */
 
 export type Section = "main" | "mahib";
@@ -54,6 +53,23 @@ function client() {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
+/**
+ * Small in-memory cache (per Cloudflare Worker instance): the same question within `seconds` reuses the
+ * answer instead of asking the database again. Failed answers are not kept.
+ */
+const memory = new Map<string, { until: number; value: Promise<unknown> }>();
+function remember<T>(key: string, seconds: number, load: () => Promise<T>): Promise<T> {
+  const now = Date.now();
+  const hit = memory.get(key);
+  if (hit && hit.until > now) return hit.value as Promise<T>;
+  const value = load();
+  memory.set(key, { until: now + seconds * 1000, value });
+  value.catch(() => memory.delete(key));
+  return value;
+}
+const MINUTE = 60;
+const HOUR = 3600;
+
 async function call<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
   const { data, error } = await client().rpc(fn, args);
   if (error) throw new Error(`${fn}: ${error.message}`);
@@ -61,33 +77,29 @@ async function call<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
 }
 
 export async function getCategories(section?: Section): Promise<Category[]> {
-  "use cache";
-  cacheLife("minutes");
-  return (await call<Category[]>("storefront_categories", { p_section: section ?? null })) ?? [];
+  return remember(`categories:${section ?? ""}`, MINUTE, async () =>
+    (await call<Category[]>("storefront_categories", { p_section: section ?? null })) ?? [],
+  );
 }
 
 export async function getProducts(section?: Section, category?: string): Promise<ProductCard[]> {
-  "use cache";
-  cacheLife("minutes");
-  return (
+  return remember(`products:${section ?? ""}:${category ?? ""}`, MINUTE, async () =>
     (await call<ProductCard[]>("storefront_products", {
       p_section: section ?? null,
       p_category: category ?? null,
-    })) ?? []
+    })) ?? [],
   );
 }
 
 export async function getHomeFeatured(): Promise<ProductCard[]> {
-  "use cache";
-  cacheLife("minutes");
-  return (await call<ProductCard[]>("storefront_home_featured")) ?? [];
+  return remember("home", MINUTE, async () => (await call<ProductCard[]>("storefront_home_featured")) ?? []);
 }
 
 /** Cached product content (title, photos, description, SEO). */
 export async function getProduct(slug: string): Promise<Product | null> {
-  "use cache";
-  cacheLife("minutes");
-  return (await call<Product | null>("storefront_product", { p_slug: slug })) ?? null;
+  return remember(`product:${slug}`, MINUTE, async () =>
+    (await call<Product | null>("storefront_product", { p_slug: slug })) ?? null,
+  );
 }
 
 /** Live read for sizes, pieces left and sold-out state. Never cached. */
@@ -96,7 +108,5 @@ export async function getProductLive(slug: string): Promise<Product | null> {
 }
 
 export async function getSettings(): Promise<{ whatsapp_number: string }> {
-  "use cache";
-  cacheLife("hours");
-  return await call<{ whatsapp_number: string }>("storefront_settings");
+  return remember("settings", HOUR, () => call<{ whatsapp_number: string }>("storefront_settings"));
 }

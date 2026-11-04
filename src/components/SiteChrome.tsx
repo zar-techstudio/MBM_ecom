@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cacheLife } from "next/cache";
 import { getCategories, getSettings } from "@/lib/catalogue";
 import { SITE_NAME, sectionPath, whatsappLink } from "@/lib/site";
 import { HeaderClient, type NavItem } from "./HeaderClient";
@@ -31,8 +30,6 @@ export async function SiteHeader() {
 }
 
 export async function SiteFooter() {
-  "use cache";
-  cacheLife("hours");
   const [main, mahib, settings] = await Promise.all([getCategories("main"), getCategories("mahib"), getSettings()]);
   const wa = (text: string) => whatsappLink(settings.whatsapp_number, text);
   return (

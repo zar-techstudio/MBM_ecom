@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getCategories, getProducts } from "@/lib/catalogue";
 import { SITE_URL, sectionPath } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [cats, main, mahib] = await Promise.all([getCategories(), getProducts("main"), getProducts("mahib")]);
   return [

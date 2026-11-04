@@ -2,16 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getProduct, getProductLive, getProducts, getSettings, type Product } from "@/lib/catalogue";
+import { getProduct, getProductLive, getSettings, type Product } from "@/lib/catalogue";
 import { SITE_NAME, SITE_URL, imageUrl, priceText, sectionPath } from "@/lib/site";
 import { ProductGallery } from "@/components/ProductGallery";
 import { OrderPanel } from "@/components/OrderPanel";
-
-/** At least one param is required at build time; "_" renders a 404 when nothing is published yet. */
-export async function generateStaticParams() {
-  const all = [...(await getProducts("main")), ...(await getProducts("mahib"))];
-  return all.length ? all.map((p) => ({ slug: p.slug })) : [{ slug: "_" }];
-}
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
   const { slug } = await params;

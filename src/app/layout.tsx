@@ -18,6 +18,10 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "
 const DESCRIPTION =
   "Premium Indian menswear, fine fabrics and bespoke tailoring from MAQDOOM'S Big Mall. Sherwanis, kurtas, waistcoats and the MAHIB exclusive edit.";
 
+/** Pages are built on each visit (the catalogue is kept in memory for a minute, see src/lib/catalogue.ts),
+ * so new and sold-out products show without a rebuild. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${SITE_NAME} — Premium Indian Menswear`, template: `%s | ${SITE_NAME}` },

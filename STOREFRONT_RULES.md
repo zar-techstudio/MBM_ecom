@@ -23,8 +23,13 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
 
 ## How it works
 
-- Content (titles, photos, categories) is cached for a few minutes
-  (`"use cache"` + `cacheLife` in `src/lib/catalogue.ts`).
+- Content (titles, photos, categories) is kept in memory for a minute, settings for an hour
+  (`remember()` in `src/lib/catalogue.ts`). Pages are built on each visit (`dynamic = "force-dynamic"`
+  in the root layout), so nothing needs a rebuild when staff publish.
+- Hosting: Cloudflare Workers (ZAR account), Worker `mbm-website`, at https://maqdoomsbigmall.com and
+  www. Deploy: `NEXT_PUBLIC_SITE_URL=https://maqdoomsbigmall.com npm run deploy` (OpenNext adapter;
+  `wrangler login` as the ZAR account). Next.js "Cache Components" are off: the Cloudflare adapter
+  does not support them yet (pages hung).
 - Sizes and stock on the product page are read live on every visit
   (`getProductLive`, inside `<Suspense>`).
 - Ordering happens on WhatsApp. Fabrics are enquire-only.
