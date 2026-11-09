@@ -295,6 +295,31 @@ a.gt-card:hover .gt-mark { color: #fff; }
   padding-bottom: clamp(2.25rem, 4vh, 3.5rem);
 }
 
-/* ---------- Header logo a little smaller ---------- */
-.header-logo-img { height: 46px; }
-@media (max-width: 640px) { .header-logo-img { height: 36px; } }
+/* ---------- Header logo: the gold MAQDOOM'S BIG MALL wordmark ---------- */
+.header-logo-img { height: 58px; }
+@media (max-width: 640px) { .header-logo-img { height: 44px; } }
+
+/* ---------- Hero: "BIG" and "MALL" gold word images under the name ----------
+   Sized from the name image's width (cqw). MALL's file has more empty space
+   around its letters than BIG's, so it is drawn taller and nudged so both
+   words share the same letter height and baseline. */
+.hero-brand-words {
+  container-type: inline-size;
+  width: 100%;
+  max-width: clamp(340px, 56vw, 780px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 5cqw;
+  margin-top: 0.2rem;
+}
+.hero-brand-words img {
+  display: block;
+  width: auto;
+  filter: drop-shadow(0 4px 10px rgba(20, 17, 14, 0.2));
+}
+.hero-word-big { height: 8cqw; margin-bottom: 0.6cqw; }
+.hero-word-mall { height: 10.25cqw; }
+@media (max-width: 768px) {
+  .hero-brand-words { max-width: 100%; margin-inline: auto; }
+}

@@ -55,7 +55,12 @@ export default async function HomePage() {
                 <h1 className="sr-only">{SITE_NAME}</h1>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/name.webp" alt="" className="hero-name-img" fetchPriority="high" />
-                <span className="hero-brand-subline">BIG MALL</span>
+                <div className="hero-brand-words" aria-hidden="true">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/BIG.webp" alt="" className="hero-word-big" fetchPriority="high" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/Mall.webp" alt="" className="hero-word-mall" fetchPriority="high" />
+                </div>
               </div>
               <p className="hero-description">
                 Premium Indian menswear, fine fabrics and bespoke tailoring — crafted for every chapter of your life.

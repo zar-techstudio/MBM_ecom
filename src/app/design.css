@@ -441,49 +441,6 @@ ul, ol {
   display: block;
 }
 
-@media (max-width: 768px) {
-  .hero-title-group {
-    position: relative;
-  }
-
-  .hero-brand-subline {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 12px;
-    box-sizing: border-box;
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    letter-spacing: 0.18em;
-    word-spacing: 0;
-    white-space: nowrap;
-  }
-
-  .hero-brand-subline::before {
-    content: "BIG";
-  }
-
-  .hero-brand-subline::after {
-    content: "MALL";
-  }
-
-  .hero-brand-subline {
-    font-size: 0;
-  }
-
-  .hero-brand-subline::before,
-  .hero-brand-subline::after {
-    font-family: var(--font-serif-display);
-    font-size: clamp(1.6rem, 6vw, 2.2rem) !important;
-    font-weight: 600;
-    color: var(--color-espresso);
-    letter-spacing: 0.28em;
-  }
-
-}
-
 .hero-description {
   font-size: clamp(0.98rem, 1.2vw, 1.15rem);
   line-height: 1.65;

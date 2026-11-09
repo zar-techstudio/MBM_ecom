@@ -67,7 +67,7 @@ export function HeaderClient({
         <div className="container nav-inner">
           <Link href="/" className="brand-link" aria-label="MAQDOOM'S BIG MALL Home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.webp" alt="MAQDOOM'S BIG MALL" className="header-logo-img" />
+            <img src="/images/header_navbar.webp" alt="MAQDOOM'S BIG MALL" className="header-logo-img" />
           </Link>
           <nav className="main-nav" aria-label="Primary Navigation">
             {nav.map((item) =>
@@ -144,7 +144,7 @@ export function HeaderClient({
         <div className="drawer-panel" style={{ maxWidth: 340 }}>
           <div className="drawer-header">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.webp" alt="MAQDOOM'S" style={{ height: 38, width: "auto", objectFit: "contain" }} />
+            <img src="/images/header_navbar.webp" alt="MAQDOOM'S BIG MALL" style={{ height: 44, width: "auto", objectFit: "contain" }} />
             <button className="modal-close-btn" aria-label="Close menu" onClick={() => setOpen(false)}>
               &times;
             </button>
