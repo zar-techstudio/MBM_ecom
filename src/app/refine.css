@@ -320,6 +320,14 @@ a.gt-card:hover .gt-mark { color: #fff; }
 }
 .hero-word-big { height: 8cqw; margin-bottom: 0.6cqw; }
 .hero-word-mall { height: 10.25cqw; }
+/* Phones: name sits a little higher, and BIG / MALL move out to the edges
+   so they frame the model's face instead of sitting behind it. */
 @media (max-width: 768px) {
-  .hero-brand-words { max-width: 100%; margin-inline: auto; }
+  .hero-title-group { margin-top: -1rem; }
+  .hero-brand-words {
+    max-width: 100%;
+    justify-content: space-between;
+    gap: 0;
+    padding-inline: 1cqw;
+  }
 }
