@@ -18,7 +18,16 @@ export const SECTION_COPY: Record<Section, { label: string; title: string; intro
 };
 
 /** Section page (/shop, /mahib) or one category inside it. */
-export async function CatalogueListing({ section, category }: { section: Section; category?: string }) {
+export async function CatalogueListing({
+  section,
+  category,
+  feature,
+}: {
+  section: Section;
+  category?: string;
+  /** Shown between the page heading and the product grid (the MAHIB runway). */
+  feature?: React.ReactNode;
+}) {
   const [categories, products] = await Promise.all([getCategories(section), getProducts(section, category)]);
   const current = category ? categories.find((c) => c.slug === category) : undefined;
   if (category && !current) notFound();
@@ -66,6 +75,7 @@ export async function CatalogueListing({ section, category }: { section: Section
           ) : null}
         </div>
       </section>
+      {feature}
       <section className="featured-section sf-listing-grid">
         <div className="container">
           <ProductGrid products={sorted} empty="Nothing here yet — new pieces are added every week." />

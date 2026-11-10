@@ -1,0 +1,450 @@
+/* ==========================================================================
+   MAHIB runway — a night durbar: dark stage, one warm spotlight, gold type,
+   maroon only for the "In this look" panel.
+   ========================================================================== */
+.mahib-runway {
+  --rw-maroon: #3a1016;
+  --rw-maroon-deep: #1f0a0d;
+  position: relative;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(197, 168, 105, 0.08), transparent 70%),
+    var(--color-espresso);
+  color: var(--text-light);
+  padding-top: clamp(1.5rem, 4vh, 3rem);
+  overflow: hidden;
+  border-top: 1px solid var(--color-espresso-border);
+}
+
+.runway-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  z-index: 3;
+}
+.runway-label {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.runway-title {
+  font-family: var(--font-serif-editorial);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--color-gold-light);
+  margin-top: 0.4rem;
+}
+.runway-count {
+  font-family: var(--font-serif-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--text-light-muted);
+  white-space: nowrap;
+}
+.runway-count span { color: var(--color-gold-light); }
+
+/* ---------- Stage ---------- */
+.runway-stage {
+  position: relative;
+  height: clamp(460px, 74vh, 760px);
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+  touch-action: pan-y;
+  user-select: none;
+  overflow: hidden; /* keeps the closed "In this look" panel out of sight */
+}
+
+/* A cone of light from above. The cone is cut on the inner layer and the outer layer
+   blurs it, so its edges stay soft. */
+.runway-spotlight {
+  position: absolute;
+  inset: -8% 0 0;
+  pointer-events: none;
+  filter: blur(22px);
+  z-index: 0;
+}
+.runway-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 22% 60% at 50% 0%, rgba(240, 214, 160, 0.30), transparent 75%),
+    linear-gradient(to bottom, rgba(197, 168, 105, 0.14), rgba(197, 168, 105, 0.04) 70%, transparent);
+  clip-path: polygon(41% 0, 59% 0, 80% 100%, 20% 100%);
+}
+.runway-floor {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  width: min(70vw, 760px);
+  height: 18%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(197, 168, 105, 0.22), rgba(197, 168, 105, 0.05) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.runway-model {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 100%;
+  aspect-ratio: 1265 / 1243;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transition:
+    left 0.95s var(--ease-luxury),
+    transform 0.95s var(--ease-luxury),
+    opacity 0.95s var(--ease-luxury),
+    filter 0.95s var(--ease-luxury);
+  -webkit-tap-highlight-color: transparent;
+}
+.runway-model img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  display: block;
+  pointer-events: none;
+}
+.runway-model:focus-visible { outline: 1px solid var(--color-gold); outline-offset: -6px; }
+
+.runway-model.is-center {
+  z-index: 2;
+  transform: translateX(-50%) scale(1);
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6)) brightness(1.02);
+}
+.runway-model.is-left,
+.runway-model.is-right {
+  z-index: 1;
+  opacity: 0.55;
+  filter: brightness(0.42) saturate(0.7) blur(1.5px);
+}
+.runway-model.is-left { left: 20%; transform: translateX(-50%) scale(0.66); }
+.runway-model.is-right { left: 80%; transform: translateX(-50%) scale(0.66); }
+.runway-model.is-left:hover,
+.runway-model.is-right:hover { opacity: 0.8; filter: brightness(0.6) saturate(0.85) blur(0.5px); }
+.runway-model.is-away {
+  z-index: 0;
+  opacity: 0;
+  transform: translateX(-50%) scale(0.5);
+  pointer-events: none;
+}
+
+/* Waist-up photos dissolve into the dark floor instead of ending in a hard edge. */
+.runway-fade {
+  position: absolute;
+  inset: auto 0 0;
+  height: 48%;
+  background: linear-gradient(to bottom, transparent, rgba(20, 17, 14, 0.7) 45%, var(--color-espresso) 92%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.runway-caption {
+  position: absolute;
+  z-index: 4;
+  left: clamp(1.25rem, 4vw, 3.5rem);
+  bottom: clamp(1.25rem, 5vh, 3rem);
+  max-width: 360px;
+}
+.runway-num {
+  display: block;
+  font-family: var(--font-serif-display);
+  font-weight: 600;
+  font-size: clamp(3rem, 6vw, 4.8rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(197, 168, 105, 0.7);
+}
+.runway-name {
+  font-family: var(--font-serif-display);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  letter-spacing: 0.08em;
+  color: var(--color-gold-light);
+  margin-top: 0.35rem;
+  animation: runway-rise 0.8s var(--ease-luxury);
+}
+.runway-occasion {
+  font-family: var(--font-serif-editorial);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-light-muted);
+  margin-top: 0.2rem;
+}
+.runway-view {
+  margin-top: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid var(--color-gold);
+  background: transparent;
+  color: var(--color-gold-light);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.runway-view:hover { background: var(--color-gold); color: var(--color-espresso); }
+
+@keyframes runway-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.runway-arrow {
+  position: absolute;
+  z-index: 4;
+  top: 45%;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 168, 105, 0.5);
+  background: rgba(20, 17, 14, 0.4);
+  color: var(--color-gold-light);
+  font-size: 1.2rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.runway-arrow:hover { background: rgba(197, 168, 105, 0.18); border-color: var(--color-gold); }
+.runway-arrow.is-prev { left: clamp(1rem, 3vw, 3rem); }
+.runway-arrow.is-next { right: clamp(1rem, 3vw, 3rem); }
+
+/* ---------- "In this look" panel ---------- */
+.runway-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(10, 8, 6, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+.runway-panel {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100%);
+  padding: clamp(1.75rem, 4vh, 2.75rem) clamp(1.5rem, 3vw, 2.5rem);
+  background: linear-gradient(160deg, var(--rw-maroon), var(--rw-maroon-deep) 70%);
+  border-left: 1px solid rgba(197, 168, 105, 0.35);
+  box-shadow: -30px 0 60px rgba(0, 0, 0, 0.45);
+  transform: translateX(102%);
+  transition: transform 0.7s var(--ease-luxury);
+  overflow-y: auto;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+.mahib-runway.is-open .runway-panel { transform: none; }
+.mahib-runway.is-open .runway-backdrop { opacity: 1; pointer-events: auto; }
+@media (min-width: 900px) {
+  /* Desktop: no dimming; the look steps left to make room for the panel. */
+  .mahib-runway.is-open .runway-backdrop { opacity: 0; }
+  .mahib-runway.is-open .runway-model.is-center { left: 36%; }
+  .mahib-runway.is-open .runway-spotlight,
+  .mahib-runway.is-open .runway-floor { translate: -14% 0; }
+  .mahib-runway.is-open .runway-model.is-left { left: 8%; opacity: 0.25; }
+  .mahib-runway.is-open .runway-model.is-right { opacity: 0; }
+  .mahib-runway.is-open .runway-caption,
+  .mahib-runway.is-open .runway-arrow.is-next { opacity: 0; pointer-events: none; }
+}
+.runway-caption, .runway-arrow { transition: opacity var(--transition-normal); }
+.runway-spotlight, .runway-floor { transition: translate 0.95s var(--ease-luxury); }
+
+.runway-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: none;
+  color: var(--color-gold-light);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.runway-panel-title {
+  font-family: var(--font-serif-display);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  letter-spacing: 0.08em;
+  color: var(--color-gold-light);
+  margin: 0.4rem 0 1.5rem;
+}
+.runway-pieces {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(197, 168, 105, 0.25);
+}
+.runway-pieces li {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(197, 168, 105, 0.18);
+}
+.runway-piece-num {
+  font-family: var(--font-serif-display);
+  font-size: 0.8rem;
+  color: var(--color-gold);
+  padding-top: 0.15rem;
+}
+.runway-piece-text { display: flex; flex-direction: column; gap: 0.2rem; }
+.runway-piece-name {
+  font-family: var(--font-serif-editorial);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-decoration: none;
+}
+a.runway-piece-name:hover { color: var(--color-gold-light); text-decoration: underline; text-underline-offset: 3px; }
+.runway-piece-note { font-size: 0.82rem; color: var(--text-light-muted); }
+.runway-order {
+  margin-top: 1.75rem;
+  display: block;
+  text-align: center;
+  padding: 1rem 1.25rem;
+  background: var(--color-gold);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+.runway-order:hover { background: var(--color-gold-light); }
+.runway-panel-note {
+  margin-top: 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-light-muted);
+}
+
+/* ---------- Look tabs ---------- */
+.runway-tabs {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  padding-top: 1.25rem;
+  padding-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+.runway-tab {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.9rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--color-espresso-border);
+  background: none;
+  color: var(--text-light-muted);
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+.runway-tab::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 1px;
+  width: 0;
+  background: var(--color-gold);
+  transition: width 0.9s var(--ease-luxury);
+}
+.runway-tab:hover { color: var(--text-light); }
+.runway-tab.active { color: var(--color-gold-light); }
+.runway-tab.active::before { width: 100%; }
+.runway-tab-num { font-family: var(--font-serif-display); font-size: 0.75rem; color: var(--color-gold); }
+.runway-tab-name {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 768px) {
+  .runway-head { align-items: flex-start; }
+  .runway-title { font-size: 1.35rem; }
+  .runway-stage { height: min(620px, 74svh); }
+  /* Model stands higher so the caption sits on clear dark floor underneath. */
+  .runway-model { height: 76%; bottom: 23%; }
+  .runway-floor { bottom: 20%; }
+  .runway-model.is-center { left: 50%; }
+  .runway-model.is-left { left: 4%; transform: translateX(-50%) scale(0.6); opacity: 0.4; }
+  .runway-model.is-right { left: 96%; transform: translateX(-50%) scale(0.6); opacity: 0.4; }
+  .runway-fade {
+    height: 56%;
+    background: linear-gradient(to bottom, transparent, rgba(20, 17, 14, 0.75) 38%, var(--color-espresso) 60%);
+  }
+  .runway-caption {
+    left: 0;
+    right: 0;
+    bottom: 1.25rem;
+    max-width: none;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  .runway-num { font-size: 2.6rem; }
+  .runway-name { font-size: 1.35rem; }
+  .runway-occasion { font-size: 1rem; }
+  .runway-view { margin-top: 0.85rem; padding: 0.75rem 1.2rem; }
+  .runway-arrow { display: none; }
+
+  /* The panel rises from the bottom like a sheet. */
+  .runway-panel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: 86%;
+    border-left: 0;
+    border-top: 1px solid rgba(197, 168, 105, 0.35);
+    transform: translateY(102%);
+    padding: 1.75rem 1.25rem 1.5rem;
+  }
+  .runway-panel-title { margin-bottom: 1rem; }
+  .runway-pieces li { padding: 0.75rem 0; }
+  .runway-order { margin-top: 1.25rem; }
+
+  .runway-tabs {
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 1.25rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+  .runway-tabs::-webkit-scrollbar { display: none; }
+  .runway-tab { padding-top: 0.75rem; }
+  .runway-tab-name { font-size: 0.66rem; letter-spacing: 0.18em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .runway-model, .runway-panel, .runway-tab::before, .runway-backdrop { transition-duration: 0.01s; }
+  .runway-name { animation: none; }
+}

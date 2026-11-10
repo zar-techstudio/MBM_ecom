@@ -40,6 +40,15 @@
 .sf-listing-mahib .sf-chip { background: transparent; border-color: var(--color-espresso-border); color: var(--text-light-muted); }
 .sf-listing-mahib .sf-chip.active { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-espresso); }
 .sf-listing-mahib .sf-page-title { color: var(--color-gold-light); }
+/* MAHIB listing stays dark below the heading too: product cards sit on the night stage. */
+.sf-listing-mahib { background: var(--color-espresso); }
+.sf-listing-mahib .featured-section { background: transparent; border-top-color: var(--color-espresso-border); }
+.sf-listing-mahib .product-card { background: var(--color-espresso-rich); border-color: var(--color-espresso-border); }
+.sf-listing-mahib .product-card:hover { border-color: rgba(197, 168, 105, 0.45); box-shadow: var(--shadow-dark); }
+.sf-listing-mahib .product-media-box { background-color: var(--color-espresso-card); }
+.sf-listing-mahib .product-title { color: var(--text-light); }
+.sf-listing-mahib .product-price { color: var(--color-gold-light); }
+.sf-listing-mahib .sf-empty { color: var(--text-light-muted); border-color: var(--color-espresso-border); }
 
 /* Product page */
 .sf-product { padding: clamp(1.5rem, 4vh, 3rem) 0 clamp(3rem, 8vh, 5rem); }
