@@ -15,6 +15,8 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
    - `storefront_products(p_section, p_category)` — product cards
    - `storefront_home_featured()` — one home pick per category
    - `storefront_product(p_slug)` — product page, sizes and pieces left
+   - `storefront_looks(p_section)` — complete outfits for the MAHIB runway
+     (**not in the ERP yet**, see "Waiting on the ERP" below; the site copes without it)
    Direct table reads are blocked for the public role, by design.
 4. **Photos** come from the public `ecommerce-images` bucket. Each photo has a
    large copy `<id>.webp` (1600×2000) and a card copy `<id>.card.webp` (600×750).
@@ -34,6 +36,53 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
   (`getProductLive`, inside `<Suspense>`).
 - Ordering happens on WhatsApp. Fabrics are enquire-only.
 - Staff publish, feature and archive products in the ERP's E-commerce section.
+
+## Waiting on the ERP (website side is ready)
+
+The website already reads these. Until the ERP adds them, the MAHIB runway is hidden on the live
+site (local `next dev` shows sample outfits from `src/lib/sample-looks.ts`) and product cards show
+one photo with no hold/hover preview.
+
+### 1. Complete looks (MAHIB runway, top 5)
+
+- Tables, owned by the ERP, same row security and audit triggers as `listings`:
+  - `looks`: `id`, `slug` (unique), `name` ("The Nikah"), `occasion` ("The ceremony · morning light",
+    optional), `section` (`main` / `mahib`), `image_path` (full-length photo in `ecommerce-images`),
+    `image_alt`, `rank`, `published`, `archived_at`, timestamps.
+  - `look_pieces`: `look_id`, `listing_id`, `role` (Sherwani, Kurta, Waistcoat, Bottom, Safa, Stole,
+    Shawl, Footwear, Mala…), `position`. Every piece is an ordinary listing, so it can also be bought alone.
+- New function `storefront_looks(p_section text)`, `SECURITY DEFINER`, execute granted to `anon`
+  like the others. Returns published, non-archived looks of that section ordered by `rank`, each:
+  ```json
+  { "slug": "nikah", "name": "The Nikah", "occasion": "The ceremony · morning light",
+    "image": "looks/nikah.webp", "image_alt": "Ivory raw-silk sherwani…",
+    "pieces": [ { "role": "Sherwani", "product": { …same JSON as storefront_product_card… } } ] }
+  ```
+  Leave out pieces whose listing is unpublished or archived (sold-out pieces stay, marked `sold_out`).
+  The website shows at most 5 looks.
+- ERP screen (E-commerce → Complete looks): create/edit a look, upload its full-length photo, add
+  pieces by searching listings and choosing a role, drag to reorder looks and pieces, publish.
+
+### 2. Hold/hover preview on product cards
+
+- Add to the card JSON (`storefront_product_card`, used by `storefront_products`,
+  `storefront_home_featured` and the look pieces):
+  - `hover_image`: bucket path of the photo shown on hold/hover (default: the listing's 2nd photo;
+    staff can pick another). Needs the usual `.card.webp` copy.
+  - `video`: bucket path (or full URL) of a short clip, or null.
+- Listing editor: upload one video per listing (shown as one of its up to 6 media). On upload,
+  compress to MP4 (H.264), about 720×900, 5–8 seconds, no sound, about 1–2 MB.
+  Store it in `ecommerce-images` (or a new public `ecommerce-videos` bucket).
+- `storefront_product` can also return `video` so the product page gallery can play it later.
+
+### Photo guide for staff
+
+- **Look photo:** the complete outfit on a mannequin (or model), full length from the top of the safa
+  to the shoes, plain white or light grey background, portrait 4:5 (1600×2000), same camera height,
+  distance and light for all five looks. The site blends white backgrounds into the arch colour.
+- **Piece photos:** each item alone on plain white, 4:5, centred with the same margin. Photo 1 the
+  whole piece (front), photo 2 a close-up of embroidery or the back; shoes at a 3/4 angle;
+  safa on a head form.
 
 ## Later (cart, payments, international delivery)
 

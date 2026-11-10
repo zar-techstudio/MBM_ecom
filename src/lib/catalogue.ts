@@ -31,6 +31,25 @@ export type ProductCard = {
   featured_in_category: boolean;
   featured_rank: number | null;
   home_featured: boolean;
+  /** Shown while a shopper holds (phone) or rests the cursor on (desktop) the card.
+   * Not sent by the ERP yet; see the ERP note in STOREFRONT_RULES.md. */
+  hover_image?: string | null;
+  /** Short muted clip played on hold/hover instead of hover_image. Bucket path or full URL. */
+  video?: string | null;
+};
+
+/** One piece of a complete outfit, e.g. role "Safa" with its product card. */
+export type LookPiece = { role: string; product: ProductCard };
+
+/** A complete outfit (MAHIB runway). Every piece is a normal product that can also be bought alone. */
+export type Look = {
+  slug: string;
+  name: string;
+  occasion: string | null;
+  /** Full-length photo of the whole outfit (bucket path). */
+  image: string;
+  image_alt: string | null;
+  pieces: LookPiece[];
 };
 
 export type SizeOption = { size: string | null; price_paise: number | null; left: number };
@@ -105,6 +124,23 @@ export async function getProduct(slug: string): Promise<Product | null> {
 /** Live read for sizes, pieces left and sold-out state. Never cached. */
 export async function getProductLive(slug: string): Promise<Product | null> {
   return (await call<Product | null>("storefront_product", { p_slug: slug })) ?? null;
+}
+
+/** The complete outfits for a section, in staff order (top 5). Read from the ERP's
+ * `storefront_looks` function. Until the ERP adds that function the runway is simply not shown;
+ * local development (`next dev`) shows sample outfits instead so the design can be worked on. */
+export async function getLooks(section: Section): Promise<Look[]> {
+  return remember(`looks:${section}`, MINUTE, async () => {
+    try {
+      return ((await call<Look[]>("storefront_looks", { p_section: section })) ?? []).slice(0, 5);
+    } catch (e) {
+      if (!/storefront_looks/.test(String(e)) || !/(find|exist)/i.test(String(e))) throw e;
+      if (process.env.NODE_ENV === "development" && section === "mahib") {
+        return (await import("./sample-looks")).SAMPLE_LOOKS;
+      }
+      return [];
+    }
+  });
 }
 
 export async function getSettings(): Promise<{ whatsapp_number: string }> {

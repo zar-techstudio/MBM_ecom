@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { CatalogueListing, SECTION_COPY } from "@/components/CatalogueListing";
 import { MahibRunway } from "@/components/MahibRunway";
-import { getSettings } from "@/lib/catalogue";
-import { MAHIB_LOOKS } from "@/lib/looks";
+import { getLooks, getSettings } from "@/lib/catalogue";
 import { SITE_URL } from "@/lib/site";
 import "./mahib.css";
 
@@ -13,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 export default async function MahibPage() {
-  const settings = await getSettings();
+  const [settings, looks] = await Promise.all([getSettings(), getLooks("mahib")]);
   return (
     <CatalogueListing
       section="mahib"
-      feature={<MahibRunway looks={MAHIB_LOOKS} whatsappNumber={settings.whatsapp_number} pageUrl={`${SITE_URL}/mahib`} />}
+      feature={looks.length ? <MahibRunway looks={looks} whatsappNumber={settings.whatsapp_number} pageUrl={`${SITE_URL}/mahib`} /> : null}
     />
   );
 }

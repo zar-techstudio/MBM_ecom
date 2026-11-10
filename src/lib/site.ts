@@ -13,6 +13,8 @@ export const SITE_URL = (
 /** E-commerce photos live in the shared public bucket; grid cards use the small copy. */
 export function imageUrl(path: string | null | undefined, size: "large" | "card" = "large") {
   if (!path) return null;
+  // Full URLs and site files (sample data in local development) are used as they are.
+  if (/^(https?:)?\//.test(path)) return path;
   const target = size === "card" ? path.replace(/(\.[a-z]+)$/, ".card$1") : path;
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ecommerce-images/${target
     .split("/")

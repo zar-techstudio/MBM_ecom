@@ -35,20 +35,21 @@
 .sf-listing-grid { border-top: none; }
 
 /* MAHIB pages use the dark espresso + gold palette */
-.sf-listing-mahib .sf-page-head { background: var(--color-espresso); color: var(--text-light); }
-.sf-listing-mahib .sf-page-intro { color: var(--text-light-muted); }
-.sf-listing-mahib .sf-chip { background: transparent; border-color: var(--color-espresso-border); color: var(--text-light-muted); }
-.sf-listing-mahib .sf-chip.active { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-espresso); }
-.sf-listing-mahib .sf-page-title { color: var(--color-gold-light); }
-/* MAHIB listing stays dark below the heading too: product cards sit on the night stage. */
-.sf-listing-mahib { background: var(--color-espresso); }
-.sf-listing-mahib .featured-section { background: transparent; border-top-color: var(--color-espresso-border); }
-.sf-listing-mahib .product-card { background: var(--color-espresso-rich); border-color: var(--color-espresso-border); }
-.sf-listing-mahib .product-card:hover { border-color: rgba(197, 168, 105, 0.45); box-shadow: var(--shadow-dark); }
-.sf-listing-mahib .product-media-box { background-color: var(--color-espresso-card); }
-.sf-listing-mahib .product-title { color: var(--text-light); }
-.sf-listing-mahib .product-price { color: var(--color-gold-light); }
-.sf-listing-mahib .sf-empty { color: var(--text-light-muted); border-color: var(--color-espresso-border); }
+/* MAHIB: a sunlit courtyard. Warm sandstone heading, maroon title, gold accents. */
+.sf-listing-mahib .sf-page-head {
+  background: linear-gradient(180deg, #efe5d4, var(--color-ivory-warm));
+  color: var(--text-primary);
+  text-align: center;
+}
+.sf-listing-mahib .sf-page-head .section-label { color: var(--color-gold-rich); }
+.sf-listing-mahib .sf-page-title { color: #6e1f2a; letter-spacing: 0.18em; }
+.sf-listing-mahib .sf-page-intro { color: var(--text-secondary); margin-left: auto; margin-right: auto; }
+.sf-listing-mahib .sf-breadcrumb, .sf-listing-mahib .sf-chips { justify-content: safe center; }
+.sf-listing-mahib .sf-chip { background: transparent; border-color: rgba(179, 142, 70, 0.45); color: var(--text-secondary); }
+.sf-listing-mahib .sf-chip.active { background: #6e1f2a; border-color: #6e1f2a; color: var(--color-ivory); }
+.sf-listing-mahib .featured-section { background: var(--color-ivory-sand); border-top: none; }
+.sf-listing-mahib .product-card { border-color: rgba(179, 142, 70, 0.25); }
+.sf-listing-mahib .product-media-box { background-color: #ece1cf; }
 
 /* Product page */
 .sf-product { padding: clamp(1.5rem, 4vh, 3rem) 0 clamp(3rem, 8vh, 5rem); }
@@ -137,3 +138,52 @@
   .sf-order-bar-btn { flex: none; padding: 0.8rem 1.1rem; font-size: 0.78rem; }
 }
 
+
+/* Product cards: hold (phone) or hover (desktop) shows the second photo or the video. */
+.product-media-box.has-preview { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.card-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-smooth);
+  pointer-events: none;
+}
+.product-media-box.is-previewing .card-preview { opacity: 1; }
+.card-play {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(253, 251, 247, 0.85);
+  box-shadow: var(--shadow-sm);
+  transition: opacity 0.3s var(--ease-smooth);
+  pointer-events: none;
+}
+.card-play svg { width: 13px; height: 13px; fill: var(--color-espresso); margin-left: 2px; }
+.product-media-box.is-previewing .card-play { opacity: 0; }
+.card-hint {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 17, 14, 0.78);
+  color: var(--color-ivory);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: card-hint 0.5s var(--ease-luxury);
+}
+@keyframes card-hint { from { opacity: 0; transform: translate(-50%, -6px); } }
+@media (prefers-reduced-motion: reduce) { .card-preview { transition: none; } }
