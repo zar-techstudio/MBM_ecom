@@ -1,105 +1,121 @@
 # Storefront rules (MAQDOOM'S Big Mall website)
 
-This site is a read-only window onto the ERP's shared Supabase database.
-The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
+Updated 12 Nov 2026. This site (`MBM_03`) is the shop front of the ERP (`E:\Projects\LEADS\Maqdooms\mbm_inv_v2`,
+live at erp.maqdoomsbigmall.com). The ERP owns the database, the schema and every migration. The
+website reads the catalogue and places orders **only through the ERP's storefront functions**; its
+contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 
 ## Hard rules
 
-1. **Public key only.** Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a
-   service-role or secret database key to this project, its `.env` files or Cloudflare.
-   The one shared secret is `SHOP_API_SECRET` (set by the ERP): used only on this site's
-   server (`src/lib/shop-api.ts`) to ask the ERP to send a sign-in code or start a payment.
-2. **No migrations here.** No `supabase/` folder, no SQL. Schema changes are
-   made in the ERP repo, tested on the test project, then applied to live.
-3. **Storefront functions only.** Read data through these RPCs, nothing else:
-   - `storefront_settings()` — WhatsApp number
-   - `storefront_categories(p_section)` — `main` / `mahib` / null for both
-   - `storefront_products(p_section, p_category)` — product cards
-   - `storefront_home_featured()` — one home pick per category
-   - `storefront_product(p_slug)` — product page, sizes and pieces left
-   - `storefront_looks(p_section)` — complete outfits for the MAHIB runway (all published, in
-     staff order; each piece has an optional dot position `x`, `y` in % of the outfit photo)
-   Direct table reads are blocked for the public role, by design.
-4. **Photos** come from the public `ecommerce-images` bucket. Each photo has a
-   large copy `<id>.webp` (1600×2000) and a card copy `<id>.card.webp` (600×750).
-   Use `imageUrl(path, "large" | "card")` from `src/lib/site.ts`.
-5. **Prices** are in paise. Online price = showroom selling price, set in the ERP.
+1. **Public key only.** Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or
+   secret database key to this project, its `.env` files or Cloudflare. The one shared secret is
+   `SHOP_API_SECRET` (set by the ERP), used only on this site's server (`src/lib/shop-api.ts`) to
+   ask the ERP to send a sign-in code or start a payment.
+2. **No migrations here.** No `supabase/` folder, no SQL. Database changes are made in the ERP repo.
+3. **Storefront functions only.** Direct table reads are blocked for the public role, by design.
+   - Catalogue (no sign-in): `storefront_settings`, `storefront_categories`, `storefront_products`,
+     `storefront_products_page` (not used yet), `storefront_home_featured`, `storefront_product`,
+     `storefront_looks` (outfits; each piece has an optional dot `x`, `y` in % of the photo).
+   - Sign-in, account, quote, orders: see `STOREFRONT_API.md` (`storefront_verify_otp`,
+     `storefront_me`, `storefront_quote`, `storefront_place_order`, `storefront_order`, …).
+4. **Amounts come from the ERP.** Prices are in paise and **include GST** (the showroom selling
+   price staff enter). Checkout totals, discounts, delivery, GST split and cash-on-delivery
+   availability come only from `storefront_quote`; the website never calculates a charge.
+   Payment status comes only from the ERP (Razorpay tells the ERP directly).
+5. **Photos** are in the public `ecommerce-images` bucket, already WebP (converted in the ERP before
+   upload): large `<id>.webp` (1600×2000) and card `<id>.card.webp` (600×750). Outfit photos are
+   cut-outs of any shape. Use `imageUrl(path, "large" | "card")` from `src/lib/site.ts`.
+6. **The session stays on the server.** The shopper's session lives only in the HttpOnly cookie
+   `mbs`, set and read by `POST /api/shop/<action>`. Never pass it to page scripts.
 
-## How it works
+## Environment
 
-- Content (titles, photos, categories) is kept in memory for a minute, settings for an hour
-  (`remember()` in `src/lib/catalogue.ts`). Pages are built on each visit (`dynamic = "force-dynamic"`
-  in the root layout), so nothing needs a rebuild when staff publish.
-- Hosting: Cloudflare Workers (ZAR account), Worker `mbm-website`, at https://maqdoomsbigmall.com and
-  www. Deploy: `NEXT_PUBLIC_SITE_URL=https://maqdoomsbigmall.com npm run deploy` (OpenNext adapter;
-  `wrangler login` as the ZAR account). Next.js "Cache Components" are off: the Cloudflare adapter
-  does not support them yet (pages hung).
-- Sizes and stock on the product page are read live on every visit
-  (`getProductLive`, inside `<Suspense>`).
-- Ordering: bag → `/checkout` (mobile + one-time code, address, review with coupon, online or
-  cash on delivery) → `/orders/<code>`. All amounts come from the ERP's quote. Every account and
-  checkout call goes through `POST /api/shop/<action>` (`src/app/api/shop/[action]/route.ts`),
-  which keeps the shopper's session in an HttpOnly cookie (`mbs`). The ERP's contract is
-  `mbm_inv_v2/docs/STOREFRONT_API.md`. WhatsApp ordering stays as an option on the bag.
-  Fabrics are enquire-only.
-- Staff publish, feature and archive products in the ERP's E-commerce section.
+| Variable | Where | What |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env` (built in) | ERP database, public key |
+| `NEXT_PUBLIC_SITE_URL` | deploy command | `https://maqdoomsbigmall.com` |
+| `SHOP_API_SECRET` | `.env`, and a secret on the `mbm-website` Worker | server-to-ERP calls only |
 
-## Outfits and card media (live in the ERP since 11 Nov 2026)
+## Hosting and deploy
 
-Originally specified here for the ERP; the ERP now provides all of it, plus dot positions and
-cut-out outfit photos of any shape. `src/lib/sample-looks.ts` is only used by `next dev` if the
-function is missing.
+- Cloudflare Workers (ZAR account), Worker `mbm-website`, at https://maqdoomsbigmall.com and www.
+- Deploy: `NEXT_PUBLIC_SITE_URL=https://maqdoomsbigmall.com npm run deploy` (OpenNext; `wrangler login`
+  as the ZAR account). If only the upload fails (network), `npx opennextjs-cloudflare deploy` retries it.
+- The build uses 3 workers (`experimental.cpus` in `next.config.ts`) so it fits in 8 GB; it needs a
+  few GB free on drive C:.
+- Next.js "Cache Components" are off (the Cloudflare adapter does not support them yet).
+- This Next.js version differs from older ones: read `node_modules/next/dist/docs/` before using an
+  API (see `AGENTS.md`). After adding a route, run `npx next typegen` so `PageProps<…>` types exist.
 
-### 1. Complete looks (MAHIB runway, top 5)
+## How the site works
 
-- Tables, owned by the ERP, same row security and audit triggers as `listings`:
-  - `looks`: `id`, `slug` (unique), `name` ("The Nikah"), `occasion` ("The ceremony · morning light",
-    optional), `section` (`main` / `mahib`), `image_path` (full-length photo in `ecommerce-images`),
-    `image_alt`, `rank`, `published`, `archived_at`, timestamps.
-  - `look_pieces`: `look_id`, `listing_id`, `role` (Sherwani, Kurta, Waistcoat, Bottom, Safa, Stole,
-    Shawl, Footwear, Mala…), `position`. Every piece is an ordinary listing, so it can also be bought alone.
-- New function `storefront_looks(p_section text)`, `SECURITY DEFINER`, execute granted to `anon`
-  like the others. Returns published, non-archived looks of that section ordered by `rank`, each:
-  ```json
-  { "slug": "nikah", "name": "The Nikah", "occasion": "The ceremony · morning light",
-    "image": "looks/nikah.webp", "image_alt": "Ivory raw-silk sherwani…",
-    "pieces": [ { "role": "Sherwani", "product": { …same JSON as storefront_product_card… } } ] }
-  ```
-  Leave out pieces whose listing is unpublished or archived (sold-out pieces stay, marked `sold_out`).
-  The website shows at most 5 looks.
-- ERP screen (E-commerce → Complete looks): create/edit a look, upload its full-length photo, add
-  pieces by searching listings and choosing a role, drag to reorder looks and pieces, publish.
+- **Freshness:** catalogue content is kept in memory for a minute, settings for an hour
+  (`remember()` in `src/lib/catalogue.ts`); pages are built on each visit, so staff changes show
+  within a minute without a deploy. Sizes and stock on product pages are read live
+  (`getProductLive` inside `<Suspense>`).
+- **Guests browse freely.** Bag, wishlist and recently viewed are kept on the device
+  (`src/lib/shop-store.ts`, localStorage key `mbm-shop-v1`). Signing in merges them into the account
+  and keeps them in sync (`src/lib/account.ts`).
+- **Ordering:** product page (size → Add to bag / Buy now) → `/bag` (live prices and stock) →
+  `/checkout` (mobile + one-time code, first time a name; address; review with coupon; pay online or
+  cash on delivery when the quote allows it) → `/orders/<code>` (status, pay now, cancel before
+  packing, tracking). `/account` has orders, profile, addresses, points, sign out. WhatsApp ordering
+  stays as a link on the bag. Fabrics are enquire-only (the ERP refuses them in a quote).
+- **Shop owner settings that affect checkout** (ERP checkout settings): delivery charge,
+  free delivery from an amount, cash on delivery on/off with an optional limit.
 
-### 2. Hold/hover preview on product cards
+### Pages
 
-- Add to the card JSON (`storefront_product_card`, used by `storefront_products`,
-  `storefront_home_featured` and the look pieces):
-  - `hover_image`: bucket path of the photo shown on hold/hover (default: the listing's 2nd photo;
-    staff can pick another). Needs the usual `.card.webp` copy.
-  - `video`: bucket path (or full URL) of a short clip, or null.
-- Listing editor: upload one video per listing (shown as one of its up to 6 media). On upload,
-  compress to MP4 (H.264), about 720×900, 5–8 seconds, no sound, about 1–2 MB.
-  Store it in `ecommerce-images` (or a new public `ecommerce-videos` bucket).
-- `storefront_product` can also return `video` so the product page gallery can play it later.
+| Path | What |
+|---|---|
+| `/` | Home: hero (outfits change by themselves), categories, MAHIB, fabrics, featured, tailoring, heritage |
+| `/shop`, `/shop/<category>` | Maqdoom's collection |
+| `/mahib`, `/mahib/<category>` | MAHIB: outfit runway on top, then heading, category chips, products |
+| `/product/<slug>` | Photos (swipe, hold or hover to zoom, full-screen pinch), size, Add to bag / Buy now, trust row, Complete the look, Recently viewed |
+| `/search?q=` | Search results (header search shows suggestions as you type) |
+| `/wishlist`, `/bag`, `/checkout`, `/orders/<code>`, `/account` | Shopping and account |
+| `/contact`, `/policies/{shipping,returns,privacy,terms}` | Store details, map, policies (owner should review the wording) |
 
-### Photo guide for staff
+### Server routes
 
-- **Look photo:** the complete outfit on a mannequin (or model), full length from the top of the safa
-  to the shoes, plain white or light grey background, portrait 4:5 (1600×2000), same camera height,
-  distance and light for all five looks. The site blends white backgrounds into the arch colour.
-- **Piece photos:** each item alone on plain white, 4:5, centred with the same margin. Photo 1 the
-  whole piece (front), photo 2 a close-up of embroidery or the back; shoes at a 3/4 angle;
-  safa on a head form.
+| Route | What |
+|---|---|
+| `POST /api/shop/<action>` | All sign-in, account and checkout calls (JSON only; `src/app/api/shop/[action]/route.ts`) |
+| `GET /api/products?slugs=` | Live sizes, prices, stock for the bag and wishlist |
+| `GET /api/search?q=` | Search suggestions (title, category, store) |
 
-## Later (cart, payments, international delivery)
+### Main pieces of code
 
-Add these as new ERP functions (e.g. `storefront_place_order`) that run as
-`SECURITY DEFINER` and validate everything server-side, plus a Next.js route
-handler for the payment provider's webhook. Keep rule 1: the storefront never
-holds a secret database key.
+- `MahibRunway` / `MahibLead`: outfit runway (fixed arches, cut-out outfits slide over them, piece
+  dots, combined price, side panel, Buy the look, 5-second auto-advance that pauses while browsing).
+- `ProductCard` / `CardMedia`: catalogue-style cards in a hairline grid; hold (phone) or hover
+  (desktop) shows the 2nd photo or video; 12 cards at a time, more on scroll; sort and filters.
+- `ProductGallery`: swipe, hold-to-zoom, hover zoom, full-screen viewer.
+- `OrderPanel`, `BagView`, `CheckoutView`, `OrderView`, `AccountView`, `SignIn`, `AddressForm`.
+- `SiteChrome`: header (search, wishlist, account, bag) and the minimal footer.
+- Styles: `design.css` (original design), `globals.css` (storefront additions), `refine.css`
+  (tweaks), `shop.css` (checkout, orders, account), `src/app/mahib/mahib.css` (runway).
+
+## Testing notes
+
+- Sign-in codes are in test mode until WhatsApp/SMS is switched on in the ERP: the code is shown in
+  the ERP under Commerce → Orders → Customers & Loyalty.
+- Online payment answers "not available" until the Razorpay keys are set in the ERP.
+- In Claude's built-in browser pane, streamed parts of a page (like the live stock box on product
+  pages) may not appear while the pane is in the background, because it stops drawing frames. Real
+  browsers are not affected; check on a phone.
+
+## Photo guide for staff
+
+- **Outfit photo:** the complete outfit on a mannequin with a head form, full length from the top of
+  the safa to the shoes, cut out on a transparent background (a cut-out stands in front of the
+  arch). A normal photo also works; it then fills the arch.
+- **Piece photos:** each item alone on a plain background, 4:5. Photo 1 the whole piece (front);
+  photo 2 a close-up of embroidery or the back (shown on hold/hover); shoes at a 3/4 angle with
+  space around them; safa on a head form. The crop tool can fit the whole photo with matching padding.
+- **Video (optional):** one 5–8 second clip per product, played on hold/hover.
 
 ## Original design
 
-`reference/` has the original static design (`index.html`, `app.js`,
-`styles.css`). `src/app/design.css` is that stylesheet; storefront additions
-live in `src/app/globals.css`.
+`reference/` has the original static design (`index.html`, `app.js`, `styles.css`);
+`src/app/design.css` is that stylesheet.
