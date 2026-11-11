@@ -61,9 +61,6 @@ export default async function ContactPage() {
             </a>
           ))}
         </p>
-        <p className="sf-doc-small">
-          {STORE.legalName} &middot; GSTIN {STORE.gstin}
-        </p>
       </div>
     </main>
   );

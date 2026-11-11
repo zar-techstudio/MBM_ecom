@@ -35,7 +35,6 @@ export async function CatalogueListing({
   const current = category ? categories.find((c) => c.slug === category) : undefined;
   if (category && !current) notFound();
   const copy = SECTION_COPY[section];
-  const crumb = section === "main" ? "Shop" : "MAHIB";
   // With a runway on top, category links jump straight to the products heading.
   const jump = lead ? "#catalogue" : "";
 
@@ -53,17 +52,6 @@ export async function CatalogueListing({
       {lead}
       <section className="sf-page-head" id="catalogue">
         <div className="container">
-          <nav className="sf-breadcrumb" aria-label="Breadcrumb">
-            <Link href="/">Home</Link>
-            <span aria-hidden="true">/</span>
-            {current ? <Link href={sectionPath(section)}>{crumb}</Link> : <span>{crumb}</span>}
-            {current ? (
-              <>
-                <span aria-hidden="true">/</span>
-                <span>{current.name}</span>
-              </>
-            ) : null}
-          </nav>
           <div className="section-label">{copy.label}</div>
           <h1 className="sf-page-title">{current ? current.name.toUpperCase() : copy.title}</h1>
           <p className="sf-page-intro">{current?.description || copy.intro}</p>

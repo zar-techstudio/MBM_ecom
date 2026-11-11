@@ -7,12 +7,12 @@ import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
 import { WishHeart } from "./WishHeart";
 
-/** Product grid card, using the original design's classes. Hold (phone) or hover (desktop) shows the
- * product's second photo or video when the ERP provides one. */
+/** Product card: full-bleed 4:5 photo (hold or hover shows the 2nd photo or video), wishlist heart,
+ * then category, a two-line title and the price. Cards sit edge to edge in a hairline grid. */
 export function ProductCard({ product, hint }: { product: Card; hint?: boolean }) {
   return (
-    <article className="product-card">
-      <Link href={`/product/${product.slug}`} className="product-card-link" aria-label={product.title}>
+    <article className="pc">
+      <Link href={`/product/${product.slug}`} className="pc-link" aria-label={product.title}>
         <CardMedia
           src={imageUrl(product.thumbnail, "card")}
           alt={product.title}
@@ -20,15 +20,13 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
           video={imageUrl(product.video)}
           hint={hint}
         >
-          <span className="product-category-tag">{product.category.name}</span>
           <WishHeart product={product} />
-          {product.sold_out ? <span className="product-soldout-tag">Sold out</span> : null}
+          {product.sold_out ? <span className="pc-flag">Sold out</span> : null}
         </CardMedia>
-        <div className="product-details">
-          <h3 className="product-title">{product.title}</h3>
-          <div className="product-price-row">
-            <span className="product-price">{priceText(product)}</span>
-          </div>
+        <div className="pc-info">
+          <span className="pc-cat">{product.category.name}</span>
+          <h3 className="pc-title">{product.title}</h3>
+          <span className={`pc-price${product.sold_out ? " is-out" : ""}`}>{priceText(product)}</span>
         </div>
       </Link>
     </article>
@@ -118,7 +116,7 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
         </div>
       ) : null}
       {list.length ? (
-        <div className="products-grid">
+        <div className="pc-grid">
           {list.slice(0, shown).map((p, i) => (
             <ProductCard key={p.slug} product={p} hint={i === tipAt} />
           ))}

@@ -29,77 +29,66 @@ export async function SiteHeader() {
   );
 }
 
-/** Footer with fixed sections (it never lists categories, so it stays tidy as the catalogue grows),
- * the showroom's address and phone, and the policy links shoppers and payment providers expect. */
-export async function SiteFooter() {
-  const settings = await getSettings();
-  const wa = whatsappLink(settings.whatsapp_number, `Hello ${SITE_NAME}, I have a question.`);
-  const year = new Date().getFullYear();
+/** Minimal footer: brand, address (map pin opens Google Maps), phone, Instagram, and three short
+ * link columns that sit side by side on every screen. It never lists categories, so it stays the
+ * same size as the catalogue grows. WhatsApp is the floating button, so it is not repeated here. */
+export function SiteFooter() {
   return (
     <footer className="site-footer sf-footer" id="siteFooter">
       <div className="container">
-        <div className="sf-footer-grid">
-          <div className="sf-footer-brand">
-            <Link href="/" aria-label={`${SITE_NAME} home`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/header_navbar.webp" alt={SITE_NAME} className="sf-footer-logo" loading="lazy" />
-            </Link>
-            <p className="sf-footer-tag">Groom couture from Hyderabad since 1895.</p>
-            <address className="sf-footer-address">
-              {STORE.street}
-              <br />
-              {STORE.city}
-              <br />
-              {STORE.hours}
-            </address>
-            <div className="sf-footer-contact">
-              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">Get directions &rarr;</a>
-              <a href={STORE.phoneHref}>{STORE.phone}</a>
-              <a href={wa} target="_blank" rel="noopener noreferrer">WhatsApp us</a>
-            </div>
-            <div className="sf-footer-social">
-              {STORE.instagram.map((i) => (
-                <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.label}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="1" className="dot" />
-                  </svg>
-                  <span>{i.handle}</span>
-                </a>
-              ))}
-            </div>
+        <div className="sf-footer-brand">
+          <Link href="/" aria-label={`${SITE_NAME} home`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/header_navbar.webp" alt={SITE_NAME} className="sf-footer-logo" loading="lazy" />
+          </Link>
+          <div className="sf-footer-reach">
+            <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="sf-footer-addr" aria-label="Open the showroom in Google Maps">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" />
+                <circle cx="12" cy="10" r="2.6" />
+              </svg>
+              <span>
+                {STORE.street}, Hyderabad
+              </span>
+            </a>
+            <a href={STORE.phoneHref} className="sf-footer-phone">
+              {STORE.phone}
+            </a>
+            <span className="sf-footer-hours">{STORE.hours}</span>
           </div>
+          <div className="sf-footer-social">
+            {STORE.instagram.map((i) => (
+              <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.label} title={i.handle}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" className="dot" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div className="sf-footer-cols">
           <nav className="sf-footer-col" aria-label="Shop">
             <h4 className="sf-footer-title">Shop</h4>
-            <Link href="/shop">Maqdoom&rsquo;s collection</Link>
-            <Link href="/mahib">MAHIB &mdash; the exclusive edit</Link>
-            <Link href="/#tailoring">Custom tailoring</Link>
+            <Link href="/shop">Maqdoom&rsquo;s</Link>
+            <Link href="/mahib">MAHIB</Link>
+            <Link href="/#tailoring">Tailoring</Link>
           </nav>
           <nav className="sf-footer-col" aria-label="Help">
             <h4 className="sf-footer-title">Help</h4>
-            <Link href="/contact">Contact &amp; store location</Link>
-            <Link href="/policies/shipping">Shipping &amp; delivery</Link>
-            <Link href="/policies/returns">Exchanges &amp; returns</Link>
-            <a href={whatsappLink(settings.whatsapp_number, "Hello, I need help with sizes.")} target="_blank" rel="noopener noreferrer">
-              Size help
-            </a>
+            <Link href="/contact">Contact</Link>
+            <Link href="/policies/shipping">Shipping</Link>
+            <Link href="/policies/returns">Returns</Link>
           </nav>
-          <nav className="sf-footer-col" aria-label="About and policies">
+          <nav className="sf-footer-col" aria-label="About">
             <h4 className="sf-footer-title">About</h4>
             <Link href="/#heritage">Our story</Link>
-            <Link href="/policies/privacy">Privacy policy</Link>
-            <Link href="/policies/terms">Terms of use</Link>
+            <Link href="/policies/privacy">Privacy</Link>
+            <Link href="/policies/terms">Terms</Link>
           </nav>
         </div>
-        <div className="sf-footer-bottom">
-          <p>
-            &copy; {year} {STORE.name}. All rights reserved.
-          </p>
-          <p>
-            {STORE.legalName} &middot; GSTIN {STORE.gstin}
-          </p>
-        </div>
+        <p className="sf-footer-copy">&copy; {new Date().getFullYear()} {STORE.name}</p>
       </div>
     </footer>
   );

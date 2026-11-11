@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { STORE, STORE_ADDRESS } from "@/lib/site";
 
@@ -9,6 +8,8 @@ import { STORE, STORE_ADDRESS } from "@/lib/site";
  */
 const UPDATED = "11 November 2026";
 const CONTACT = `${STORE.phone} (call or WhatsApp), ${STORE.name}, ${STORE_ADDRESS}`;
+/** Grievance officer, as Indian e-commerce rules require (Consumer Protection (E-Commerce) Rules, 2020). */
+const GRIEVANCE = `Grievance Officer: Moghny Maqdoom, ${STORE.phone} (call or WhatsApp), ${STORE.name}, ${STORE_ADDRESS}. We acknowledge complaints within 48 hours and resolve them within one month.`;
 
 type Policy = { title: string; intro: string; sections: { h: string; p: string[] }[] };
 
@@ -62,7 +63,7 @@ const POLICIES: Record<string, Policy> = {
       },
       {
         h: "How to reach us",
-        p: [`Message us on WhatsApp or call ${STORE.phone} with your order or bill number.`],
+        p: [`Message us on WhatsApp or call ${STORE.phone} with your order or bill number.`, GRIEVANCE],
       },
     ],
   },
@@ -96,7 +97,7 @@ const POLICIES: Record<string, Policy> = {
           "You can ask us to correct or delete your details, or to stop sending offers, at any time by contacting us.",
         ],
       },
-      { h: "Grievances", p: [`For any concern about your data or an order, contact: ${CONTACT}.`] },
+      { h: "Grievances", p: [GRIEVANCE] },
     ],
   },
   terms: {
@@ -123,6 +124,7 @@ const POLICIES: Record<string, Policy> = {
       },
       { h: "Law", p: ["These terms are governed by Indian law; the courts at Hyderabad, Telangana have jurisdiction."] },
       { h: "Contact", p: [CONTACT] },
+      { h: "Grievances", p: [GRIEVANCE] },
     ],
   },
 };
@@ -143,11 +145,7 @@ export default async function PolicyPage({ params }: PageProps<"/policies/[slug]
   return (
     <main className="sf-doc">
       <div className="container sf-doc-inner">
-        <nav className="sf-breadcrumb" aria-label="Breadcrumb">
-          <Link href="/">Home</Link>
-          <span aria-hidden="true">/</span>
-          <span>{p.title}</span>
-        </nav>
+        <div className="section-label">Policies</div>
         <h1 className="sf-doc-title">{p.title}</h1>
         <p className="sf-doc-intro">{p.intro}</p>
         {p.sections.map((s) => (

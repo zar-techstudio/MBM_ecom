@@ -34,27 +34,26 @@ export function WishlistView() {
       <section className="featured-section sf-listing-grid">
         <div className="container">
           {wish.length ? (
-            <div className="products-grid">
+            <div className="pc-grid">
               {wish.map((p) => {
                 const l = live?.[p.slug];
                 const sizes = pickable(l);
                 const gone = live && (!l?.found || l.sold_out);
                 const one = sizes.length === 1 && !sizes[0]!.size;
                 return (
-                  <article key={p.slug} className="product-card wish-card">
-                    <Link href={`/product/${p.slug}`} className="product-card-link">
+                  <article key={p.slug} className="pc wish-card">
+                    <Link href={`/product/${p.slug}`} className="pc-link">
                       <div className="product-media-box">
                         {p.thumbnail ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img className="product-img" src={imageUrl(p.thumbnail, "card") ?? ""} alt={p.title} loading="lazy" />
                         ) : null}
-                        {gone ? <span className="product-soldout-tag">Sold out</span> : null}
+                        {gone ? <span className="pc-flag">Sold out</span> : null}
                       </div>
-                      <div className="product-details">
-                        <h3 className="product-title">{p.title}</h3>
-                        <div className="product-price-row">
-                          <span className="product-price">{priceText({ ...p, price_from_paise_per_m: null })}</span>
-                        </div>
+                      <div className="pc-info">
+                        <span className="pc-cat">{p.category}</span>
+                        <h3 className="pc-title">{p.title}</h3>
+                        <span className="pc-price">{priceText({ ...p, price_from_paise_per_m: null })}</span>
                       </div>
                     </Link>
                     <button type="button" className="wish-remove" aria-label={`Remove ${p.title}`} onClick={() => shop.toggleWish(p)}>
