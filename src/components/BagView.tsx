@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { shop, useShop, type BagLine } from "@/lib/shop-store";
 import { formatINR, imageUrl, whatsappLink } from "@/lib/site";
 import { pickable, priceOf, useLive, type Live } from "@/lib/use-live";
@@ -40,6 +41,16 @@ export function BagView({ whatsappNumber, siteUrl }: { whatsappNumber: string; s
   const items = okRows.reduce((n, r) => n + r.line.qty, 0);
   const subtotal = okRows.reduce((n, r) => n + (r.unit ?? 0) * r.line.qty, 0);
   const blocked = rows.some((r) => r.issue);
+
+  // Save sizes that were picked automatically (only one left), so checkout orders the right one.
+  const autoSized = rows.filter((r) => r.line.size === null && r.size !== null).map((r) => `${r.line.slug}:${r.size}`).join(",");
+  useEffect(() => {
+    if (!autoSized) return;
+    autoSized.split(",").forEach((pair) => {
+      const [slug, size] = pair.split(":");
+      if (slug && size) shop.setSize(slug, null, size);
+    });
+  }, [autoSized]);
 
   const order = whatsappLink(
     whatsappNumber,
@@ -142,24 +153,25 @@ export function BagView({ whatsappNumber, siteUrl }: { whatsappNumber: string; s
             </div>
             <div className="sf-bag-sum-row">
               <span>Delivery</span>
-              <span>Confirmed with your order</span>
+              <span>Worked out at checkout</span>
             </div>
             <div className="sf-bag-sum-row is-total">
               <span>Total</span>
               <span>{ready ? formatINR(subtotal) : "…"}</span>
             </div>
-            <a
+            <Link
+              href="/checkout"
               className={`sf-bag-order${!ready || blocked || !items ? " is-off" : ""}`}
-              href={ready && !blocked && items ? order : undefined}
-              target="_blank"
-              rel="noopener noreferrer"
               aria-disabled={!ready || blocked || !items}
             >
-              Place order
-            </a>
+              Checkout
+            </Link>
             <p className="sf-bag-note">
               {blocked ? "Fix the pieces marked above to continue. " : ""}
-              We confirm your order, delivery and payment on WhatsApp. Pay online or cash on delivery.
+              Pay online or cash on delivery. Prefer to chat?{" "}
+              <a href={ready && !blocked && items ? order : undefined} target="_blank" rel="noopener noreferrer">
+                Order on WhatsApp
+              </a>
             </p>
             <ul className="sf-bag-trust">
               <li>Cash on delivery available</li>

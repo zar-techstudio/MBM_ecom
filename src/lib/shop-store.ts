@@ -58,6 +58,7 @@ function set(next: State) {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {}
   listeners.forEach((l) => l());
+  changeListeners.forEach((l) => l(next));
 }
 
 function subscribe(l: () => void) {
@@ -148,6 +149,28 @@ export const shop = {
     set({ ...state, seen: [pick(p), ...state.seen.filter((s) => s.slug !== p.slug)].slice(0, 12) });
   },
 };
+
+/** Called after every change made on this device (not for lists replaced from the account). */
+const changeListeners = new Set<(s: State) => void>();
+export function onShopChange(l: (s: State) => void) {
+  changeListeners.add(l);
+  return () => changeListeners.delete(l);
+}
+
+/** Replace the bag and wishlist with the signed-in account's (keeps "recently viewed"). */
+export function replaceFromAccount(bag: BagLine[], wish: SavedProduct[]) {
+  load();
+  state = { ...state, bag, wish };
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {}
+  listeners.forEach((l) => l());
+}
+
+export function shopSnapshot() {
+  load();
+  return state;
+}
 
 export const bagCount = (s: State) => s.bag.reduce((n, l) => n + l.qty, 0);
 

@@ -6,7 +6,9 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
 ## Hard rules
 
 1. **Public key only.** Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a
-   service-role or secret key to this project, its `.env` files or Vercel.
+   service-role or secret database key to this project, its `.env` files or Cloudflare.
+   The one shared secret is `SHOP_API_SECRET` (set by the ERP): used only on this site's
+   server (`src/lib/shop-api.ts`) to ask the ERP to send a sign-in code or start a payment.
 2. **No migrations here.** No `supabase/` folder, no SQL. Schema changes are
    made in the ERP repo, tested on the test project, then applied to live.
 3. **Storefront functions only.** Read data through these RPCs, nothing else:
@@ -34,7 +36,12 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
   does not support them yet (pages hung).
 - Sizes and stock on the product page are read live on every visit
   (`getProductLive`, inside `<Suspense>`).
-- Ordering happens on WhatsApp. Fabrics are enquire-only.
+- Ordering: bag → `/checkout` (mobile + one-time code, address, review with coupon, online or
+  cash on delivery) → `/orders/<code>`. All amounts come from the ERP's quote. Every account and
+  checkout call goes through `POST /api/shop/<action>` (`src/app/api/shop/[action]/route.ts`),
+  which keeps the shopper's session in an HttpOnly cookie (`mbs`). The ERP's contract is
+  `mbm_inv_v2/docs/STOREFRONT_API.md`. WhatsApp ordering stays as an option on the bag.
+  Fabrics are enquire-only.
 - Staff publish, feature and archive products in the ERP's E-commerce section.
 
 ## Outfits and card media (live in the ERP since 11 Nov 2026)

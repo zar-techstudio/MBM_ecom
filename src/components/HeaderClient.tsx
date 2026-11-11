@@ -176,6 +176,9 @@ export function HeaderClient({
                 </div>
               ))}
               <div className="drawer-group">
+                <Link href="/account" className="drawer-main" onClick={() => setOpen(false)}>
+                  My account &amp; orders
+                </Link>
                 <Link href="/wishlist" className="drawer-main" onClick={() => setOpen(false)}>
                   Wishlist
                 </Link>
