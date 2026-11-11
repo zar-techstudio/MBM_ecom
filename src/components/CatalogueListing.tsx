@@ -22,11 +22,14 @@ export async function CatalogueListing({
   section,
   category,
   feature,
+  lead,
 }: {
   section: Section;
   category?: string;
   /** Shown between the page heading and the product grid (the MAHIB runway). */
   feature?: React.ReactNode;
+  /** Shown first, above the page heading (the MAHIB outfit runway). */
+  lead?: React.ReactNode;
 }) {
   const [categories, products] = await Promise.all([getCategories(section), getProducts(section, category)]);
   const current = category ? categories.find((c) => c.slug === category) : undefined;
@@ -45,6 +48,7 @@ export async function CatalogueListing({
 
   return (
     <main className={`sf-listing${section === "mahib" ? " sf-listing-mahib" : ""}`}>
+      {lead}
       <section className="sf-page-head">
         <div className="container">
           <nav className="sf-breadcrumb" aria-label="Breadcrumb">

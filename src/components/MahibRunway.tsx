@@ -2,16 +2,61 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Look } from "@/lib/catalogue";
-import { imageUrl, priceText, whatsappLink } from "@/lib/site";
+import type { Look, LookPiece } from "@/lib/catalogue";
+import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
 
 const pad = (n: number) => String(n).padStart(2, "0");
+const ARCH = 0.62; // width / height of an arch (matches .runway-model in mahib.css)
+const MAX_W = 1.3; // a wide photo may spill this far past the arch's sides
 
 /** Where a look sits relative to the one in front: 0 centre, -1 left, 1 right, else hidden. */
 function offsetOf(i: number, active: number, count: number) {
   let d = (i - active + count) % count;
   if (d > count / 2) d -= count;
   return d;
+}
+
+/** Size of the photo box inside the arch; the piece dots (in % of the photo) use the same box.
+ * A cut-out is shown whole (never cropped). A normal photo (solid background) fills the whole arch
+ * instead, like a portrait in a window, so its background never shows as a box. */
+function photoBox(aspect: number, fill: boolean) {
+  const w = aspect / ARCH;
+  if (fill) return w >= 1 ? { width: `${w * 100}%`, height: "100%" } : { width: "100%", height: `${(1 / w) * 100}%` };
+  return w <= MAX_W
+    ? { width: `${w * 100}%`, height: "100%" }
+    : { width: `${MAX_W * 100}%`, height: `${((MAX_W * ARCH) / aspect) * 100}%` };
+}
+
+/** True when the photo has an opaque background (a normal photo, not a cut-out): its corners
+ * are solid. */
+function isOpaquePhoto(img: HTMLImageElement) {
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 16;
+    const g = c.getContext("2d");
+    if (!g) return false;
+    g.drawImage(img, 0, 0, 16, 16);
+    const d = g.getImageData(0, 0, 16, 16).data;
+    const alpha = (x: number, y: number) => d[(y * 16 + x) * 4 + 3];
+    return [alpha(0, 0), alpha(15, 0), alpha(0, 15), alpha(15, 15)].every((a) => a > 245);
+  } catch {
+    return false;
+  }
+}
+
+/** "Complete look ₹X", or "from ₹X" when a piece has a price range or no price. */
+function lookTotal(pieces: LookPiece[]) {
+  let sum = 0;
+  let from = false;
+  for (const { product: p } of pieces) {
+    if (p.kind !== "garment" || p.price_min_paise == null) {
+      from = true;
+      continue;
+    }
+    sum += p.price_min_paise;
+    if (p.price_max_paise != null && p.price_max_paise !== p.price_min_paise) from = true;
+  }
+  return sum ? `${from ? "from " : ""}${formatINR(sum)}` : "";
 }
 
 /** Thin gold outline of a Hyderabadi pointed arch, stretched to its box. */
@@ -23,36 +68,64 @@ function ArchLine() {
   );
 }
 
-/** MAHIB runway: the top complete outfits, each standing in a courtyard arch. Swipe, use the arrows
- * or the tabs; "View the look" lists every piece, each of which is a product that can be bought alone. */
+/**
+ * MAHIB runway: every published outfit stands in a courtyard arch. It moves on every 5 seconds
+ * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows
+ * and tabs. Dots on the photo open that piece; "View the look" slides in a narrow panel from the
+ * right with every piece. Each piece is a normal product that can be bought alone.
+ */
 export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[]; whatsappNumber: string; pageUrl: string }) {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
+  const [pick, setPick] = useState<number | null>(null); // piece shown in the product card
+  const [hovering, setHovering] = useState(false);
+  const [aspects, setAspects] = useState<Record<string, number>>({});
+  const [solid, setSolid] = useState<Record<string, boolean>>({}); // normal photos (not cut-outs)
   const drag = useRef<{ x: number; id: number } | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const swiped = useRef(false);
   const count = looks.length;
-  const look = looks[active];
+  const act = count ? Math.min(active, count - 1) : 0; // stays valid if the list gets shorter
+  const look = looks[act];
+  const paused = open || pick !== null || hovering || count < 2;
 
-  const go = useCallback((step: number) => setActive((a) => (a + step + count) % count), [count]);
+  const measure = useCallback((slug: string, img: HTMLImageElement) => {
+    const { naturalWidth: w, naturalHeight: h } = img;
+    if (!w || !h) return;
+    setAspects((a) => (a[slug] ? a : { ...a, [slug]: w / h }));
+    if (isOpaquePhoto(img)) setSolid((o) => (o[slug] ? o : { ...o, [slug]: true }));
+  }, []);
+  const show = useCallback(
+    (i: number) => {
+      setActive(((i % count) + count) % count);
+      setPick(null);
+    },
+    [count],
+  );
+  const go = useCallback((step: number) => show(act + step), [act, show]);
 
   useEffect(() => {
-    if (!open) return;
-    panelRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    if (!open && pick === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (pick !== null) setPick(null);
+      else setOpen(false);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, pick]);
 
   if (!count) return null;
 
-  const productUrl = (slug: string) => `${pageUrl.replace(/\/mahib$/, "")}/product/${slug}`;
-  const order = whatsappLink(
+  const base = pageUrl.replace(/\/mahib$/, "");
+  const link = (p: LookPiece) => (p.product.slug ? ` ${base}/product/${p.product.slug}` : "");
+  const orderLook = whatsappLink(
     whatsappNumber,
-    [
-      `Hello, I'd like the complete MAHIB look "${look.name}":`,
-      ...look.pieces.map((p) => `- ${p.role}: ${p.product.title}${p.product.slug ? ` (${productUrl(p.product.slug)})` : ""}`),
-    ].join("\n"),
+    [`Hello, I'd like the complete MAHIB look "${look.name}":`, ...look.pieces.map((p) => `- ${p.role}: ${p.product.title}${link(p)}`)].join(
+      "\n",
+    ),
   );
+  const total = lookTotal(look.pieces);
+  const picked = pick !== null ? look.pieces[pick] : null;
 
   return (
     <section
@@ -61,7 +134,7 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
       aria-roledescription="carousel"
       aria-label="MAHIB complete looks"
       onKeyDown={(e) => {
-        if (open) return;
+        if (open || pick !== null) return;
         if (e.key === "ArrowLeft") go(-1);
         if (e.key === "ArrowRight") go(1);
       }}
@@ -69,13 +142,15 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
       <div className="container runway-head">
         <div className="runway-label">The MAHIB Edit</div>
         <h2 className="runway-title">Complete looks for every night of the wedding</h2>
-        <p className="runway-sub">Take the whole outfit, or just the piece you love.</p>
       </div>
 
       <div
         className="runway-stage"
+        onPointerEnter={(e) => e.pointerType === "mouse" && setHovering(true)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && setHovering(false)}
         onPointerDown={(e) => {
-          if (e.pointerType === "mouse" || open) return;
+          swiped.current = false;
+          if (e.pointerType === "mouse") return;
           drag.current = { x: e.clientX, id: e.pointerId };
         }}
         onPointerUp={(e) => {
@@ -83,30 +158,66 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
           drag.current = null;
           if (!d || d.id !== e.pointerId) return;
           const dx = e.clientX - d.x;
-          if (Math.abs(dx) > 45) go(dx < 0 ? 1 : -1);
+          if (Math.abs(dx) > 45) {
+            swiped.current = true;
+            go(dx < 0 ? 1 : -1);
+          }
         }}
         onPointerCancel={() => (drag.current = null)}
       >
         <div className="runway-floor" aria-hidden="true" />
         {looks.map((l, i) => {
-          const off = offsetOf(i, active, count);
+          const off = offsetOf(i, act, count);
           const pos = off === 0 ? "center" : off === -1 ? "left" : off === 1 ? "right" : "away";
+          const box = photoBox(aspects[l.slug] ?? 0.5, Boolean(solid[l.slug]));
           return (
-            <button
-              key={l.slug}
-              type="button"
-              className={`runway-model is-${pos}`}
-              aria-hidden={pos === "away"}
-              tabIndex={pos === "away" ? -1 : 0}
-              aria-label={off === 0 ? `View the pieces in ${l.name}` : `Show ${l.name}`}
-              onClick={() => (off === 0 ? setOpen(true) : setActive(i))}
-            >
+            <div key={l.slug} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
               <span className="runway-arch">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imageUrl(l.image) ?? ""} alt={l.image_alt ?? l.name} loading={i === 0 ? "eager" : "lazy"} draggable={false} />
+                <img
+                  src={imageUrl(l.image) ?? ""}
+                  alt={l.image_alt ?? l.name}
+                  style={box}
+                  className={solid[l.slug] ? "is-photo" : undefined}
+                  crossOrigin="anonymous"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  draggable={false}
+                  ref={(el) => {
+                    // Photo already loaded before the page became interactive: onLoad won't fire.
+                    if (el?.complete && el.naturalWidth && !aspects[l.slug]) measure(l.slug, el);
+                  }}
+                  onLoad={(e) => measure(l.slug, e.currentTarget)}
+                />
               </span>
               <ArchLine />
-            </button>
+              <button
+                type="button"
+                className="runway-hit"
+                tabIndex={pos === "away" ? -1 : 0}
+                aria-label={off === 0 ? `View the pieces in ${l.name}` : `Show ${l.name}`}
+                onClick={() => {
+                  if (swiped.current) return;
+                  if (off === 0) setOpen(true);
+                  else show(i);
+                }}
+              />
+              {pos === "center" ? (
+                <div className="runway-dots" style={box}>
+                  {l.pieces.map((p, n) =>
+                    p.x != null && p.y != null ? (
+                      <button
+                        key={`${p.role}-${n}`}
+                        type="button"
+                        className={`runway-dot${pick === n ? " active" : ""}`}
+                        style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                        aria-label={`${p.role}: ${p.product.title}`}
+                        onClick={() => setPick(pick === n ? null : n)}
+                      />
+                    ) : null,
+                  )}
+                </div>
+              ) : null}
+            </div>
           );
         })}
 
@@ -117,64 +228,78 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
           &rarr;
         </button>
 
-        <div className="runway-backdrop" aria-hidden="true" onClick={() => setOpen(false)} />
-        <div
-          ref={panelRef}
-          className="runway-panel"
-          role="dialog"
-          aria-label={`In this look: ${look.name}`}
-          aria-hidden={!open}
-          tabIndex={-1}
-          inert={!open}
-        >
-          <button type="button" className="runway-close" aria-label="Close" onClick={() => setOpen(false)}>
-            &times;
-          </button>
-          <div className="runway-label">In this look</div>
-          <h3 className="runway-panel-title">{look.name}</h3>
+        {picked ? (
+          <div className="runway-card" role="dialog" aria-label={`${picked.role}: ${picked.product.title}`}>
+            <button type="button" className="runway-card-close" aria-label="Close" onClick={() => setPick(null)}>
+              &times;
+            </button>
+            <span className="runway-card-img">
+              {picked.product.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageUrl(picked.product.thumbnail, "card") ?? ""} alt="" />
+              ) : null}
+            </span>
+            <span className="runway-card-text">
+              <span className="runway-piece-role">{picked.role}</span>
+              <span className="runway-card-title">{picked.product.title}</span>
+              <span className="runway-card-price">{picked.product.sold_out ? "Sold out" : priceText(picked.product)}</span>
+              <span className="runway-card-actions">
+                {picked.product.slug ? (
+                  <Link href={`/product/${picked.product.slug}`} className="runway-card-btn is-dark">
+                    View details
+                  </Link>
+                ) : null}
+                <a
+                  className="runway-card-btn"
+                  href={whatsappLink(whatsappNumber, `Hello, I'd like this piece from "${look.name}": ${picked.product.title}${link(picked)}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Buy alone
+                </a>
+              </span>
+            </span>
+          </div>
+        ) : null}
+
+        <aside className="runway-panel" aria-label={`In this look: ${look.name}`} aria-hidden={!open} inert={!open}>
+          <div className="runway-panel-head">
+            <span className="runway-label">In this look</span>
+            <button type="button" className="runway-close" aria-label="Close" onClick={() => setOpen(false)}>
+              &times;
+            </button>
+          </div>
           <ul className="runway-pieces">
-            {look.pieces.map((p) => {
-              const thumb = imageUrl(p.product.thumbnail, "card");
-              const price = priceText(p.product);
-              const body = (
-                <>
+            {look.pieces.map((p, n) => (
+              <li key={`${p.role}-${n}`}>
+                <button type="button" className={`runway-piece${pick === n ? " active" : ""}`} onClick={() => setPick(n)}>
                   <span className="runway-piece-img">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {thumb ? <img src={thumb} alt="" loading="lazy" /> : null}
+                    {p.product.thumbnail ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl(p.product.thumbnail, "card") ?? ""} alt="" loading="lazy" />
+                    ) : null}
                   </span>
                   <span className="runway-piece-text">
                     <span className="runway-piece-role">{p.role}</span>
                     <span className="runway-piece-name">{p.product.title}</span>
-                    <span className="runway-piece-price">
-                      {p.product.sold_out ? "Sold out" : price}
-                      {p.product.slug ? <span className="runway-piece-buy">Buy alone &rarr;</span> : null}
-                    </span>
+                    <span className="runway-piece-price">{p.product.sold_out ? "Sold out" : priceText(p.product)}</span>
                   </span>
-                </>
-              );
-              return (
-                <li key={`${p.role}-${p.product.title}`}>
-                  {p.product.slug ? (
-                    <Link href={`/product/${p.product.slug}`} className="runway-piece">
-                      {body}
-                    </Link>
-                  ) : (
-                    <div className="runway-piece">{body}</div>
-                  )}
-                </li>
-              );
-            })}
+                </button>
+              </li>
+            ))}
           </ul>
-          <a className="runway-order" href={order} target="_blank" rel="noopener noreferrer">
-            Order the full look on WhatsApp
-          </a>
-          <p className="runway-panel-note">Every piece is fitted to you. We confirm sizes and price on WhatsApp before you pay.</p>
-        </div>
+          <div className="runway-panel-foot">
+            {total ? <span className="runway-panel-total">{total}</span> : null}
+            <a className="runway-order" href={orderLook} target="_blank" rel="noopener noreferrer">
+              Buy the look
+            </a>
+          </div>
+        </aside>
       </div>
 
       <div className="container runway-caption" aria-live="polite">
         <span className="runway-num" aria-hidden="true">
-          {pad(active + 1)}
+          {pad(act + 1)}
         </span>
         <div className="runway-caption-text">
           <h3 className="runway-name" key={look.slug}>
@@ -182,28 +307,52 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
           </h3>
           {look.occasion ? <p className="runway-occasion">{look.occasion}</p> : null}
         </div>
-        <button type="button" className="runway-view" onClick={() => setOpen(true)}>
-          View the look &middot; {look.pieces.length} pieces
-        </button>
+        <div className="runway-buy">
+          {total ? (
+            <span className="runway-total">
+              <span className="runway-total-label">Complete look · {look.pieces.length} pieces</span>
+              <span className="runway-total-price">{total}</span>
+            </span>
+          ) : null}
+          <span className="runway-buy-actions">
+            <a className="runway-view is-dark" href={orderLook} target="_blank" rel="noopener noreferrer">
+              Buy the look
+            </a>
+            <button type="button" className="runway-view" onClick={() => setOpen(true)}>
+              View the look
+            </button>
+          </span>
+        </div>
       </div>
 
-      <nav className="container runway-tabs" aria-label="Choose a look">
-        {looks.map((l, i) => (
-          <button
-            key={l.slug}
-            type="button"
-            className={`runway-tab${i === active ? " active" : ""}`}
-            aria-current={i === active}
-            onClick={() => {
-              setActive(i);
-              setOpen(false);
-            }}
-          >
-            <span className="runway-tab-num">{pad(i + 1)}</span>
-            <span className="runway-tab-name">{l.name.replace(/^The /, "")}</span>
-          </button>
-        ))}
-      </nav>
+      {count > 1 ? (
+        <nav className="container runway-tabs" aria-label="Choose a look">
+          {looks.map((l, i) => (
+            <button
+              key={l.slug}
+              type="button"
+              className={`runway-tab${i === act ? " active" : ""}`}
+              aria-current={i === act}
+              onClick={() => show(i)}
+            >
+              {i === act ? (
+                // Fills over 5 seconds; when it ends the next look comes in. Paused while browsing.
+                <span
+                  key={act}
+                  className="runway-tab-bar"
+                  style={{ animationPlayState: paused ? "paused" : "running" }}
+                  onAnimationEnd={() => go(1)}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <span className="runway-tab-num">{pad(i + 1)}</span>
+              <span className="runway-tab-name">{l.name.replace(/^The /, "")}</span>
+            </button>
+          ))}
+        </nav>
+      ) : (
+        <div className="runway-tabs-spacer" />
+      )}
     </section>
   );
 }

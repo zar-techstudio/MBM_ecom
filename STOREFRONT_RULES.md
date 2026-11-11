@@ -15,8 +15,8 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
    - `storefront_products(p_section, p_category)` — product cards
    - `storefront_home_featured()` — one home pick per category
    - `storefront_product(p_slug)` — product page, sizes and pieces left
-   - `storefront_looks(p_section)` — complete outfits for the MAHIB runway
-     (**not in the ERP yet**, see "Waiting on the ERP" below; the site copes without it)
+   - `storefront_looks(p_section)` — complete outfits for the MAHIB runway (all published, in
+     staff order; each piece has an optional dot position `x`, `y` in % of the outfit photo)
    Direct table reads are blocked for the public role, by design.
 4. **Photos** come from the public `ecommerce-images` bucket. Each photo has a
    large copy `<id>.webp` (1600×2000) and a card copy `<id>.card.webp` (600×750).
@@ -37,11 +37,11 @@ The ERP (`maqdoom-s-INV`) owns the data, the schema and every migration.
 - Ordering happens on WhatsApp. Fabrics are enquire-only.
 - Staff publish, feature and archive products in the ERP's E-commerce section.
 
-## Waiting on the ERP (website side is ready)
+## Outfits and card media (live in the ERP since 11 Nov 2026)
 
-The website already reads these. Until the ERP adds them, the MAHIB runway is hidden on the live
-site (local `next dev` shows sample outfits from `src/lib/sample-looks.ts`) and product cards show
-one photo with no hold/hover preview.
+Originally specified here for the ERP; the ERP now provides all of it, plus dot positions and
+cut-out outfit photos of any shape. `src/lib/sample-looks.ts` is only used by `next dev` if the
+function is missing.
 
 ### 1. Complete looks (MAHIB runway, top 5)
 

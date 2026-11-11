@@ -16,7 +16,7 @@ export default async function MahibPage() {
   return (
     <CatalogueListing
       section="mahib"
-      feature={looks.length ? <MahibRunway looks={looks} whatsappNumber={settings.whatsapp_number} pageUrl={`${SITE_URL}/mahib`} /> : null}
+      lead={looks.length ? <MahibRunway looks={looks} whatsappNumber={settings.whatsapp_number} pageUrl={`${SITE_URL}/mahib`} /> : null}
     />
   );
 }

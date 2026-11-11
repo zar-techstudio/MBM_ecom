@@ -38,15 +38,17 @@ export type ProductCard = {
   video?: string | null;
 };
 
-/** One piece of a complete outfit, e.g. role "Safa" with its product card. */
-export type LookPiece = { role: string; product: ProductCard };
+/** One piece of a complete outfit, e.g. role "Safa" with its product card. The product may come
+ * from either store. x, y place the piece's dot on the outfit photo (% from the top left), or null. */
+export type LookPiece = { role: string; product: ProductCard; x?: number | null; y?: number | null };
 
 /** A complete outfit (MAHIB runway). Every piece is a normal product that can also be bought alone. */
 export type Look = {
   slug: string;
   name: string;
   occasion: string | null;
-  /** Full-length photo of the whole outfit (bucket path). */
+  /** Full-length photo of the whole outfit (bucket path). Any shape; usually a cut-out with a
+   * transparent background, so it is shown whole (never cropped). */
   image: string;
   image_alt: string | null;
   pieces: LookPiece[];
@@ -126,13 +128,13 @@ export async function getProductLive(slug: string): Promise<Product | null> {
   return (await call<Product | null>("storefront_product", { p_slug: slug })) ?? null;
 }
 
-/** The complete outfits for a section, in staff order (top 5). Read from the ERP's
+/** The complete outfits for a section, in staff order (all that staff publish). Read from the ERP's
  * `storefront_looks` function. Until the ERP adds that function the runway is simply not shown;
  * local development (`next dev`) shows sample outfits instead so the design can be worked on. */
 export async function getLooks(section: Section): Promise<Look[]> {
   return remember(`looks:${section}`, MINUTE, async () => {
     try {
-      return ((await call<Look[]>("storefront_looks", { p_section: section })) ?? []).slice(0, 5);
+      return (await call<Look[]>("storefront_looks", { p_section: section })) ?? [];
     } catch (e) {
       if (!/storefront_looks/.test(String(e)) || !/(find|exist)/i.test(String(e))) throw e;
       if (process.env.NODE_ENV === "development" && section === "mahib") {
