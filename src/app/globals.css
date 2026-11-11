@@ -190,7 +190,7 @@
 #catalogue { scroll-margin-top: calc(var(--header-height) + 0.5rem); }
 
 /* Product photos: swipe / arrows, hover zoom (desktop), full-screen viewer. */
-.sf-gallery-main { position: relative; cursor: zoom-in; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.sf-gallery-main { position: relative; cursor: zoom-in; touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .sf-gallery-main img { transition: transform 0.25s var(--ease-smooth); transform-origin: var(--zx, 50%) var(--zy, 50%); }
 .sf-gallery-main.is-zoom img { transform: scale(2.2); transition: transform 0.25s var(--ease-smooth), transform-origin 0s; }
 .sf-gallery-arrow {
@@ -212,8 +212,6 @@
 .sf-gallery-arrow.is-prev { left: 12px; }
 .sf-gallery-arrow.is-next { right: 12px; }
 .sf-gallery-arrow:hover { background: var(--color-gold); }
-.sf-gallery-main:hover .sf-gallery-arrow { opacity: 1; }
-.sf-gallery-main.is-zoom .sf-gallery-arrow { opacity: 0.85; }
 .sf-gallery-count {
   position: absolute;
   right: 12px;
@@ -227,9 +225,8 @@
   letter-spacing: 0.08em;
   pointer-events: none;
 }
-@media (hover: none) {
-  .sf-gallery-arrow { opacity: 0.9; width: 38px; height: 38px; margin-top: -19px; font-size: 1rem; }
-}
+/* Phones swipe; arrows only appear in the full-screen view on desktop. */
+@media (hover: none) { .sf-viewer .sf-gallery-arrow { display: none; } }
 
 .sf-viewer { position: fixed; inset: 0; z-index: 1000; background: var(--color-ivory); }
 .sf-viewer-stage {
@@ -286,3 +283,68 @@
   .sf-viewer-touch { display: none; }
   .sf-viewer-mouse { display: inline; }
 }
+
+/* Product grid: more cards load as you scroll. */
+.sf-more { display: flex; justify-content: center; gap: 0.4rem; padding: 2rem 0 0.5rem; }
+.sf-more-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-gold-rich); animation: sf-more 1s ease-in-out infinite; }
+.sf-more-dot:nth-child(2) { animation-delay: 0.15s; }
+.sf-more-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes sf-more { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+.sf-end { text-align: center; padding: 2rem 0 0.5rem; font-family: var(--font-serif-editorial); font-style: italic; color: var(--text-muted); }
+
+/* Footer: fixed sections, so it stays tidy however many categories there are. */
+.sf-footer { padding-top: clamp(3rem, 6vh, 4.5rem); }
+.sf-footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  padding-bottom: clamp(2rem, 4vh, 3rem);
+}
+.sf-footer-logo { height: 64px; width: auto; display: block; }
+.sf-footer-tag { margin-top: 0.9rem; font-family: var(--font-serif-editorial); font-style: italic; font-size: 1.1rem; color: var(--text-light-muted); }
+.sf-footer-address { margin-top: 1rem; font-style: normal; font-size: 0.9rem; line-height: 1.6; color: var(--text-light-muted); }
+.sf-footer-contact { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 0.9rem; }
+.sf-footer-contact a { color: var(--color-gold-light); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+.sf-footer-contact a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sf-footer-col { display: flex; flex-direction: column; gap: 0.7rem; }
+.sf-footer-title { font-family: var(--font-serif-display); font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 0.3rem; }
+.sf-footer-col a { color: var(--text-light-muted); font-size: 0.9rem; text-decoration: none; transition: color var(--transition-fast); }
+.sf-footer-col a:hover { color: var(--color-ivory); }
+.sf-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding: 1.25rem 0 0.25rem;
+  border-top: 1px solid #231c16;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: #8e8377;
+}
+@media (max-width: 900px) {
+  .sf-footer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sf-footer-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .sf-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.75rem; }
+  .sf-footer-col:last-child { grid-column: 1 / -1; }
+  .sf-footer-logo { height: 52px; }
+  .sf-footer-bottom { flex-direction: column; padding-bottom: 5rem; } /* room for the floating button */
+}
+
+/* Contact and policy pages */
+.sf-doc { background: var(--color-ivory); padding: clamp(2.5rem, 6vh, 4.5rem) 0 clamp(3rem, 8vh, 5rem); }
+.sf-doc-inner { max-width: 820px; }
+.sf-doc-title { font-family: var(--font-serif-display); font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 0.06em; color: var(--color-espresso); margin: 0.4rem 0 1rem; }
+.sf-doc-intro { font-family: var(--font-serif-editorial); font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+.sf-doc-section { padding: 1.1rem 0; border-top: 1px solid var(--color-ivory-sand); }
+.sf-doc-section h2 { font-family: var(--font-serif-display); font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-espresso); margin-bottom: 0.5rem; }
+.sf-doc-section p { color: var(--text-secondary); line-height: 1.7; margin-top: 0.4rem; }
+.sf-doc-small { margin-top: 1.75rem; font-size: 0.8rem; color: var(--text-muted); }
+.sf-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0 1.5rem; }
+.sf-contact-card { padding: 1.5rem; background: #fff; border: 1px solid var(--color-ivory-sand); }
+.sf-contact-card h2 { font-family: var(--font-serif-display); font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.75rem; }
+.sf-contact-card address, .sf-contact-card p { font-style: normal; line-height: 1.7; color: var(--text-secondary); margin-bottom: 1rem; }
+.sf-contact-card a:not(.btn-primary) { color: var(--color-espresso); font-weight: 600; }
+.sf-map { width: 100%; height: clamp(280px, 45vh, 420px); border: 1px solid var(--color-ivory-sand); display: block; }
+@media (max-width: 640px) { .sf-contact-grid { grid-template-columns: 1fr; } }

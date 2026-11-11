@@ -54,3 +54,17 @@ export function sectionPath(section: "main" | "mahib", category?: string) {
   const base = section === "mahib" ? "/mahib" : "/shop";
   return category ? `${base}/${category}` : base;
 }
+
+/** The showroom (from the ERP's bill details). Used by the footer, contact page and policies. */
+export const STORE = {
+  name: "MAQDOOM'S Big Mall",
+  legalName: "BIG BOSS CLOTHIERS",
+  gstin: "36AIAPM2102M2ZI",
+  street: "22-7-176, Moghalpura, Charminar East",
+  city: "Hyderabad, Telangana 500002",
+  phone: "+91 96104 15415",
+  phoneHref: "tel:+919610415415",
+};
+export const STORE_ADDRESS = `${STORE.street}, ${STORE.city}`;
+export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${STORE.name}, ${STORE_ADDRESS}`)}`;
+export const MAPS_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(`${STORE.name}, ${STORE_ADDRESS}`)}&output=embed`;

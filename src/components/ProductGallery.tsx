@@ -7,11 +7,19 @@ type Img = { large: string; card: string };
 const SWIPE_PX = 40; // a finger moving further than this sideways changes the photo
 const TAP_PX = 10; // ...and less than this counts as a tap
 const MAX_ZOOM = 4;
+const HOLD_MS = 300; // phone: hold this long to zoom in place
+
+/** Point the zoom at a screen position over the photo. */
+function aimZoom(el: HTMLElement, x: number, y: number) {
+  const r = el.getBoundingClientRect();
+  el.style.setProperty("--zx", `${((x - r.left) / r.width) * 100}%`);
+  el.style.setProperty("--zy", `${((y - r.top) / r.height) * 100}%`);
+}
 const TAP_ZOOM = 2.5;
 
 /**
- * Product photos. Swipe (phones), arrows or thumbnails change the photo. On desktop the photo zooms
- * in under the cursor; a tap or click opens it full screen, where it can be pinched, double-tapped
+ * Product photos. Swipe (phones) or thumbnails change the photo. The photo zooms in under the cursor
+ * (desktop) or under a finger held on it (phones); a tap or click opens it full screen, where it can be pinched, double-tapped
  * (or clicked) to zoom, dragged when zoomed, and swiped to the next photo. URLs are built on the server.
  */
 export function ProductGallery({ images, title }: { images: Img[]; title: string }) {
@@ -20,7 +28,18 @@ export function ProductGallery({ images, title }: { images: Img[]; title: string
   const [viewer, setViewer] = useState(false);
   const main = useRef<HTMLDivElement>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
+  const holdTimer = useRef<number | undefined>(undefined);
+  const holding = useRef(false); // a finger is holding the photo: zoomed in under it
   const count = images.length;
+
+  // While a finger holds the photo, its movement looks around the zoomed photo instead of scrolling.
+  useEffect(() => {
+    const el = main.current;
+    if (!el) return;
+    const stop = (e: TouchEvent) => holding.current && e.cancelable && e.preventDefault();
+    el.addEventListener("touchmove", stop, { passive: false });
+    return () => el.removeEventListener("touchmove", stop);
+  }, [count]);
 
   const step = useCallback((d: number) => setIndex((i) => (i + d + count) % count), [count]);
 
@@ -34,26 +53,48 @@ export function ProductGallery({ images, title }: { images: Img[]; title: string
         ref={main}
         className={`sf-gallery-main${zoom ? " is-zoom" : ""}`}
         onPointerDown={(e) => {
-          if (e.pointerType !== "mouse") touch.current = { x: e.clientX, y: e.clientY };
+          if (e.pointerType === "mouse") return;
+          touch.current = { x: e.clientX, y: e.clientY };
+          const el = e.currentTarget;
+          const { clientX, clientY } = e;
+          window.clearTimeout(holdTimer.current);
+          holdTimer.current = window.setTimeout(() => {
+            holding.current = true;
+            aimZoom(el, clientX, clientY);
+            setZoom(true);
+          }, HOLD_MS);
+        }}
+        onPointerMove={(e) => {
+          const t = touch.current;
+          if (!t || e.pointerType === "mouse") return;
+          if (holding.current) return aimZoom(e.currentTarget, e.clientX, e.clientY);
+          if (Math.hypot(e.clientX - t.x, e.clientY - t.y) > TAP_PX) window.clearTimeout(holdTimer.current);
         }}
         onPointerUp={(e) => {
           const t = touch.current;
           touch.current = null;
+          window.clearTimeout(holdTimer.current);
           if (e.pointerType === "mouse") return setViewer(true);
+          if (holding.current) {
+            holding.current = false;
+            return setZoom(false);
+          }
           if (!t) return;
           const dx = e.clientX - t.x;
           const dy = e.clientY - t.y;
           if (count > 1 && Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
           else if (Math.hypot(dx, dy) < TAP_PX) setViewer(true);
         }}
-        onPointerCancel={() => (touch.current = null)}
+        onPointerCancel={() => {
+          touch.current = null;
+          window.clearTimeout(holdTimer.current);
+          holding.current = false;
+          setZoom(false);
+        }}
+        onContextMenu={(e) => e.preventDefault()}
         onMouseEnter={() => window.matchMedia("(hover: hover)").matches && setZoom(true)}
         onMouseLeave={() => setZoom(false)}
-        onMouseMove={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty("--zx", `${((e.clientX - r.left) / r.width) * 100}%`);
-          e.currentTarget.style.setProperty("--zy", `${((e.clientY - r.top) / r.height) * 100}%`);
-        }}
+        onMouseMove={(e) => aimZoom(e.currentTarget, e.clientX, e.clientY)}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -66,24 +107,6 @@ export function ProductGallery({ images, title }: { images: Img[]; title: string
         />
         {count > 1 ? (
           <>
-            <button
-              type="button"
-              className="sf-gallery-arrow is-prev"
-              aria-label="Previous photo"
-              onPointerUp={(e) => e.stopPropagation()}
-              onClick={() => step(-1)}
-            >
-              &larr;
-            </button>
-            <button
-              type="button"
-              className="sf-gallery-arrow is-next"
-              aria-label="Next photo"
-              onPointerUp={(e) => e.stopPropagation()}
-              onClick={() => step(1)}
-            >
-              &rarr;
-            </button>
             <span className="sf-gallery-count" aria-hidden="true">
               {at + 1} / {count}
             </span>

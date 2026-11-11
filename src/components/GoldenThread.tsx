@@ -77,7 +77,7 @@ export function GoldenThread({ knots }: { knots: ThreadKnot[] }) {
   }, []);
 
   return (
-    <section className="gt-section" ref={root} aria-label="The Maqdoom story since 1895">
+    <section className="gt-section" id="heritage" ref={root} aria-label="The Maqdoom story since 1895">
       <div className="container">
         <p className="gt-eyebrow">SINCE 1895</p>
         <h2 className="gt-title">THE GOLDEN THREAD</h2>

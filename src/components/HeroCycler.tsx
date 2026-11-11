@@ -7,9 +7,8 @@ const OUTFITS = HERO_OUTFITS;
 const HOLD_MS = 4800;
 
 /**
- * The hero's four outfits with 01–04 pagination. Each change is a curtain reveal: the new outfit
- * is unveiled from the bottom up behind a gold line. The active number shows a thin timer line.
- * Pauses while the tab is hidden.
+ * Changes the hero's four outfits every few seconds. Each change is a curtain reveal: the new
+ * outfit is unveiled from the bottom up behind a gold line. Pauses while the tab is hidden.
  */
 export function HeroCycler() {
   const [index, setIndex] = useState(0);
@@ -49,29 +48,5 @@ export function HeroCycler() {
     }
   }, [index]);
 
-  return (
-    <div
-      className="hero-pagination"
-      aria-label="Outfit carousel controls"
-      style={{ ["--hero-hold" as string]: `${HOLD_MS}ms` }}
-    >
-      {OUTFITS.map((_, i) => (
-        <span key={i} style={{ display: "contents" }}>
-          {i > 0 ? <span className="pagination-dash">—</span> : null}
-          <span
-            key={i === index ? `on-${index}` : `off-${i}`}
-            className={`page-num${i === index ? " active" : ""}${i === index && visible ? " timing" : ""}`}
-            role="button"
-            tabIndex={0}
-            aria-label={`Outfit ${i + 1}`}
-            aria-pressed={i === index}
-            onClick={() => setIndex(i)}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setIndex(i)}
-          >
-            {String(i + 1).padStart(2, "0")}
-          </span>
-        </span>
-      ))}
-    </div>
-  );
+  return null; // no visible controls: the outfits simply change on their own
 }

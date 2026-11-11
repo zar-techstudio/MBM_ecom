@@ -8,6 +8,7 @@ import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
 const pad = (n: number) => String(n).padStart(2, "0");
 const ARCH = 0.62; // width / height of an arch (matches .runway-model in mahib.css)
 const MAX_W = 1.3; // a wide photo may spill this far past the arch's sides
+const ADVANCE_MS = 5000;
 
 /** Where a look sits relative to the one in front: 0 centre, -1 left, 1 right, else hidden. */
 function offsetOf(i: number, active: number, count: number) {
@@ -71,8 +72,7 @@ function ArchLine() {
 
 /**
  * MAHIB runway: every published outfit stands in a courtyard arch. It moves on every 5 seconds
- * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows
- * and tabs. Dots on the photo open that piece; "View the look" slides in a narrow panel from the
+ * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "View the look" slides in a narrow panel from the
  * right with every piece. Each piece is a normal product that can be bought alone.
  */
 export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[]; whatsappNumber: string; pageUrl: string }) {
@@ -103,6 +103,13 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
     [count],
   );
   const go = useCallback((step: number) => show(act + step), [act, show]);
+
+  // Next outfit every 5 seconds, unless the shopper is looking at something or prefers less motion.
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setTimeout(() => go(1), ADVANCE_MS);
+    return () => window.clearTimeout(t);
+  }, [paused, go]);
 
   useEffect(() => {
     if (!open && pick === null) return;
@@ -142,7 +149,7 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
     >
       <div className="container runway-head">
         <div className="runway-label">The MAHIB Edit</div>
-        <h2 className="runway-title">Complete looks for every night of the wedding</h2>
+        <h2 className="runway-title">Every ceremony, styled head to toe</h2>
       </div>
 
       <div
@@ -340,34 +347,7 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
         </div>
       </div>
 
-      {count > 1 ? (
-        <nav className="container runway-tabs" aria-label="Choose a look">
-          {looks.map((l, i) => (
-            <button
-              key={l.slug}
-              type="button"
-              className={`runway-tab${i === act ? " active" : ""}`}
-              aria-current={i === act}
-              onClick={() => show(i)}
-            >
-              {i === act ? (
-                // Fills over 5 seconds; when it ends the next look comes in. Paused while browsing.
-                <span
-                  key={act}
-                  className="runway-tab-bar"
-                  style={{ animationPlayState: paused ? "paused" : "running" }}
-                  onAnimationEnd={() => go(1)}
-                  aria-hidden="true"
-                />
-              ) : null}
-              <span className="runway-tab-num">{pad(i + 1)}</span>
-              <span className="runway-tab-name">{l.name.replace(/^The /, "")}</span>
-            </button>
-          ))}
-        </nav>
-      ) : (
-        <div className="runway-tabs-spacer" />
-      )}
+      <div className="runway-tabs-spacer" />
     </section>
   );
 }

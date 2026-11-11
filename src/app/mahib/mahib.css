@@ -432,47 +432,7 @@
 
 @keyframes runway-rise { from { opacity: 0; transform: translateY(8px); } }
 
-/* ---------- Look tabs (the gold bar fills over 5 s, then the next look comes in) ---------- */
-.runway-tabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(130px, 1fr);
-  gap: clamp(0.75rem, 2vw, 2rem);
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-top: 1.4rem;
-  padding-bottom: clamp(2rem, 5vh, 3rem);
-}
-.runway-tabs::-webkit-scrollbar { display: none; }
-.runway-tabs-spacer { height: clamp(1.5rem, 4vh, 2.5rem); }
-.runway-tab {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.9rem 0 0;
-  border: 0;
-  border-top: 1px solid var(--color-taupe-light);
-  background: none;
-  color: var(--text-muted);
-  text-align: left;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-.runway-tab:hover, .runway-tab.active { color: var(--color-espresso); }
-.runway-tab-bar {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  height: 2px;
-  width: 100%;
-  background: var(--color-gold-rich);
-  transform-origin: 0 50%;
-  animation: runway-progress 5s linear forwards;
-}
-@keyframes runway-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.runway-tab-num { font-family: var(--font-serif-display); font-size: 0.75rem; color: var(--color-gold-rich); }
-.runway-tab-name { font-family: var(--font-sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+.runway-tabs-spacer { height: clamp(1.75rem, 4vh, 2.75rem); }
 
 /* ---------- Phones ---------- */
 @media (max-width: 768px) {
@@ -497,13 +457,10 @@
   .runway-total { flex-direction: row; justify-content: space-between; align-items: baseline; text-align: left; }
   .runway-buy-actions .runway-view { flex: 1; padding: 0.85rem 0.5rem; }
 
-  .runway-tabs { grid-auto-columns: max-content; gap: 1.25rem; padding-top: 1rem; padding-bottom: 2rem; }
-  .runway-tab-name { font-size: 0.66rem; letter-spacing: 0.18em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .runway-model, .runway-panel { transition-duration: 0.01s; }
   .runway-name, .runway-card { animation: none; }
   .runway-dot::after { animation: none; display: none; }
-  .runway-tab-bar { animation: none; } /* no auto-advance */
 }

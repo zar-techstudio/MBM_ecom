@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
 import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
@@ -30,14 +33,41 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
   );
 }
 
+const PAGE = 12; // fills whole rows on 2, 3 and 4 columns
+
+/** Product grid that shows 12 cards and adds 12 more as the shopper scrolls near the end. */
 export function ProductGrid({ products, empty }: { products: Card[]; empty: string }) {
+  const [shown, setShown] = useState(PAGE);
+  const end = useRef<HTMLDivElement>(null);
+  const more = shown < products.length;
+
+  useEffect(() => {
+    const el = end.current;
+    if (!el || !more) return;
+    const io = new IntersectionObserver((e) => e[0]?.isIntersecting && setShown((n) => n + PAGE), { rootMargin: "600px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [more, shown]);
+
   if (!products.length) return <p className="sf-empty">{empty}</p>;
   const tipAt = products.findIndex((p) => p.hover_image || p.video);
   return (
-    <div className="products-grid">
-      {products.map((p, i) => (
-        <ProductCard key={p.slug} product={p} hint={i === tipAt} />
-      ))}
-    </div>
+    <>
+      <div className="products-grid">
+        {products.slice(0, shown).map((p, i) => (
+          <ProductCard key={p.slug} product={p} hint={i === tipAt} />
+        ))}
+      </div>
+      {more ? (
+        <div ref={end} className="sf-more" aria-live="polite">
+          <span className="sf-more-dot" />
+          <span className="sf-more-dot" />
+          <span className="sf-more-dot" />
+          <span className="sr-only">Loading more pieces</span>
+        </div>
+      ) : products.length > PAGE ? (
+        <p className="sf-end">You&rsquo;ve seen all {products.length} pieces</p>
+      ) : null}
+    </>
   );
 }

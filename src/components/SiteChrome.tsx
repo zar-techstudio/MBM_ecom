@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCategories, getSettings } from "@/lib/catalogue";
-import { SITE_NAME, sectionPath, whatsappLink } from "@/lib/site";
+import { MAPS_URL, SITE_NAME, STORE, sectionPath, whatsappLink } from "@/lib/site";
 import { HeaderClient, type NavItem } from "./HeaderClient";
 
 const isFabric = (c: { slug: string; name: string }) => /fabric|thaan/.test(`${c.slug} ${c.name}`.toLowerCase());
@@ -29,54 +29,62 @@ export async function SiteHeader() {
   );
 }
 
+/** Footer with fixed sections (it never lists categories, so it stays tidy as the catalogue grows),
+ * the showroom's address and phone, and the policy links shoppers and payment providers expect. */
 export async function SiteFooter() {
-  const [main, mahib, settings] = await Promise.all([getCategories("main"), getCategories("mahib"), getSettings()]);
-  const wa = (text: string) => whatsappLink(settings.whatsapp_number, text);
+  const settings = await getSettings();
+  const wa = whatsappLink(settings.whatsapp_number, `Hello ${SITE_NAME}, I have a question.`);
+  const year = new Date().getFullYear();
   return (
-    <footer className="site-footer" id="siteFooter">
+    <footer className="site-footer sf-footer" id="siteFooter">
       <div className="container">
-        <div className="footer-top-grid">
-          <div className="footer-brand-col">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo2.webp" alt={SITE_NAME} className="footer-logo2-img" loading="lazy" />
+        <div className="sf-footer-grid">
+          <div className="sf-footer-brand">
+            <Link href="/" aria-label={`${SITE_NAME} home`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/header_navbar.webp" alt={SITE_NAME} className="sf-footer-logo" loading="lazy" />
+            </Link>
+            <p className="sf-footer-tag">Groom couture from Hyderabad since 1895.</p>
+            <address className="sf-footer-address">
+              {STORE.street}
+              <br />
+              {STORE.city}
+            </address>
+            <div className="sf-footer-contact">
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">Get directions &rarr;</a>
+              <a href={STORE.phoneHref}>{STORE.phone}</a>
+              <a href={wa} target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+            </div>
           </div>
-          <div className="footer-list-col">
-            <h4 className="footer-col-title">Shop</h4>
-            <ul className="footer-links-list">
-              <li><Link href="/shop" className="footer-link">All Products</Link></li>
-              {main.map((c) => (
-                <li key={c.slug}><Link href={sectionPath("main", c.slug)} className="footer-link">{c.name}</Link></li>
-              ))}
-            </ul>
-          </div>
-          <div className="footer-list-col">
-            <h4 className="footer-col-title">MAHIB</h4>
-            <ul className="footer-links-list">
-              <li><Link href="/mahib" className="footer-link">The MAHIB Edit</Link></li>
-              {mahib.map((c) => (
-                <li key={c.slug}><Link href={sectionPath("mahib", c.slug)} className="footer-link">{c.name}</Link></li>
-              ))}
-            </ul>
-          </div>
-          <div className="footer-list-col">
-            <h4 className="footer-col-title">Help</h4>
-            <ul className="footer-links-list">
-              <li><a href={wa("Hello, I'd like help with an order.")} className="footer-link" target="_blank" rel="noopener noreferrer">Order on WhatsApp</a></li>
-              <li><a href={wa("Hello, I'd like to book a custom tailoring appointment.")} className="footer-link" target="_blank" rel="noopener noreferrer">Custom Tailoring</a></li>
-              <li><a href={wa("Hello, I have a question about sizes.")} className="footer-link" target="_blank" rel="noopener noreferrer">Size Help</a></li>
-            </ul>
-          </div>
-          <div className="footer-talk-col">
-            <h4 className="footer-col-title">Talk to Us</h4>
-            <p className="newsletter-desc">Questions, orders and appointments are handled on WhatsApp.</p>
-            <a href={wa("Hello!")} className="btn-primary" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex" }}>
-              <span>Chat on WhatsApp</span>
-              <span className="btn-arrow">&rarr;</span>
+          <nav className="sf-footer-col" aria-label="Shop">
+            <h4 className="sf-footer-title">Shop</h4>
+            <Link href="/shop">Maqdoom&rsquo;s collection</Link>
+            <Link href="/mahib">MAHIB &mdash; the exclusive edit</Link>
+            <Link href="/#tailoring">Custom tailoring</Link>
+          </nav>
+          <nav className="sf-footer-col" aria-label="Help">
+            <h4 className="sf-footer-title">Help</h4>
+            <Link href="/contact">Contact &amp; store location</Link>
+            <Link href="/policies/shipping">Shipping &amp; delivery</Link>
+            <Link href="/policies/returns">Exchanges &amp; returns</Link>
+            <a href={whatsappLink(settings.whatsapp_number, "Hello, I need help with sizes.")} target="_blank" rel="noopener noreferrer">
+              Size help
             </a>
-          </div>
+          </nav>
+          <nav className="sf-footer-col" aria-label="About and policies">
+            <h4 className="sf-footer-title">About</h4>
+            <Link href="/#heritage">Our story</Link>
+            <Link href="/policies/privacy">Privacy policy</Link>
+            <Link href="/policies/terms">Terms of use</Link>
+          </nav>
         </div>
-        <div className="footer-bottom-bar">
-          <p className="copyright-text">&copy; {new Date().getFullYear()} MAQDOOM&rsquo;S Big Mall. All rights reserved.</p>
+        <div className="sf-footer-bottom">
+          <p>
+            &copy; {year} {STORE.name}. All rights reserved.
+          </p>
+          <p>
+            {STORE.legalName} &middot; GSTIN {STORE.gstin}
+          </p>
         </div>
       </div>
     </footer>
