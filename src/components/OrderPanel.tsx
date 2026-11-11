@@ -1,8 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { SizeOption } from "@/lib/catalogue";
+import type { ProductCard, SizeOption } from "@/lib/catalogue";
+import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
+import { WishHeart } from "./WishHeart";
 
 type Props = {
   title: string;
@@ -13,12 +17,18 @@ type Props = {
   soldOut: boolean;
   whatsappNumber: string;
   checking?: boolean;
+  /** The product, for the bag and wishlist. */
+  card: ProductCard;
 };
 
 type Action = { label: string; href?: string; onClick?: () => void; disabled?: boolean; dark?: boolean };
 
-/** Size picker and the WhatsApp order / enquiry button, plus a sticky bar on phones. */
-export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsappNumber, checking }: Props) {
+/** Size picker, Add to bag / Buy now and the wishlist heart, plus a sticky bar on phones.
+ * Fabric is enquire-only (cut to length in the showroom); sold-out pieces offer a WhatsApp ask. */
+export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsappNumber, checking, card }: Props) {
+  const router = useRouter();
+  const [added, setAdded] = useState(false);
+  const [nudge, setNudge] = useState(0); // shakes the sizes when Add is tapped without one
   const available = sizes.filter((s) => s.left > 0);
   const named = sizes.filter((s) => s.size);
   const [picked, setPicked] = useState<string | null>(available.length === 1 ? available[0].size : null);
@@ -41,19 +51,34 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
       href: whatsappLink(whatsappNumber, `Hello, is this available again? ${title}\n${url}`),
       dark: true,
     };
-  } else if (needsSize) {
-    action = {
-      label: "Choose a size",
-      onClick: () => sizesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
-      disabled: true,
-    };
+  } else if (added) {
+    action = { label: "Added · View bag", onClick: () => router.push("/bag") };
   } else {
-    const lines = [`Hello, I'd like to order: ${title}`];
-    if (picked) lines.push(`Size: ${picked}`);
-    if (price) lines.push(`Price: ${price}`);
-    lines.push(url);
-    action = { label: "Order on WhatsApp", href: whatsappLink(whatsappNumber, lines.join("\n")) };
+    action = {
+      label: "Add to bag",
+      onClick: () => {
+        if (needsSize) {
+          sizesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          setNudge((n) => n + 1);
+          return;
+        }
+        shop.add(toSaved(card), picked);
+        setAdded(true);
+      },
+    };
   }
+  const buyNow = () => {
+    if (needsSize) {
+      sizesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setNudge((n) => n + 1);
+      return;
+    }
+    if (!added) shop.add(toSaved(card), picked);
+    router.push("/bag");
+  };
+  const buyable = kind !== "fabric" && !soldOut;
+  const ask = whatsappLink(whatsappNumber, `Hello, I have a question about: ${title}
+${url}`);
 
   return (
     <div className="sf-order">
@@ -62,7 +87,7 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
         <p className="sf-order-note">Fabric is cut to your length in the showroom. Ask us for shades, width and pricing.</p>
       ) : null}
       {kind !== "fabric" && named.length ? (
-        <fieldset ref={sizesRef} className="sf-sizes" disabled={checking}>
+        <fieldset ref={sizesRef} className={`sf-sizes${nudge ? " is-nudged" : ""}`} key={nudge} disabled={checking}>
           <legend>Size</legend>
           <div className="sf-size-row">
             {named.map((s) => (
@@ -72,7 +97,10 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
                 className={`sf-size${picked === s.size ? " active" : ""}`}
                 disabled={s.left <= 0}
                 aria-pressed={picked === s.size}
-                onClick={() => setPicked(s.size)}
+                onClick={() => {
+                  setPicked(s.size);
+                  setAdded(false);
+                }}
               >
                 {s.size}
               </button>
@@ -85,12 +113,32 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
       {soldOut && kind !== "fabric" ? (
         <p className="sf-order-note">Sold out for now. Message us and we&rsquo;ll tell you when it&rsquo;s back.</p>
       ) : null}
-      <div ref={actionRef}>
+      <div ref={actionRef} className="sf-order-actions">
         <ActionButton action={action} className="sf-order-btn" />
+        {buyable ? (
+          <button type="button" className="btn-outline sf-order-buy" onClick={buyNow}>
+            <span>Buy now</span>
+          </button>
+        ) : null}
+        <WishHeart product={card} className="wish-heart sf-order-wish" />
       </div>
-      {kind !== "fabric" ? (
-        <p className="sf-order-note">We confirm availability, fit and delivery with you on WhatsApp before you pay.</p>
+      {buyable ? (
+        <ul className="sf-order-trust">
+          <li>Cash on delivery available</li>
+          <li>Delivered across India and abroad</li>
+          <li>
+            Online orders are not exchanged. Not sure about the size?{" "}
+            <a href={ask} target="_blank" rel="noopener noreferrer">
+              Ask us on WhatsApp
+            </a>
+          </li>
+        </ul>
       ) : null}
+      {kind === "fabric" ? null : (
+        <p className="sf-order-note">
+          Prefer the showroom? <Link href="/contact">Visit us near Charminar</Link>, open every day 9 am – 11 pm.
+        </p>
+      )}
 
       {/* Phones: keep the order button reachable while reading the page. */}
       {showBar ? (
@@ -102,10 +150,7 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
               {picked ? ` · Size ${picked}` : ""}
             </span>
           </div>
-          <ActionButton
-            action={needsSize ? { ...action, disabled: false } : action}
-            className="sf-order-bar-btn"
-          />
+          <ActionButton action={action} className="sf-order-bar-btn" />
         </div>
       ) : null}
     </div>

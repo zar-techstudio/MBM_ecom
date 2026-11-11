@@ -464,3 +464,5 @@
   .runway-name, .runway-card { animation: none; }
   .runway-dot::after { animation: none; display: none; }
 }
+button.runway-order { width: 100%; border: 0; cursor: pointer; }
+button.runway-card-btn { background: none; cursor: pointer; }

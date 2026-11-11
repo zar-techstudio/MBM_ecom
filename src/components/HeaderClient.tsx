@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FeelTheFabric } from "./FeelTheFabric";
+import { ShopIcons } from "./ShopIcons";
 
 export type NavLink = { href: string; label: string };
 export type NavItem = NavLink & { mahib?: boolean; children?: NavLink[] };
@@ -122,6 +123,7 @@ export function HeaderClient({
           </nav>
           <div className="nav-actions">
             <FeelTheFabric fabricsHref={fabricsHref} />
+            <ShopIcons />
             <button className="icon-btn mobile-menu-btn" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="3" y1="12" x2="21" y2="12" />
@@ -173,6 +175,17 @@ export function HeaderClient({
                   ) : null}
                 </div>
               ))}
+              <div className="drawer-group">
+                <Link href="/wishlist" className="drawer-main" onClick={() => setOpen(false)}>
+                  Wishlist
+                </Link>
+                <Link href="/bag" className="drawer-main" onClick={() => setOpen(false)}>
+                  Bag
+                </Link>
+                <Link href="/contact" className="drawer-main" onClick={() => setOpen(false)}>
+                  Contact &amp; store
+                </Link>
+              </div>
             </nav>
             <a className="btn-primary drawer-wa" href={whatsappHref} target="_blank" rel="noopener noreferrer">
               <span>Chat on WhatsApp</span>

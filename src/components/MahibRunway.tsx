@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Look, LookPiece } from "@/lib/catalogue";
-import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
+import { shop, toSaved } from "@/lib/shop-store";
+import { formatINR, imageUrl, priceText } from "@/lib/site";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const ARCH = 0.62; // width / height of an arch (matches .runway-model in mahib.css)
@@ -75,11 +77,13 @@ function ArchLine() {
  * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "View the look" slides in a narrow panel from the
  * right with every piece. Each piece is a normal product that can be bought alone.
  */
-export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[]; whatsappNumber: string; pageUrl: string }) {
+export function MahibRunway({ looks }: { looks: Look[] }) {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
   const [pick, setPick] = useState<number | null>(null); // piece shown in the product card
   const [hovering, setHovering] = useState(false);
+  const router = useRouter();
+  const [added, setAdded] = useState<string | null>(null); // piece just added from its card
   const [aspects, setAspects] = useState<Record<string, number>>({});
   const [solid, setSolid] = useState<Record<string, boolean>>({}); // normal photos (not cut-outs)
   const drag = useRef<{ x: number; id: number } | null>(null);
@@ -124,14 +128,11 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
 
   if (!count) return null;
 
-  const base = pageUrl.replace(/\/mahib$/, "");
-  const link = (p: LookPiece) => (p.product.slug ? ` ${base}/product/${p.product.slug}` : "");
-  const orderLook = whatsappLink(
-    whatsappNumber,
-    [`Hello, I'd like the complete MAHIB look "${look.name}":`, ...look.pieces.map((p) => `- ${p.role}: ${p.product.title}${link(p)}`)].join(
-      "\n",
-    ),
-  );
+  // Every available piece goes into the bag (sizes are chosen there), then the bag opens.
+  const buyLook = () => {
+    look.pieces.filter((p) => p.product.slug && !p.product.sold_out).forEach((p) => shop.add(toSaved(p.product), null, 1, look.name));
+    router.push("/bag");
+  };
   const total = lookTotal(look.pieces);
   const picked = pick !== null ? look.pieces[pick] : null;
 
@@ -271,14 +272,24 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
                     View details
                   </Link>
                 ) : null}
-                <a
-                  className="runway-card-btn"
-                  href={whatsappLink(whatsappNumber, `Hello, I'd like this piece from "${look.name}": ${picked.product.title}${link(picked)}`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Buy alone
-                </a>
+                {picked.product.slug && !picked.product.sold_out ? (
+                  added === picked.product.slug ? (
+                    <Link href="/bag" className="runway-card-btn">
+                      Added &middot; View bag
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="runway-card-btn"
+                      onClick={() => {
+                        shop.add(toSaved(picked.product), null, 1, look.name);
+                        setAdded(picked.product.slug);
+                      }}
+                    >
+                      Add to bag
+                    </button>
+                  )
+                ) : null}
               </span>
             </span>
           </div>
@@ -312,9 +323,9 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
           </ul>
           <div className="runway-panel-foot">
             {total ? <span className="runway-panel-total">{total}</span> : null}
-            <a className="runway-order" href={orderLook} target="_blank" rel="noopener noreferrer">
+            <button type="button" className="runway-order" onClick={buyLook}>
               Buy the look
-            </a>
+            </button>
           </div>
         </aside>
       </div>
@@ -337,9 +348,9 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
             </span>
           ) : null}
           <span className="runway-buy-actions">
-            <a className="runway-view is-dark" href={orderLook} target="_blank" rel="noopener noreferrer">
+            <button type="button" className="runway-view is-dark" onClick={buyLook}>
               Buy the look
-            </a>
+            </button>
             <button type="button" className="runway-view" onClick={() => setOpen(true)}>
               View the look
             </button>

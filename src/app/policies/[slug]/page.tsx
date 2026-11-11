@@ -15,7 +15,7 @@ type Policy = { title: string; intro: string; sections: { h: string; p: string[]
 const POLICIES: Record<string, Policy> = {
   shipping: {
     title: "Shipping & delivery",
-    intro: "We deliver across India and abroad. Every order is confirmed with you before you pay.",
+    intro: "We deliver across India and abroad. Pay online or with cash on delivery.",
     sections: [
       {
         h: "Confirming your order",
@@ -33,6 +33,10 @@ const POLICIES: Record<string, Policy> = {
         ],
       },
       {
+        h: "Cash on delivery",
+        p: ["Cash on delivery is available. Pay the courier in cash or UPI when your order arrives."],
+      },
+      {
         h: "Collect from the showroom",
         p: [`You can also collect your order from the showroom at ${STORE_ADDRESS}.`],
       },
@@ -40,29 +44,24 @@ const POLICIES: Record<string, Policy> = {
   },
   returns: {
     title: "Exchanges & returns",
-    intro: "We want every piece to be right. Here is how exchanges work, in the showroom and online.",
+    intro: "Please check sizes and details before you order online: online purchases are not exchanged.",
     sections: [
       {
-        h: "Exchanges",
+        h: "Online orders",
         p: [
-          "Ready-made pieces can be exchanged within 2 days of purchase (or of delivery, for online orders), unused, unwashed and with their tags and packing.",
-          "Exchanges are for another size, or for another piece of the same or higher value (you pay the difference).",
+          "Online orders cannot be exchanged or returned. Ask us on WhatsApp about sizes and fit before you order; we are happy to help.",
+          "If your order arrives damaged, or is not what you ordered, tell us as soon as you receive it, with photos. We will replace the piece or refund you in full.",
         ],
       },
       {
-        h: "Not eligible",
+        h: "Showroom purchases",
         p: [
+          "Ready-made pieces bought in the showroom can be exchanged within 2 days, unused, unwashed and with their tags and bill. There are no refunds.",
           "Custom-tailored or altered pieces and fabric cut to length cannot be exchanged.",
         ],
       },
       {
-        h: "Refunds",
-        p: [
-          "We do not refund purchases, except when an online order arrives damaged, or is not what you ordered: tell us as soon as you receive it, with photos, and we will replace the piece or refund you in full to the original payment method.",
-        ],
-      },
-      {
-        h: "How to request an exchange",
+        h: "How to reach us",
         p: [`Message us on WhatsApp or call ${STORE.phone} with your order or bill number.`],
       },
     ],
@@ -115,7 +114,7 @@ const POLICIES: Record<string, Policy> = {
         h: "Orders",
         p: [
           "An order is accepted once we confirm it and you pay. We may decline an order, for example if a price was shown incorrectly.",
-          "Exchanges and refunds follow our Exchanges & returns policy.",
+          "Online orders are not exchanged; see our Exchanges & returns policy.",
         ],
       },
       {

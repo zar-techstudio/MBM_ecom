@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
 import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
+import { WishHeart } from "./WishHeart";
 
 /** Product grid card, using the original design's classes. Hold (phone) or hover (desktop) shows the
  * product's second photo or video when the ERP provides one. */
@@ -20,6 +21,7 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
           hint={hint}
         >
           <span className="product-category-tag">{product.category.name}</span>
+          <WishHeart product={product} />
           {product.sold_out ? <span className="product-soldout-tag">Sold out</span> : null}
         </CardMedia>
         <div className="product-details">
@@ -35,11 +37,41 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
 
 const PAGE = 12; // fills whole rows on 2, 3 and 4 columns
 
-/** Product grid that shows 12 cards and adds 12 more as the shopper scrolls near the end. */
+const RANGES = [
+  { id: "u2", label: "Under ₹2,000", min: 0, max: 200000 },
+  { id: "2-10", label: "₹2,000 – ₹10,000", min: 200000, max: 1000000 },
+  { id: "10-50", label: "₹10,000 – ₹50,000", min: 1000000, max: 5000000 },
+  { id: "50+", label: "Above ₹50,000", min: 5000000, max: Infinity },
+];
+const priceOf = (p: Card) => p.price_min_paise ?? p.price_from_paise_per_m ?? null;
+
+/** Product grid with sort and filters (shown once there are a few products); shows 12 cards and
+ * adds 12 more as the shopper scrolls near the end. */
 export function ProductGrid({ products, empty }: { products: Card[]; empty: string }) {
   const [shown, setShown] = useState(PAGE);
+  const [sort, setSort] = useState("featured");
+  const [range, setRange] = useState("");
+  const [inStock, setInStock] = useState(false);
   const end = useRef<HTMLDivElement>(null);
-  const more = shown < products.length;
+
+  let list = products;
+  if (inStock) list = list.filter((p) => !p.sold_out);
+  const r = RANGES.find((x) => x.id === range);
+  if (r) list = list.filter((p) => { const v = priceOf(p); return v != null && v >= r.min && v < r.max; });
+  if (sort !== "featured")
+    list = [...list].sort((a, b) => {
+      const va = priceOf(a);
+      const vb = priceOf(b);
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      return sort === "low" ? va - vb : vb - va;
+    });
+  const more = shown < list.length;
+  const usable = RANGES.filter((x) => products.some((p) => { const v = priceOf(p); return v != null && v >= x.min && v < x.max; }));
+  const reset = <T,>(fn: (v: T) => void) => (v: T) => {
+    fn(v);
+    setShown(PAGE);
+  };
 
   useEffect(() => {
     const el = end.current;
@@ -50,14 +82,50 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
   }, [more, shown]);
 
   if (!products.length) return <p className="sf-empty">{empty}</p>;
-  const tipAt = products.findIndex((p) => p.hover_image || p.video);
+  const tipAt = list.findIndex((p) => p.hover_image || p.video);
   return (
     <>
-      <div className="products-grid">
-        {products.slice(0, shown).map((p, i) => (
-          <ProductCard key={p.slug} product={p} hint={i === tipAt} />
-        ))}
-      </div>
+      {products.length > 4 ? (
+        <div className="sf-tools">
+          <span className="sf-tools-count">
+            {list.length} {list.length === 1 ? "piece" : "pieces"}
+          </span>
+          <label className="sf-tool">
+            <span className="sr-only">Sort</span>
+            <select value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
+              <option value="featured">Sort: Recommended</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+            </select>
+          </label>
+          {usable.length > 1 ? (
+            <label className="sf-tool">
+              <span className="sr-only">Price</span>
+              <select value={range} onChange={(e) => reset(setRange)(e.target.value)}>
+                <option value="">Any price</option>
+                {usable.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label className="sf-tool sf-tool-check">
+            <input type="checkbox" checked={inStock} onChange={(e) => reset(setInStock)(e.target.checked)} />
+            <span>In stock only</span>
+          </label>
+        </div>
+      ) : null}
+      {list.length ? (
+        <div className="products-grid">
+          {list.slice(0, shown).map((p, i) => (
+            <ProductCard key={p.slug} product={p} hint={i === tipAt} />
+          ))}
+        </div>
+      ) : (
+        <p className="sf-empty">Nothing matches these filters.</p>
+      )}
       {more ? (
         <div ref={end} className="sf-more" aria-live="polite">
           <span className="sf-more-dot" />
@@ -65,8 +133,8 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
           <span className="sf-more-dot" />
           <span className="sr-only">Loading more pieces</span>
         </div>
-      ) : products.length > PAGE ? (
-        <p className="sf-end">You&rsquo;ve seen all {products.length} pieces</p>
+      ) : list.length > PAGE ? (
+        <p className="sf-end">You&rsquo;ve seen all {list.length} pieces</p>
       ) : null}
     </>
   );

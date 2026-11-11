@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getProduct, getProductLive, getSettings, type Product } from "@/lib/catalogue";
+import { getLooks, getProduct, getProductLive, getSettings, type Product } from "@/lib/catalogue";
 import { SITE_NAME, SITE_URL, imageUrl, priceText, sectionPath } from "@/lib/site";
 import { ProductGallery } from "@/components/ProductGallery";
 import { OrderPanel } from "@/components/OrderPanel";
+import { CompleteTheLook } from "@/components/CompleteTheLook";
+import { RecentlyViewed, TrackView } from "@/components/RecentlyViewed";
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -25,8 +27,15 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params;
-  const [product, settings] = await Promise.all([getProduct(slug), getSettings()]);
+  const [product, settings, mahibLooks, mainLooks] = await Promise.all([
+    getProduct(slug),
+    getSettings(),
+    getLooks("mahib"),
+    getLooks("main"),
+  ]);
   if (!product) notFound();
+  // Outfits this piece belongs to: their other pieces are offered as "Complete the look".
+  const looks = [...mahibLooks, ...mainLooks].filter((l) => l.pieces.some((p) => p.product.slug === slug));
 
   const url = `${SITE_URL}/product/${product.slug}`;
   // Thumbnail (the starred photo) first, then the rest in staff order.
@@ -43,6 +52,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
       soldOut={p.sold_out}
       whatsappNumber={settings.whatsapp_number}
       checking={checking}
+      card={p}
     />
   );
 
@@ -81,6 +91,11 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             {/* Tags are not shown: they feed search and the structured data below. */}
           </div>
         </div>
+        {looks.map((l) => (
+          <CompleteTheLook key={l.slug} look={l} current={slug} />
+        ))}
+        <RecentlyViewed exclude={slug} />
+        <TrackView product={product} />
       </div>
       <script
         type="application/ld+json"

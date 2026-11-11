@@ -25,6 +25,7 @@ export default async function ContactPage() {
               <br />
               {STORE.city}
             </address>
+            <p>{STORE.hours}</p>
             <a className="btn-primary" href={MAPS_URL} target="_blank" rel="noopener noreferrer">
               <span>Get directions</span>
               <span className="btn-arrow">&rarr;</span>
@@ -34,7 +35,7 @@ export default async function ContactPage() {
             <h2>Talk to us</h2>
             <p>
               Orders, sizes, custom tailoring and appointments: message us on WhatsApp or call. We reply during showroom
-              hours.
+              hours, 9 am to 11 pm.
             </p>
             <p>
               <a href={whatsappLink(settings.whatsapp_number, `Hello ${SITE_NAME}, I have a question.`)} target="_blank" rel="noopener noreferrer">
@@ -53,6 +54,13 @@ export default async function ContactPage() {
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
         />
+        <p className="sf-doc-small">
+          {STORE.instagram.map((i) => (
+            <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer" className="sf-insta">
+              {i.handle}
+            </a>
+          ))}
+        </p>
         <p className="sf-doc-small">
           {STORE.legalName} &middot; GSTIN {STORE.gstin}
         </p>

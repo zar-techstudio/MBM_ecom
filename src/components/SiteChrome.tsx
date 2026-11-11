@@ -49,11 +49,25 @@ export async function SiteFooter() {
               {STORE.street}
               <br />
               {STORE.city}
+              <br />
+              {STORE.hours}
             </address>
             <div className="sf-footer-contact">
               <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">Get directions &rarr;</a>
               <a href={STORE.phoneHref}>{STORE.phone}</a>
               <a href={wa} target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+            </div>
+            <div className="sf-footer-social">
+              {STORE.instagram.map((i) => (
+                <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.label}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1" className="dot" />
+                  </svg>
+                  <span>{i.handle}</span>
+                </a>
+              ))}
             </div>
           </div>
           <nav className="sf-footer-col" aria-label="Shop">

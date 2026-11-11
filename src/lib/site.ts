@@ -64,6 +64,11 @@ export const STORE = {
   city: "Hyderabad, Telangana 500002",
   phone: "+91 96104 15415",
   phoneHref: "tel:+919610415415",
+  hours: "Open every day, 9 am – 11 pm",
+  instagram: [
+    { label: "MAQDOOM'S Big Mall on Instagram", handle: "@maqdooms_bigmall", href: "https://www.instagram.com/maqdooms_bigmall/" },
+    { label: "MAHIB on Instagram", handle: "@mahib_by_moghnymaqdoom", href: "https://www.instagram.com/mahib_by_moghnymaqdoom/" },
+  ],
 };
 export const STORE_ADDRESS = `${STORE.street}, ${STORE.city}`;
 export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${STORE.name}, ${STORE_ADDRESS}`)}`;
