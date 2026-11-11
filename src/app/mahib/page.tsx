@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { CatalogueListing, SECTION_COPY } from "@/components/CatalogueListing";
-import { MahibRunway } from "@/components/MahibRunway";
-import { getLooks, getSettings } from "@/lib/catalogue";
-import { SITE_URL } from "@/lib/site";
-import "./mahib.css";
+import { MahibLead } from "@/components/MahibLead";
 
 export const metadata: Metadata = {
   title: "MAHIB — The Exclusive Edit",
@@ -11,12 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/mahib" },
 };
 
-export default async function MahibPage() {
-  const [settings, looks] = await Promise.all([getSettings(), getLooks("mahib")]);
-  return (
-    <CatalogueListing
-      section="mahib"
-      lead={looks.length ? <MahibRunway looks={looks} whatsappNumber={settings.whatsapp_number} pageUrl={`${SITE_URL}/mahib`} /> : null}
-    />
-  );
+export default function MahibPage() {
+  return <CatalogueListing section="mahib" lead={<MahibLead />} />;
 }

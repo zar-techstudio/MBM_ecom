@@ -11,6 +11,7 @@ const MAX_W = 1.3; // a wide photo may spill this far past the arch's sides
 
 /** Where a look sits relative to the one in front: 0 centre, -1 left, 1 right, else hidden. */
 function offsetOf(i: number, active: number, count: number) {
+  if (count === 2 && i !== active) return i < active ? -1 : 1; // the other look waits on its own side
   let d = (i - active + count) % count;
   if (d > count / 2) d -= count;
   return d;
@@ -165,61 +166,75 @@ export function MahibRunway({ looks, whatsappNumber, pageUrl }: { looks: Look[];
         }}
         onPointerCancel={() => (drag.current = null)}
       >
-        <div className="runway-floor" aria-hidden="true" />
-        {looks.map((l, i) => {
-          const off = offsetOf(i, act, count);
-          const pos = off === 0 ? "center" : off === -1 ? "left" : off === 1 ? "right" : "away";
-          const box = photoBox(aspects[l.slug] ?? 0.5, Boolean(solid[l.slug]));
-          return (
-            <div key={l.slug} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
-              <span className="runway-arch">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl(l.image) ?? ""}
-                  alt={l.image_alt ?? l.name}
-                  style={box}
-                  className={solid[l.slug] ? "is-photo" : undefined}
-                  crossOrigin="anonymous"
-                  loading={i === 0 ? "eager" : "lazy"}
-                  draggable={false}
-                  ref={(el) => {
-                    // Photo already loaded before the page became interactive: onLoad won't fire.
-                    if (el?.complete && el.naturalWidth && !aspects[l.slug]) measure(l.slug, el);
-                  }}
-                  onLoad={(e) => measure(l.slug, e.currentTarget)}
-                />
+        <div className="runway-scene">
+          <div className="runway-floor" aria-hidden="true" />
+          {/* The arches stay put; the outfits move from arch to arch on top of them. */}
+          <div className="runway-arches" aria-hidden="true">
+            {(["left", "center", "right"] as const).map((pos) => (
+              <span key={pos} className={`runway-slot is-${pos}`}>
+                <span className="runway-arch" />
+                <ArchLine />
               </span>
-              <ArchLine />
-              <button
-                type="button"
-                className="runway-hit"
-                tabIndex={pos === "away" ? -1 : 0}
-                aria-label={off === 0 ? `View the pieces in ${l.name}` : `Show ${l.name}`}
-                onClick={() => {
-                  if (swiped.current) return;
-                  if (off === 0) setOpen(true);
-                  else show(i);
+            ))}
+          </div>
+          {looks.map((l, i) => {
+            const off = offsetOf(i, act, count);
+            const pos = off === 0 ? "center" : off === -1 ? "left" : off === 1 ? "right" : "away";
+            const photo = Boolean(solid[l.slug]);
+            const box = photoBox(aspects[l.slug] ?? 0.5, photo);
+            const img = (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl(l.image) ?? ""}
+                alt={l.image_alt ?? l.name}
+                style={box}
+                className={photo ? "runway-photo" : "runway-sticker"}
+                crossOrigin="anonymous"
+                loading={i === 0 ? "eager" : "lazy"}
+                draggable={false}
+                ref={(el) => {
+                  // Photo already loaded before the page became interactive: onLoad won't fire.
+                  if (el?.complete && el.naturalWidth && !aspects[l.slug]) measure(l.slug, el);
                 }}
+                onLoad={(e) => measure(l.slug, e.currentTarget)}
               />
-              {pos === "center" ? (
-                <div className="runway-dots" style={box}>
-                  {l.pieces.map((p, n) =>
-                    p.x != null && p.y != null ? (
-                      <button
-                        key={`${p.role}-${n}`}
-                        type="button"
-                        className={`runway-dot${pick === n ? " active" : ""}`}
-                        style={{ left: `${p.x}%`, top: `${p.y}%` }}
-                        aria-label={`${p.role}: ${p.product.title}`}
-                        onClick={() => setPick(pick === n ? null : n)}
-                      />
-                    ) : null,
-                  )}
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+            );
+            return (
+              <div key={l.slug} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
+                {/* A cut-out stands over the arch and may rise past it (a tall safa is never cut);
+                    a normal photo is kept inside the arch's shape. */}
+                {photo ? <span className="runway-arch runway-arch-clip">{img}</span> : img}
+                <button
+                  type="button"
+                  className="runway-hit"
+                  tabIndex={pos === "away" ? -1 : 0}
+                  aria-label={off === 0 ? `View the pieces in ${l.name}` : `Show ${l.name}`}
+                  onClick={() => {
+                    if (swiped.current) return;
+                    if (off === 0) setOpen(true);
+                    else show(i);
+                  }}
+                />
+                {pos === "center" ? (
+                  <div className="runway-dots" style={box}>
+                    {l.pieces.map((p, n) =>
+                      p.x != null && p.y != null ? (
+                        <button
+                          key={`${p.role}-${n}`}
+                          type="button"
+                          className={`runway-dot${pick === n ? " active" : ""}`}
+                          style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                          aria-label={`${p.role}: ${p.product.title}`}
+                          onClick={() => setPick(pick === n ? null : n)}
+                        />
+                      ) : null,
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
 
         <button type="button" className="runway-arrow is-prev" aria-label="Previous look" onClick={() => go(-1)}>
           &larr;

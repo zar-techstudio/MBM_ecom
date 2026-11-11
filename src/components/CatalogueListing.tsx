@@ -36,6 +36,8 @@ export async function CatalogueListing({
   if (category && !current) notFound();
   const copy = SECTION_COPY[section];
   const crumb = section === "main" ? "Shop" : "MAHIB";
+  // With a runway on top, category links jump straight to the products heading.
+  const jump = lead ? "#catalogue" : "";
 
   // Within a category, the staff-chosen featured pieces come first (by rank).
   const sorted = current
@@ -49,7 +51,7 @@ export async function CatalogueListing({
   return (
     <main className={`sf-listing${section === "mahib" ? " sf-listing-mahib" : ""}`}>
       {lead}
-      <section className="sf-page-head">
+      <section className="sf-page-head" id="catalogue">
         <div className="container">
           <nav className="sf-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
@@ -67,11 +69,11 @@ export async function CatalogueListing({
           <p className="sf-page-intro">{current?.description || copy.intro}</p>
           {categories.length ? (
             <nav className="sf-chips" aria-label="Categories">
-              <Link href={sectionPath(section)} className={`sf-chip${current ? "" : " active"}`}>
+              <Link href={sectionPath(section) + jump} className={`sf-chip${current ? "" : " active"}`}>
                 All
               </Link>
               {categories.map((c) => (
-                <Link key={c.slug} href={sectionPath(section, c.slug)} className={`sf-chip${c.slug === category ? " active" : ""}`}>
+                <Link key={c.slug} href={sectionPath(section, c.slug) + jump} className={`sf-chip${c.slug === category ? " active" : ""}`}>
                   {c.name}
                 </Link>
               ))}

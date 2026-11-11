@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CatalogueListing } from "@/components/CatalogueListing";
+import { MahibLead } from "@/components/MahibLead";
 import { getCategories } from "@/lib/catalogue";
 
 export async function generateMetadata({ params }: PageProps<"/mahib/[category]">): Promise<Metadata> {
@@ -15,5 +16,5 @@ export async function generateMetadata({ params }: PageProps<"/mahib/[category]"
 
 export default async function CategoryPage({ params }: PageProps<"/mahib/[category]">) {
   const { category } = await params;
-  return <CatalogueListing section="mahib" category={category} />;
+  return <CatalogueListing section="mahib" category={category} lead={<MahibLead />} />;
 }
