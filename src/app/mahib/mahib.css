@@ -380,56 +380,6 @@
   .runway-order { font-size: 0.56rem; letter-spacing: 0.12em; }
 }
 
-/* ---------- Caption, combined price and actions under the arches ---------- */
-.runway-caption {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: clamp(0.9rem, 2.5vw, 2rem);
-  padding-top: clamp(1.1rem, 3vh, 1.75rem);
-}
-.runway-num {
-  font-family: var(--font-serif-display);
-  font-weight: 600;
-  font-size: clamp(2.4rem, 4.5vw, 3.6rem);
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--color-gold-rich);
-}
-.runway-name {
-  font-family: var(--font-serif-display);
-  font-weight: 600;
-  font-size: clamp(1.25rem, 2.3vw, 1.85rem);
-  letter-spacing: 0.08em;
-  color: var(--rw-maroon);
-  animation: runway-rise 0.7s var(--ease-luxury);
-}
-.runway-occasion { font-family: var(--font-serif-editorial); font-style: italic; font-size: 1.05rem; color: var(--text-secondary); margin-top: 0.1rem; }
-.runway-buy { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.75rem); }
-.runway-total { display: flex; flex-direction: column; text-align: right; }
-.runway-total-label { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
-.runway-total-price { font-family: var(--font-serif-display); font-weight: 600; font-size: clamp(1.15rem, 2vw, 1.5rem); color: var(--color-espresso); }
-.runway-buy-actions { display: flex; gap: 0.5rem; }
-.runway-view {
-  padding: 0.85rem 1.3rem;
-  border: 1px solid var(--color-espresso);
-  background: transparent;
-  color: var(--color-espresso);
-  font-family: var(--font-sans);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  text-decoration: none;
-  text-align: center;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-.runway-view:hover { background: var(--color-espresso); color: var(--color-ivory); }
-.runway-view.is-dark { background: var(--color-espresso); color: var(--color-ivory); }
-.runway-view.is-dark:hover { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-espresso); }
-
 @keyframes runway-rise { from { opacity: 0; transform: translateY(8px); } }
 
 .runway-tabs-spacer { height: clamp(1.75rem, 4vh, 2.75rem); }
@@ -451,11 +401,6 @@
   .runway-card-btn { padding: 0.5rem 0.6rem; font-size: 0.56rem; letter-spacing: 0.12em; }
   .mahib-runway:not(.is-open) .runway-card { width: calc(100% - 1.5rem); }
 
-  .runway-caption { grid-template-columns: auto 1fr; gap: 0.35rem 0.9rem; padding-top: 1rem; }
-  .runway-num { font-size: 2.3rem; }
-  .runway-buy { grid-column: 1 / -1; flex-direction: column; align-items: stretch; gap: 0.6rem; margin-top: 0.4rem; }
-  .runway-total { flex-direction: row; justify-content: space-between; align-items: baseline; text-align: left; }
-  .runway-buy-actions .runway-view { flex: 1; padding: 0.85rem 0.5rem; }
 
 }
 
@@ -466,3 +411,135 @@
 }
 button.runway-order { width: 100%; border: 0; cursor: pointer; }
 button.runway-card-btn { background: none; cursor: pointer; }
+
+/* ==========================================================================
+   Refresh (from the owner's reference): heading with lines and a subline,
+   smaller arches so the whole runway fits one screen, a label under every
+   arch, round chevron arrows, and a look bar with the main actions.
+   ========================================================================== */
+.runway-label-lined { display: flex; align-items: center; justify-content: center; gap: 1.1rem; }
+.runway-label-lined::before,
+.runway-label-lined::after { content: ""; width: clamp(40px, 8vw, 96px); height: 1px; background: rgba(179, 142, 70, 0.55); }
+.runway-title { max-width: none; font-size: clamp(1.6rem, 3.1vw, 2.75rem); }
+.runway-sub {
+  margin: 0.4rem auto 0;
+  max-width: 72ch;
+  font-family: var(--font-serif-editorial);
+  font-size: clamp(0.98rem, 1.2vw, 1.12rem);
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+
+.runway-stage { height: clamp(380px, calc(100vh - 420px), 620px); margin-top: clamp(0.75rem, 2vh, 1.5rem); }
+.runway-floor { display: none; }
+.runway-slot,
+.runway-model { bottom: 17%; height: 81%; }
+.runway-slot.is-left, .runway-model.is-left { left: 26%; transform: translateX(-50%) scale(0.8); }
+.runway-slot.is-right, .runway-model.is-right { left: 74%; transform: translateX(-50%) scale(0.8); }
+.runway-slot.is-left, .runway-slot.is-right { opacity: 0.9; }
+.runway-slot.is-empty { opacity: 0; }
+/* Two looks: the pair is centred as a whole. */
+.runway-scene.is-pair-r { transform: translateX(-12%); }
+.runway-scene.is-pair-l { transform: translateX(12%); }
+.runway-model.is-left,
+.runway-model.is-right { opacity: 0.88; filter: saturate(0.85); }
+
+/* "01 / Occasion" and the look's name under each arch. */
+.runway-tag {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.7rem);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 150%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  text-align: center;
+  pointer-events: none;
+}
+.runway-tag-num { font-family: var(--font-sans); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-gold-rich); }
+.runway-tag-name { font-family: var(--font-serif-editorial); font-size: clamp(1.1rem, 1.6vw, 1.45rem); font-weight: 500; color: var(--color-espresso); }
+.runway-model.is-away .runway-tag { opacity: 0; }
+
+.runway-arrow { display: grid; place-items: center; width: 54px; height: 54px; background: rgba(253, 251, 247, 0.9); border-color: var(--color-gold-rich); color: var(--color-espresso); }
+.runway-arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.runway-arrow.is-prev { left: clamp(1rem, 9vw, 9rem); }
+.runway-arrow.is-next { right: clamp(1rem, 9vw, 9rem); }
+
+/* Look bar: featured look | what's in it | price and actions. */
+.runway-bar {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.75rem);
+  padding-top: clamp(0.9rem, 2.2vh, 1.4rem);
+  padding-bottom: 0.25rem;
+  margin-top: 0.4rem;
+  border-top: 1px solid rgba(179, 142, 70, 0.3);
+}
+.runway-eyebrow { display: block; font-family: var(--font-sans); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-gold-rich); }
+.runway-eyebrow i { font-style: normal; margin: 0 0.35em; }
+.runway-contents .runway-eyebrow { color: var(--text-muted); }
+.runway-bar .runway-name {
+  margin-top: 0.2rem;
+  font-family: var(--font-serif-editorial);
+  font-weight: 500;
+  font-size: clamp(1.45rem, 2.4vw, 2.05rem);
+  letter-spacing: 0;
+  line-height: 1.1;
+  color: var(--color-espresso);
+}
+.runway-occasion { font-family: var(--font-serif-editorial); font-style: italic; font-size: 1rem; color: var(--text-secondary); margin-top: 0.1rem; }
+.runway-contents { padding-left: clamp(1rem, 3vw, 2.75rem); border-left: 1px solid rgba(179, 142, 70, 0.35); }
+.runway-roles { display: block; margin-top: 0.3rem; font-family: var(--font-serif-editorial); font-size: 1.02rem; color: var(--text-secondary); }
+.runway-buy { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+.runway-total-price { margin-right: 0.5rem; font-family: var(--font-serif-display); font-weight: 600; font-size: clamp(1.15rem, 1.8vw, 1.45rem); color: var(--color-espresso); white-space: nowrap; }
+.runway-shop,
+.runway-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 4px;
+  font-family: var(--font-serif-editorial);
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.runway-shop { border: 1px solid var(--rw-maroon); background: var(--rw-maroon); color: var(--color-ivory); }
+.runway-shop:hover { background: #561520; border-color: #561520; }
+.runway-custom { border: 1px solid rgba(20, 17, 14, 0.45); background: transparent; color: var(--color-espresso); }
+.runway-custom:hover { border-color: var(--color-espresso); background: rgba(255, 255, 255, 0.6); }
+.runway-tabs-spacer { height: clamp(1.25rem, 3vh, 2rem); }
+
+@media (max-width: 1100px) {
+  .runway-bar { grid-template-columns: 1fr auto; }
+  .runway-buy { grid-column: 1 / -1; justify-content: flex-start; }
+}
+
+@media (max-width: 768px) {
+  .runway-label-lined::before, .runway-label-lined::after { width: 28px; }
+  .runway-arrow { display: none; }
+  .runway-title { font-size: 1.45rem; }
+  .runway-sub { font-size: 0.92rem; padding: 0 1rem; }
+  .runway-stage { height: min(520px, 62svh); }
+  .runway-scene.is-pair-r, .runway-scene.is-pair-l { transform: none; }
+  .runway-slot, .runway-model { bottom: 13%; height: 84%; }
+  .runway-slot.is-left, .runway-model.is-left { left: 2%; transform: translateX(-50%) scale(0.72); }
+  .runway-slot.is-right, .runway-model.is-right { left: 98%; transform: translateX(-50%) scale(0.72); }
+  .runway-model.is-left .runway-tag, .runway-model.is-right .runway-tag { opacity: 0; }
+  .runway-tag { top: calc(100% + 0.6rem); }
+
+  .runway-bar { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; padding-top: 0.9rem; }
+  .runway-contents { padding-left: 0; border-left: 0; }
+  .runway-buy { grid-column: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .runway-total-price { grid-column: 1 / -1; margin: 0; }
+  .runway-shop, .runway-custom { padding: 0.8rem 0.5rem; font-size: 0.95rem; }
+}
+.runway-order { background: var(--rw-maroon); }
+.runway-order:hover { background: #561520; color: var(--color-ivory); }

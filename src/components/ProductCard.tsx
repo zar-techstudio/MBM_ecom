@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
+import { shop, toSaved, useShop } from "@/lib/shop-store";
 import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
 import { Stars } from "./Stars";
 import { WishHeart } from "./WishHeart";
 
-/** Product card: full-bleed 4:5 photo (hold or hover shows the 2nd photo or video), wishlist heart,
- * then category, a two-line title and the price. Cards sit edge to edge in a hairline grid. */
+/** Product card: 4:5 photo (hold or hover shows the 2nd photo or video), wishlist heart, then
+ * category, a two-line title, the price and Add to bag. */
 export function ProductCard({ product, hint }: { product: Card; hint?: boolean }) {
   return (
     <article className="pc">
@@ -38,7 +39,32 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
           </span>
         </div>
       </Link>
+      <AddToBag product={product} />
     </article>
+  );
+}
+
+/** Adds the piece with no size yet (the bag asks for it, and picks a single size by itself).
+ * Fabric is sold by length, so it opens the product page instead. */
+function AddToBag({ product }: { product: Card }) {
+  const { bag } = useShop();
+  if (product.sold_out) return <span className="pc-add is-off">Sold out</span>;
+  if (product.kind !== "garment")
+    return (
+      <Link href={`/product/${product.slug}`} className="pc-add">
+        Choose length
+      </Link>
+    );
+  if (bag.some((l) => l.slug === product.slug))
+    return (
+      <Link href="/bag" className="pc-add is-in">
+        In bag &middot; View
+      </Link>
+    );
+  return (
+    <button type="button" className="pc-add" onClick={() => shop.add(toSaved(product), null)}>
+      Add to bag
+    </button>
   );
 }
 
@@ -51,6 +77,7 @@ const RANGES = [
   { id: "50+", label: "Above ₹50,000", min: 5000000, max: Infinity },
 ];
 const priceOf = (p: Card) => p.price_min_paise ?? p.price_from_paise_per_m ?? null;
+const VIEW_KEY = "mbm-grid-view"; // "grid" or "list", remembered on the device
 
 /** Product grid with sort and filters (shown once there are a few products); shows 12 cards and
  * adds 12 more as the shopper scrolls near the end. */
@@ -59,7 +86,24 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
   const [sort, setSort] = useState("featured");
   const [range, setRange] = useState("");
   const [inStock, setInStock] = useState(false);
+  const [view, setView] = useState<"grid" | "list">("grid");
   const end = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(VIEW_KEY);
+    } catch {}
+    if (saved !== "list") return;
+    const t = window.setTimeout(() => setView("list"), 0);
+    return () => window.clearTimeout(t);
+  }, []);
+  const pickView = (v: "grid" | "list") => {
+    setView(v);
+    try {
+      localStorage.setItem(VIEW_KEY, v);
+    } catch {}
+  };
 
   let list = products;
   if (inStock) list = list.filter((p) => !p.sold_out);
@@ -94,7 +138,6 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
     <>
       {products.length > 4 ? (
         <div className="sf-tools">
-
           <label className="sf-tool">
             <span className="sr-only">Sort</span>
             <select value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
@@ -127,12 +170,32 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
         </div>
       ) : null}
       {products.length > 4 ? (
-        <p className="sf-tools-count">
-          {list.length} {list.length === 1 ? "piece" : "pieces"}
-        </p>
+        <div className="sf-count-row">
+          <p className="sf-tools-count">
+            {list.length} {list.length === 1 ? "Piece" : "Pieces"}
+          </p>
+          <div className="sf-view" role="group" aria-label="Layout">
+            <button type="button" className={view === "grid" ? "on" : undefined} aria-pressed={view === "grid"} aria-label="Grid" onClick={() => pickView("grid")}>
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="3" y="3" width="5.5" height="5.5" rx="1" />
+                <rect x="11.5" y="3" width="5.5" height="5.5" rx="1" />
+                <rect x="3" y="11.5" width="5.5" height="5.5" rx="1" />
+                <rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1" />
+              </svg>
+            </button>
+            <button type="button" className={view === "list" ? "on" : undefined} aria-pressed={view === "list"} aria-label="List" onClick={() => pickView("list")}>
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M7 5h10M7 10h10M7 15h10" />
+                <circle cx="3.6" cy="5" r="1" />
+                <circle cx="3.6" cy="10" r="1" />
+                <circle cx="3.6" cy="15" r="1" />
+              </svg>
+            </button>
+          </div>
+        </div>
       ) : null}
       {list.length ? (
-        <div className="pc-grid">
+        <div className={`pc-grid${view === "list" ? " is-list" : ""}`}>
           {list.slice(0, shown).map((p, i) => (
             <ProductCard key={p.slug} product={p} hint={i === tipAt} />
           ))}

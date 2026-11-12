@@ -63,6 +63,14 @@ function lookTotal(pieces: LookPiece[]) {
   return sum ? `${from ? "from " : ""}${formatINR(sum)}` : "";
 }
 
+function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d={dir === "left" ? "M14.5 6 8.5 12l6 6" : "M9.5 6l6 6-6 6"} />
+    </svg>
+  );
+}
+
 /** Thin gold outline of a Hyderabadi pointed arch, stretched to its box. */
 function ArchLine() {
   return (
@@ -74,7 +82,7 @@ function ArchLine() {
 
 /**
  * MAHIB runway: every published outfit stands in a courtyard arch. It moves on every 5 seconds
- * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "View the look" slides in a narrow panel from the
+ * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "Customize your look" slides in a narrow panel from the
  * right with every piece. Each piece is a normal product that can be bought alone.
  */
 export function MahibRunway({ looks }: { looks: Look[] }) {
@@ -143,6 +151,8 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
     router.push("/bag");
   };
   const total = lookTotal(look.pieces);
+  // Only the spots an outfit stands in get an arch (two looks: no empty arch on the left).
+  const used = new Set(looks.map((_, i) => offsetOf(i, act, count)));
   const picked = pick !== null ? look.pieces[pick] : null;
 
   return (
@@ -158,8 +168,9 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
       }}
     >
       <div className="container runway-head">
-        <div className="runway-label">The MAHIB Edit</div>
-        <h2 className="runway-title">Every ceremony, styled head to toe</h2>
+        <div className="runway-label runway-label-lined">The MAHIB Edit</div>
+        <h2 className="runway-title">Every ceremony, styled head to toe.</h2>
+        <p className="runway-sub">Complete looks, put together piece by piece for every celebration.</p>
       </div>
 
       <div
@@ -183,12 +194,12 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         }}
         onPointerCancel={() => (drag.current = null)}
       >
-        <div className="runway-scene">
+        <div className={`runway-scene${count === 2 ? (used.has(1) ? " is-pair-r" : " is-pair-l") : ""}`}>
           <div className="runway-floor" aria-hidden="true" />
           {/* The arches stay put; the outfits move from arch to arch on top of them. */}
           <div className="runway-arches" aria-hidden="true">
-            {(["left", "center", "right"] as const).map((pos) => (
-              <span key={pos} className={`runway-slot is-${pos}`}>
+            {(["left", "center", "right"] as const).map((pos, n) => (
+              <span key={pos} className={`runway-slot is-${pos}${used.has(n - 1) ? "" : " is-empty"}`}>
                 <span className="runway-arch" />
                 <ArchLine />
               </span>
@@ -232,6 +243,13 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
                     else show(i);
                   }}
                 />
+                <span className="runway-tag" aria-hidden="true">
+                  <span className="runway-tag-num">
+                    {pad(i + 1)}
+                    {l.occasion ? ` / ${l.occasion}` : ""}
+                  </span>
+                  <span className="runway-tag-name">{l.name}</span>
+                </span>
                 {pos === "center" ? (
                   <div className="runway-dots" style={box}>
                     {l.pieces.map((p, n) =>
@@ -254,10 +272,10 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         </div>
 
         <button type="button" className="runway-arrow is-prev" aria-label="Previous look" onClick={() => go(-1)}>
-          &larr;
+          <Chevron dir="left" />
         </button>
         <button type="button" className="runway-arrow is-next" aria-label="Next look" onClick={() => go(1)}>
-          &rarr;
+          <Chevron dir="right" />
         </button>
 
         {picked ? (
@@ -339,31 +357,30 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         </aside>
       </div>
 
-      <div className="container runway-caption" aria-live="polite">
-        <span className="runway-num" aria-hidden="true">
-          {pad(act + 1)}
-        </span>
-        <div className="runway-caption-text">
+      <div className="container runway-bar" aria-live="polite">
+        <div className="runway-feat">
+          <span className="runway-eyebrow">
+            Featured look <i>&middot;</i> {pad(act + 1)} / {pad(count)}
+          </span>
           <h3 className="runway-name" key={look.slug}>
             {look.name}
           </h3>
           {look.occasion ? <p className="runway-occasion">{look.occasion}</p> : null}
         </div>
-        <div className="runway-buy">
-          {total ? (
-            <span className="runway-total">
-              <span className="runway-total-label">Complete look · {look.pieces.length} pieces</span>
-              <span className="runway-total-price">{total}</span>
-            </span>
-          ) : null}
-          <span className="runway-buy-actions">
-            <button type="button" className="runway-view is-dark" onClick={buyLook}>
-              Buy the look
-            </button>
-            <button type="button" className="runway-view" onClick={() => setOpen(true)}>
-              View the look
-            </button>
+        <div className="runway-contents">
+          <span className="runway-eyebrow">
+            Complete look <i>&middot;</i> {look.pieces.length} {look.pieces.length === 1 ? "piece" : "pieces"}
           </span>
+          <span className="runway-roles">{look.pieces.map((p) => p.role).join(" · ")}</span>
+        </div>
+        <div className="runway-buy">
+          {total ? <span className="runway-total-price">{total}</span> : null}
+          <button type="button" className="runway-shop" onClick={buyLook}>
+            Shop complete look <span aria-hidden="true">&rarr;</span>
+          </button>
+          <button type="button" className="runway-custom" onClick={() => setOpen(true)}>
+            Customize your look
+          </button>
         </div>
       </div>
 
