@@ -46,3 +46,12 @@ Please add each as **new keys** on the existing storefront functions (same names
 ## 9. Damage claims (returns)
 - The website now tells shoppers to send an unboxing video within 48 hours for damaged or wrong
   items. The ERP may want a place to attach that video to the order when staff record the claim.
+
+## 10. Home featured for MBM and MAHIB
+- Staff should be able to tick "Show on home page" on **any** product, from the main shop (MBM)
+  or from MAHIB, and set its order on the home page.
+- `storefront_home_featured()` should return **every** ticked product (any section, in staff
+  order, sold-out ones left out), not one per category. Same card shape as `storefront_products`.
+- Checked on 12 Nov 2026: it returns an empty list, and none of the 6 live products (all MAHIB)
+  is ticked. The website shows exactly what this function returns; while it is empty, the
+  newest pieces stand in so the row is never blank.

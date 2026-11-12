@@ -90,16 +90,9 @@ export default async function HomePage() {
     getSettings(),
     getLooks("mahib"),
   ]);
-  // Until staff pick enough "home featured" pieces in the ERP, the row is filled with the newest.
-  const featured =
-    chosen.length >= 4
-      ? chosen
-      : [
-          ...chosen,
-          ...(await getProducts()).filter(
-            (p) => !p.sold_out && !chosen.some((c) => c.slug === p.slug),
-          ),
-        ].slice(0, 8);
+  // Featured = the pieces staff mark "home featured" in the ERP (MBM or MAHIB). Until they pick any,
+  // the newest pieces stand in, so the row is never empty.
+  const featured = chosen.length ? chosen : (await getProducts()).filter((p) => !p.sold_out).slice(0, 8);
   const fabrics = main.find(isFabric);
   const fabricsHref = fabrics ? sectionPath("main", fabrics.slug) : "/shop";
   const tailoringHref = whatsappLink(
@@ -402,7 +395,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. FEATURED — one home-featured product per category, chosen in the ERP */}
+      {/* 6. FEATURED — the pieces staff mark "home featured" in the ERP, from MBM and MAHIB */}
       <section
         className="featured-section"
         id="featured-products"

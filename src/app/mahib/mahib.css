@@ -570,3 +570,25 @@ button.runway-card-btn { background: none; cursor: pointer; }
 /* Side labels stay the same size as the centre one (their arch is drawn smaller). */
 .runway-model.is-left .runway-tag,
 .runway-model.is-right .runway-tag { transform: translateX(-50%) scale(1.25); transform-origin: 50% 0; }
+
+/* Arch detailing as in the reference: ivory wall edged in gold, a recessed niche shaded at the top
+   and sides with its own thin gold line. (A normal photo's clip arch keeps no niche.) */
+.runway-slot .runway-arch {
+  background: linear-gradient(90deg, #efe4d2 0%, #f8f1e6 18%, #f8f1e6 82%, #ece0cc 100%);
+  box-shadow: none;
+}
+.runway-slot .runway-arch::after {
+  content: "";
+  position: absolute;
+  inset: 5.5% 7.5% 0;
+  background:
+    radial-gradient(ellipse 85% 30% at 50% 0%, rgba(110, 80, 45, 0.3), transparent 72%),
+    linear-gradient(180deg, #d7c3a5 0%, #e3d3bb 45%, #e8dac5 78%, #dccab0 100%);
+  box-shadow: inset 16px 0 22px -12px rgba(90, 62, 30, 0.28), inset -16px 0 22px -12px rgba(90, 62, 30, 0.28);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.runway-slot .runway-arch-line { inset: 0; width: 100%; height: 100%; }
+.runway-slot .runway-arch-line path { stroke-width: 2px; opacity: 1; }
+.runway-slot .runway-arch-line + .runway-arch-line { inset: 5.5% auto auto 7.5%; width: 85%; height: 94.5%; }
+.runway-slot .runway-arch-line + .runway-arch-line path { stroke-width: 1px; opacity: 0.75; }

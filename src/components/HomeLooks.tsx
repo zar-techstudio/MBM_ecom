@@ -68,10 +68,14 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
               </button>
             ) : null}
             <Link href={runway} className="ls-arch" aria-label={`See ${look.name} on the MAHIB runway`}>
-              <span className="ls-arch-bg" aria-hidden="true" />
-              <svg className="ls-arch-line" viewBox="0 0 200 400" preserveAspectRatio="none" aria-hidden="true">
-                <path d={ARCH_PATH} vectorEffect="non-scaling-stroke" />
-              </svg>
+              {/* Ivory wall with a gold edge, a shaded niche with its own thin gold line, a marble pedestal. */}
+              <span className="ls-arch-wall" aria-hidden="true" />
+              <span className="ls-arch-niche" aria-hidden="true" />
+              {(["outer", "inner"] as const).map((k) => (
+                <svg key={k} className={`ls-arch-line is-${k}`} viewBox="0 0 200 400" preserveAspectRatio="none" aria-hidden="true">
+                  <path d={ARCH_PATH} vectorEffect="non-scaling-stroke" />
+                </svg>
+              ))}
               <span className="ls-pedestal" aria-hidden="true" />
               {/* Every outfit is in place; only the one in turn is shown, so the arch never moves. */}
               {looks.map((l, i) => (
