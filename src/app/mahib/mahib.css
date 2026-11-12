@@ -634,23 +634,3 @@ button.runway-card-btn { background: none; cursor: pointer; }
     radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255, 252, 245, 0.95), transparent 70%),
     linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-warm) 55%, var(--color-ivory-sand) 100%);
 }
-/* Owner's sizing (desktop), measured in units of the original centre arch width (= 100, which is
-   0.7 x --arch-h). Only the arches change; the outfits, names and arrows stay where they were.
-   - Centre: 120 wide (10 more on each side, same centre), 5 lower at the bottom, 10 higher at the top.
-   - Sides: same width, moved 10 towards the centre, 5 lower at the bottom, 10 higher at the top
-     (in their own units, before their 0.78 scale). */
-@media (min-width: 769px) {
-  .runway-slot {
-    aspect-ratio: auto;
-    width: calc(var(--arch-h) * 0.7);
-    height: calc(var(--arch-h) * 1.105);
-    bottom: calc(4.5rem - var(--arch-h) * 0.035);
-    transform-origin: 50% calc(var(--arch-h) * 0.69);
-  }
-  .runway-slot.is-center { width: calc(var(--arch-h) * 0.84); z-index: 1; }
-  .runway-slot.is-left { left: calc(27% + var(--arch-h) * 0.07); }
-  .runway-slot.is-right { left: calc(73% - var(--arch-h) * 0.07); }
-}
-@media (min-width: 769px) {
-  .runway-slot::after { display: none; } /* the lowered arch base would cover the look numbers */
-}
