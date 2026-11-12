@@ -7,7 +7,7 @@ type Img = { large: string; card: string };
 const SWIPE_PX = 40; // a finger moving further than this sideways changes the photo
 const TAP_PX = 10; // ...and less than this counts as a tap
 const MAX_ZOOM = 4;
-const HOLD_MS = 300; // phone: hold this long to zoom in place
+const HOLD_MS = 160; // phone: hold this long to zoom in place (a tap or swipe is shorter)
 
 /** Point the zoom at a screen position over the photo. */
 function aimZoom(el: HTMLElement, x: number, y: number) {

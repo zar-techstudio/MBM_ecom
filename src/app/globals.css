@@ -149,7 +149,7 @@
   object-fit: cover;
   object-position: top center;
   opacity: 0;
-  transition: opacity 0.4s var(--ease-smooth);
+  transition: opacity 0.2s var(--ease-smooth);
   pointer-events: none;
 }
 .product-media-box.is-previewing .card-preview { opacity: 1; }
@@ -192,7 +192,7 @@
 /* Product photos: swipe / arrows, hover zoom (desktop), full-screen viewer. */
 .sf-gallery-main { position: relative; cursor: zoom-in; touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .sf-gallery-main img { transition: transform 0.25s var(--ease-smooth); transform-origin: var(--zx, 50%) var(--zy, 50%); }
-.sf-gallery-main.is-zoom img { transform: scale(2.2); transition: transform 0.25s var(--ease-smooth), transform-origin 0s; }
+.sf-gallery-main.is-zoom img { transform: scale(2.2); transition: transform 0.15s var(--ease-smooth), transform-origin 0s; }
 .sf-gallery-arrow {
   position: absolute;
   top: 50%;

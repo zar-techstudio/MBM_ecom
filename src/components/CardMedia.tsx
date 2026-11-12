@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const HOLD_MS = 350; // phone: how long a finger rests before the preview starts
-const HOVER_MS = 250; // desktop: how long the cursor rests before the preview starts
+const HOLD_MS = 180; // phone: how long a finger rests before the preview starts (a tap is shorter)
+const HOVER_MS = 100; // desktop: how long the cursor rests before the preview starts
 const MOVE_PX = 10; // a finger that moves further than this is scrolling, not holding
 const HINT_KEY = "mbm-hold-hint-seen";
 
