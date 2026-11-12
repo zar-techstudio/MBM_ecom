@@ -539,3 +539,10 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
 }
 /* Owner's niche colour, flat (same as the runway). */
 .ls-arch-niche { background: #c4ae97; }
+/* Rounded tops: the photo box clips to the card's corners (3D cards don't clip their children). */
+.home .ring .ring-card .category-img-box { border-radius: 24px 24px 0 0; }
+.home .ring .ring-card .category-img-box img { border-radius: inherit; }
+.home .ring .ring-card .category-info-box { border-radius: 0 0 24px 24px; }
+.home .ring .ring-card { border-radius: 36px; }
+.home .ring .ring-card .category-img-box { border-radius: 34px 34px 0 0; }
+.home .ring .ring-card .category-info-box { border-radius: 0 0 34px 34px; }
