@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { IntroSplash } from "@/components/IntroSplash";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./design.css";
@@ -36,7 +37,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${cormorant.variable} ${jakarta.variable}`}>
+    // data-scroll-behavior: page changes jump straight to the top instead of smooth-scrolling there
+    <html lang="en" data-scroll-behavior="smooth" className={`${cinzel.variable} ${cormorant.variable} ${jakarta.variable}`}>
       <body>
         <a href="#content" className="sr-only">
           Skip to content
@@ -45,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div id="content">{children}</div>
         <SiteFooter />
         <IntroSplash />
+        <ScrollToTop />
       </body>
     </html>
   );
