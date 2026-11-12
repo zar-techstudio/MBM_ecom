@@ -6,6 +6,7 @@ import { CategoryRing } from "@/components/CategoryRing";
 import { GoldenThread } from "@/components/GoldenThread";
 import { HERO_OUTFITS } from "@/lib/hero";
 import { ProductGrid } from "@/components/ProductCard";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 
 /* Design artwork for categories until the e-commerce team adds banners in the ERP. */
 const DESIGN_ART: [RegExp, string][] = [
@@ -243,6 +244,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <ProductGrid products={featured} empty="New arrivals are being photographed. Visit again soon." />
+          <RecentlyViewed />
         </div>
       </section>
 

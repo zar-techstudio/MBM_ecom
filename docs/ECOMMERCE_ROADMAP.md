@@ -38,7 +38,12 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
 - Product page: swipe photos, hold-to-zoom (phone), hover zoom (desktop), full-screen pinch and
   double-tap; size, Add to bag, Buy now, wishlist; trust row (cash on delivery, delivery across
   India and abroad, online orders not exchanged); Complete the look; Recently viewed.
-- Search with instant suggestions and a results page.
+- Search with instant suggestions and a results page; a search bar at the top of listing pages;
+  **AI photo search** (camera in the search: snap or upload a photo, Gemini picks the closest pieces).
+- Listing pages: category bubbles with photos; filter chips that scroll sideways.
+- Product page: rating, wishlist and share on the photo; size guide; highlights, details and
+  delivery & returns as open/close sections; "More like this"; Add to bag + Buy now bar on phones.
+- Home: Recently viewed. Returns: unboxing video for damaged or wrong items (48 hours).
 - Contact page with map; Shipping, Exchanges & returns, Privacy, Terms (grievance officer
   Moghny Maqdoom). **Wording is a draft: the owner should read it once.**
 
@@ -73,11 +78,11 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
 - **WhatsApp messages** [ERP, C3]: review links and order updates sent automatically.
 
 ### Not done yet (website)
-- Size and fit block (model height, size worn) and a size guide: needs these fields from the [ERP].
-- Delivery-date estimate by PIN code: needs the courier API [ERP].
+- Waiting on the ERP (see `docs/ERP_REQUESTS.md`): MRP and % off, colour variants, size chart per
+  category, fit details, delivery date by PIN code, review tags and star breakdown, Q&A.
 - Use `storefront_products_page` for very large catalogues (the site pages in the browser today,
   fine for hundreds of products).
-- Share button on product pages; filters by size and colour (need size/colour data).
+- Filters by size and colour (need size/colour data from the ERP).
 - Phase D ideas: size finder, outfit builder, scratch-card welcome offer, family matching sets,
   gift cards, showroom fitting appointments, analytics with consent.
 

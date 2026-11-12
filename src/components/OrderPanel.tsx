@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ProductCard, SizeOption } from "@/lib/catalogue";
 import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
+import { SizeGuide, guideFor } from "./SizeGuide";
 import { WishHeart } from "./WishHeart";
 
 type Props = {
@@ -29,6 +30,7 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
   const router = useRouter();
   const [added, setAdded] = useState(false);
   const [nudge, setNudge] = useState(0); // shakes the sizes when Add is tapped without one
+  const [guide, setGuide] = useState(false);
   const available = sizes.filter((s) => s.left > 0);
   const named = sizes.filter((s) => s.size);
   const [picked, setPicked] = useState<string | null>(available.length === 1 ? available[0].size : null);
@@ -88,7 +90,12 @@ ${url}`);
       ) : null}
       {kind !== "fabric" && named.length ? (
         <fieldset ref={sizesRef} className={`sf-sizes${nudge ? " is-nudged" : ""}`} key={nudge} disabled={checking}>
-          <legend>Size</legend>
+          <legend className="sf-size-legend">
+            Size
+            <button type="button" className="sf-size-guide" onClick={() => setGuide(true)}>
+              Size guide
+            </button>
+          </legend>
           <div className="sf-size-row">
             {named.map((s) => (
               <button
@@ -141,7 +148,7 @@ ${url}`);
       )}
 
       {/* Phones: keep the order button reachable while reading the page. */}
-      {showBar ? (
+      {showBar && !buyable ? (
         <div className="sf-order-bar" role="region" aria-label="Order">
           <div className="sf-order-bar-text">
             <span className="sf-order-bar-title">{title}</span>
@@ -153,6 +160,17 @@ ${url}`);
           <ActionButton action={action} className="sf-order-bar-btn" />
         </div>
       ) : null}
+      {showBar && buyable ? (
+        <div className="sf-order-bar sf-order-bar-2" role="region" aria-label="Buy">
+          <button type="button" className="sf-bar-add" onClick={action.onClick}>
+            {added ? "In your bag" : "Add to bag"}
+          </button>
+          <button type="button" className="sf-bar-buy" onClick={buyNow}>
+            Buy now
+          </button>
+        </div>
+      ) : null}
+      {guide ? <SizeGuide kind={guideFor(card.category.name)} ask={ask} onClose={() => setGuide(false)} /> : null}
     </div>
   );
 }

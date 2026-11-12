@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCategories, getProducts, type Section } from "@/lib/catalogue";
-import { sectionPath } from "@/lib/site";
+import { imageUrl, sectionPath } from "@/lib/site";
 import { ProductGrid } from "./ProductCard";
+import { SearchBar } from "./SearchBar";
 
 export const SECTION_COPY: Record<Section, { label: string; title: string; intro: string }> = {
   main: {
@@ -31,7 +32,17 @@ export async function CatalogueListing({
   /** Shown first, above the page heading (the MAHIB outfit runway). */
   lead?: React.ReactNode;
 }) {
-  const [categories, products] = await Promise.all([getCategories(section), getProducts(section, category)]);
+  const [categories, products, all] = await Promise.all([
+    getCategories(section),
+    getProducts(section, category),
+    getProducts(section), // for each category's bubble photo
+  ]);
+  // Bubble photo: the category's banner, else its first product's photo.
+  const photoOf = (slug?: string) => {
+    const c = slug ? categories.find((x) => x.slug === slug) : undefined;
+    const path = c?.banner ?? all.find((p) => !slug || p.category.slug === slug)?.thumbnail ?? null;
+    return imageUrl(path, "card");
+  };
   const current = category ? categories.find((c) => c.slug === category) : undefined;
   if (category && !current) notFound();
   const copy = SECTION_COPY[section];
@@ -55,16 +66,31 @@ export async function CatalogueListing({
           <div className="section-label">{copy.label}</div>
           <h1 className="sf-page-title">{current ? current.name.toUpperCase() : copy.title}</h1>
           <p className="sf-page-intro">{current?.description || copy.intro}</p>
+          <SearchBar />
           {categories.length ? (
-            <nav className="sf-chips" aria-label="Categories">
-              <Link href={sectionPath(section) + jump} className={`sf-chip${current ? "" : " active"}`}>
-                All
-              </Link>
-              {categories.map((c) => (
-                <Link key={c.slug} href={sectionPath(section, c.slug) + jump} className={`sf-chip${c.slug === category ? " active" : ""}`}>
-                  {c.name}
-                </Link>
-              ))}
+            <nav className="sf-bubbles" aria-label="Categories">
+              {[{ slug: undefined, name: "All" }, ...categories].map((c) => {
+                const active = c.slug ? c.slug === category : !current;
+                const src = photoOf(c.slug);
+                return (
+                  <Link
+                    key={c.slug ?? "all"}
+                    href={sectionPath(section, c.slug) + jump}
+                    className={`sf-bubble${active ? " active" : ""}`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <span className="sf-bubble-img">
+                      {src ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={src} alt="" loading="lazy" />
+                      ) : (
+                        <span>{c.name.slice(0, 1)}</span>
+                      )}
+                    </span>
+                    <span className="sf-bubble-name">{c.name}</span>
+                  </Link>
+                );
+              })}
             </nav>
           ) : null}
         </div>

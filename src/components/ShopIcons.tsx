@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { ProductCard } from "@/lib/catalogue";
+import { lensFind, type LensAnswer } from "@/lib/lens-client";
 import { bagCount, useShop } from "@/lib/shop-store";
 import { imageUrl, priceText } from "@/lib/site";
 
@@ -25,6 +26,12 @@ const Icon = {
       <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
     </svg>
   ),
+  camera: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  ),
   bag: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5 8h14l-1 12H6L5 8z" />
@@ -36,11 +43,18 @@ const Icon = {
 /** Header icons: search, wishlist (desktop; on phones it is in the menu) and bag, with counts. */
 export function ShopIcons() {
   const s = useShop();
-  const [search, setSearch] = useState(false);
+  const [search, setSearch] = useState<{ photo?: File } | null>(null);
   const bag = bagCount(s);
+
+  // Search bars elsewhere on the page (and their camera buttons) open this search.
+  useEffect(() => {
+    const open = (e: Event) => setSearch({ photo: (e as CustomEvent<{ photo?: File }>).detail?.photo });
+    window.addEventListener("mbm-search", open);
+    return () => window.removeEventListener("mbm-search", open);
+  }, []);
   return (
     <>
-      <button type="button" className="shop-icon" aria-label="Search" onClick={() => setSearch(true)}>
+      <button type="button" className="shop-icon" aria-label="Search" onClick={() => setSearch({})}>
         {Icon.search}
       </button>
       <Link href="/wishlist" className="shop-icon shop-icon-wish" aria-label={`Wishlist, ${s.wish.length} items`}>
@@ -58,15 +72,34 @@ export function ShopIcons() {
           </span>
         ) : null}
       </Link>
-      {search ? <SearchOverlay onClose={() => setSearch(false)} /> : null}
+      {search ? <SearchOverlay photo={search.photo} onClose={() => setSearch(null)} /> : null}
     </>
   );
 }
 
-/** Search box with instant suggestions; Enter shows all results. */
-function SearchOverlay({ onClose }: { onClose: () => void }) {
+type Lens = { status: "loading" | "done" | "error"; preview: string; answer?: LensAnswer; error?: string };
+
+/** Search box with instant suggestions (Enter shows all results), and photo search: take or pick a
+ * photo and the closest pieces from the catalogue are shown. */
+function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ProductCard[] | null>(null);
+  const [lens, setLens] = useState<Lens | null>(null);
+
+  const byPhoto = (file: File | undefined) => {
+    if (!file) return;
+    setQ("");
+    setLens({ status: "loading", preview: URL.createObjectURL(file) });
+    lensFind(file)
+      .then((answer) => setLens((l) => (l ? { ...l, status: "done", answer } : l)))
+      .catch((e: Error) => setLens((l) => (l ? { ...l, status: "error", error: e.message } : l)));
+  };
+
+  useEffect(() => {
+    if (!photo) return;
+    const t = window.setTimeout(() => byPhoto(photo), 0);
+    return () => window.clearTimeout(t);
+  }, [photo]);
   const input = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -117,18 +150,36 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
           ref={input}
           type="search"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setLens(null);
+          }}
           placeholder="Search sherwanis, safas, mojris…"
           aria-label="Search products"
           enterKeyHint="search"
         />
+        <label className="search-cam" title="Search with a photo">
+          <input type="file" accept="image/*" onChange={(e) => byPhoto(e.target.files?.[0])} aria-label="Search with a photo" />
+          {Icon.camera}
+        </label>
         <button type="button" className="search-close" onClick={onClose} aria-label="Close search">
           &times;
         </button>
       </form>
       <div className="search-results">
-        {shown === null ? (
+        {lens ? (
+          <LensResults lens={lens} onClose={onClose} />
+        ) : shown === null ? (
           <div className="search-hints">
+            <label className="search-photo-cta">
+              <input type="file" accept="image/*" onChange={(e) => byPhoto(e.target.files?.[0])} />
+              {Icon.camera}
+              <span>
+                <strong>Search with a photo</strong>
+                <br />
+                Saw an outfit you love? Snap it or pick a screenshot and we&rsquo;ll find the closest pieces.
+              </span>
+            </label>
             <p className="search-hint-title">Popular</p>
             {["Sherwani", "Safa", "Mojri", "Kurta", "MAHIB"].map((h) => (
               <button key={h} type="button" className="sf-chip" onClick={() => setQ(h)}>
@@ -167,6 +218,53 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
           <p className="search-empty">Nothing found for &ldquo;{q.trim()}&rdquo;. Try another word, or ask us on WhatsApp.</p>
         )}
       </div>
+    </div>
+  );
+}
+
+function LensResults({ lens, onClose }: { lens: Lens; onClose: () => void }) {
+  return (
+    <div className="lens">
+      <div className="lens-head">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={lens.preview} alt="Your photo" className={lens.status === "loading" ? "is-scanning" : undefined} />
+        <div>
+          <p className="search-hint-title">Photo search</p>
+          <p className="lens-desc">
+            {lens.status === "loading"
+              ? "Looking at your photo… this takes a few seconds"
+              : lens.status === "error"
+                ? lens.error
+                : lens.answer?.description || "Here is what we found"}
+          </p>
+        </div>
+      </div>
+      {lens.status === "done" ? (
+        lens.answer?.products.length ? (
+          <ul>
+            {lens.answer.products.map((p) => (
+              <li key={p.slug}>
+                <Link href={`/product/${p.slug}`} onClick={onClose} className="search-item">
+                  <span className="search-item-img">
+                    {p.thumbnail ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl(p.thumbnail, "card") ?? ""} alt="" loading="lazy" />
+                    ) : null}
+                  </span>
+                  <span className="search-item-text">
+                    <span className="search-item-title">{p.title}</span>
+                    <span className="search-item-meta">
+                      {p.category.name} &middot; {priceText(p)}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="search-empty">Nothing close in the shop right now. Send the photo to us on WhatsApp and we&rsquo;ll help.</p>
+        )
+      ) : null}
     </div>
   );
 }

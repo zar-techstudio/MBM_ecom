@@ -51,7 +51,8 @@ const POLICIES: Record<string, Policy> = {
         h: "Online orders",
         p: [
           "Online orders cannot be exchanged or returned. Ask us on WhatsApp about sizes and fit before you order; we are happy to help.",
-          "If your order arrives damaged, or is not what you ordered, tell us as soon as you receive it, with photos. We will replace the piece or refund you in full.",
+          "If your order arrives damaged, or is not what you ordered, tell us within 48 hours of delivery with an unboxing video (recorded from the sealed parcel, without cuts) and photos. We will replace the piece or refund you in full.",
+          "Please keep the tags and packing as they came until you have checked the order.",
         ],
       },
       {

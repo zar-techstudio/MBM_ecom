@@ -38,6 +38,11 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env` (built in) | ERP database, public key |
 | `NEXT_PUBLIC_SITE_URL` | deploy command | `https://maqdoomsbigmall.com` |
 | `SHOP_API_SECRET` | `.env`, and a secret on the `mbm-website` Worker | server-to-ERP calls only |
+| `GEMINI_API_KEY` | `.env`, and a secret on the `mbm-website` Worker | AI photo search (same key as the ERP) |
+
+`.env` lists every value with a note. Secrets on the Worker are set with
+`npx wrangler secret put NAME --name mbm-website` and listed with `npx wrangler secret list --name mbm-website`;
+keep `.env` and the Worker in step.
 
 ## Hosting and deploy
 
@@ -90,6 +95,7 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 | `POST /api/shop/<action>` | All sign-in, account and checkout calls (JSON only; `src/app/api/shop/[action]/route.ts`) |
 | `GET /api/products?slugs=` | Live sizes, prices, stock for the bag and wishlist |
 | `GET /api/search?q=` | Search suggestions (title, category, store) |
+| `POST /api/lens` | AI photo search: a photo (resized in the browser) → Gemini picks the closest products from the catalogue (`src/lib/lens.ts`; fast model first; 12 searches per device per 10 minutes) |
 | `POST /api/review-photo?token=` | A review photo (WebP/JPEG, resized to ~1200 px in the browser), passed to the ERP |
 
 ### Main pieces of code
@@ -105,6 +111,12 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
   reviews, Show more, photos), `Stars`; ratings on cards; `aggregateRating` and reviews in the
   product's structured data for Google.
 - `SiteChrome`: header (search, wishlist, account, bag) and the minimal footer.
+- Search: `ShopIcons` (search screen with suggestions and the camera for photo search),
+  `SearchBar` (search bar at the top of listing pages), `lens-client.ts`.
+- Listing pages: category bubbles (category banner, else the first product photo), filter chips
+  that scroll sideways. Product pages: `PhotoActions` (rating, wishlist, share on the photo),
+  `SizeGuide` (general guide until the ERP has charts), open/close sections (highlights,
+  details, delivery & returns), `ProductRail` ("More like this"), two-button bar on phones.
 - Styles: `design.css` (original design), `globals.css` (storefront additions), `refine.css`
   (tweaks), `shop.css` (checkout, orders, account), `src/app/mahib/mahib.css` (runway).
 

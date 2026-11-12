@@ -255,6 +255,12 @@ export function OrderView({ code }: { code: string }) {
           </section>
         ) : null}
 
+        {order.status === "shipped" || order.status === "delivered" ? (
+          <p className="co-small ord-unbox">
+            Tip: record a short video while opening the parcel. If anything arrives damaged or wrong, send it to us
+            within 48 hours and we&rsquo;ll replace it or refund you.
+          </p>
+        ) : null}
         <p className="co-small">
           Questions about this order? <Link href="/contact">Contact us</Link> with order {order.code}.{" "}
           <Link href="/account">All my orders</Link>

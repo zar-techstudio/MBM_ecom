@@ -94,9 +94,7 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
     <>
       {products.length > 4 ? (
         <div className="sf-tools">
-          <span className="sf-tools-count">
-            {list.length} {list.length === 1 ? "piece" : "pieces"}
-          </span>
+
           <label className="sf-tool">
             <span className="sr-only">Sort</span>
             <select value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
@@ -105,24 +103,33 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
               <option value="high">Price: high to low</option>
             </select>
           </label>
-          {usable.length > 1 ? (
-            <label className="sf-tool">
-              <span className="sr-only">Price</span>
-              <select value={range} onChange={(e) => reset(setRange)(e.target.value)}>
-                <option value="">Any price</option>
-                {usable.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <label className="sf-tool sf-tool-check">
-            <input type="checkbox" checked={inStock} onChange={(e) => reset(setInStock)(e.target.checked)} />
-            <span>In stock only</span>
-          </label>
+          <button
+            type="button"
+            className={`sf-fchip${inStock ? " on" : ""}`}
+            aria-pressed={inStock}
+            onClick={() => reset(setInStock)(!inStock)}
+          >
+            In stock
+          </button>
+          {usable.length > 1
+            ? usable.map((x) => (
+                <button
+                  key={x.id}
+                  type="button"
+                  className={`sf-fchip${range === x.id ? " on" : ""}`}
+                  aria-pressed={range === x.id}
+                  onClick={() => reset(setRange)(range === x.id ? "" : x.id)}
+                >
+                  {x.label}
+                </button>
+              ))
+            : null}
         </div>
+      ) : null}
+      {products.length > 4 ? (
+        <p className="sf-tools-count">
+          {list.length} {list.length === 1 ? "piece" : "pieces"}
+        </p>
       ) : null}
       {list.length ? (
         <div className="pc-grid">

@@ -22,7 +22,7 @@ const TAP_ZOOM = 2.5;
  * (desktop) or under a finger held on it (phones); a tap or click opens it full screen, where it can be pinched, double-tapped
  * (or clicked) to zoom, dragged when zoomed, and swiped to the next photo. URLs are built on the server.
  */
-export function ProductGallery({ images, title }: { images: Img[]; title: string }) {
+export function ProductGallery({ images, title, overlay }: { images: Img[]; title: string; overlay?: React.ReactNode }) {
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState(false); // desktop hover zoom
   const [viewer, setViewer] = useState(false);
@@ -111,6 +111,12 @@ export function ProductGallery({ images, title }: { images: Img[]; title: string
               {at + 1} / {count}
             </span>
           </>
+        ) : null}
+        {overlay ? (
+          // Badges and buttons on the photo: taps on them don't zoom or open the photo.
+          <div className="sf-gallery-over" onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
+            {overlay}
+          </div>
         ) : null}
       </div>
       {count > 1 ? (

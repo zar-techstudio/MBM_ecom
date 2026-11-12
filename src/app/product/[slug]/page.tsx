@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getLooks, getProduct, getProductLive, getReviews, getSettings, type Product, type Reviews } from "@/lib/catalogue";
-import { SITE_NAME, SITE_URL, imageUrl, priceText, sectionPath } from "@/lib/site";
+import { getLooks, getProduct, getProductLive, getProducts, getReviews, getSettings, type Product, type Reviews } from "@/lib/catalogue";
+import { SITE_NAME, SITE_URL, imageUrl, priceText } from "@/lib/site";
 import { ProductGallery } from "@/components/ProductGallery";
 import { OrderPanel } from "@/components/OrderPanel";
 import { CompleteTheLook } from "@/components/CompleteTheLook";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Stars } from "@/components/Stars";
+import { PhotoActions } from "@/components/PhotoActions";
+import { ProductRail } from "@/components/ProductRail";
 import { RecentlyViewed, TrackView } from "@/components/RecentlyViewed";
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
@@ -37,6 +39,11 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
     getReviews(slug),
   ]);
   if (!product) notFound();
+  // "More like this": other pieces in the same category, in stock first.
+  const similar = (await getProducts(product.category.section, product.category.slug))
+    .filter((p) => p.slug !== slug)
+    .sort((a, b) => Number(a.sold_out) - Number(b.sold_out))
+    .slice(0, 12);
   // Outfits this piece belongs to: their other pieces are offered as "Complete the look".
   const looks = [...mahibLooks, ...mainLooks].filter((l) => l.pieces.some((p) => p.product.slug === slug));
 
@@ -62,15 +69,12 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
   return (
     <main className={`sf-product${section === "mahib" ? " sf-listing-mahib" : ""}`}>
       <div className="container">
-        <nav className="sf-breadcrumb" aria-label="Breadcrumb">
-          <Link href="/">Home</Link>
-          <span aria-hidden="true">/</span>
-          <Link href={sectionPath(section)}>{section === "mahib" ? "MAHIB" : "Shop"}</Link>
-          <span aria-hidden="true">/</span>
-          <Link href={sectionPath(section, product.category.slug)}>{product.category.name}</Link>
-        </nav>
         <div className="sf-product-grid">
-          <ProductGallery images={images} title={product.title} />
+          <ProductGallery
+            images={images}
+            title={product.title}
+            overlay={<PhotoActions product={{ ...product, rating: reviews.rating ?? product.rating }} url={url} />}
+          />
           <div className="sf-product-info">
             <div className="section-label">{product.category.name.toUpperCase()}</div>
             <h1 className="sf-product-title">{product.title}</h1>
@@ -85,20 +89,39 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             <Suspense fallback={panel(product, true)}>
               <LivePanel slug={product.slug} render={panel} />
             </Suspense>
-            {product.highlights?.length ? (
-              <ul className="sf-highlights" aria-label="Highlights">
-                {product.highlights.map((h) => (
-                  <li key={h}>{h}</li>
-                ))}
-              </ul>
-            ) : null}
-            {product.description ? (
-              <div className="sf-product-desc">
-                {product.description.split(/\n{2,}/).map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-            ) : null}
+            <div className="sf-sections">
+              {product.highlights?.length ? (
+                <details open>
+                  <summary>Product highlights</summary>
+                  <ul className="sf-highlights" aria-label="Highlights">
+                    {product.highlights.map((h) => (
+                      <li key={h}>{h}</li>
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
+              {product.description ? (
+                <details open={!product.highlights?.length}>
+                  <summary>Details</summary>
+                  <div className="sf-product-desc">
+                    {product.description.split(/\n{2,}/).map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
+              <details>
+                <summary>Delivery &amp; returns</summary>
+                <ul className="sf-highlights">
+                  <li>Delivered across India and abroad; cash on delivery where available.</li>
+                  <li>Online orders are not exchanged. Check the size guide, or ask us before you order.</li>
+                  <li>Arrived damaged or not what you ordered? Tell us with an unboxing video and we&rsquo;ll replace it or refund you.</li>
+                  <li>
+                    Or collect it from the showroom near Charminar. <Link href="/policies/returns">Full policy</Link>
+                  </li>
+                </ul>
+              </details>
+            </div>
             {/* Tags are not shown: they feed search and the structured data below. */}
           </div>
         </div>
@@ -106,6 +129,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
         {looks.map((l) => (
           <CompleteTheLook key={l.slug} look={l} current={slug} />
         ))}
+        {similar.length ? <ProductRail title="More like this" products={similar} /> : null}
         <RecentlyViewed exclude={slug} />
         <TrackView product={product} />
       </div>
