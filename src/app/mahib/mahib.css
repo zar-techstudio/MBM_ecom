@@ -634,3 +634,11 @@ button.runway-card-btn { background: none; cursor: pointer; }
     radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255, 252, 245, 0.95), transparent 70%),
     linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-warm) 55%, var(--color-ivory-sand) 100%);
 }
+/* Measured from the owner's reference at 1672 x 941: centre arch 388 x 542, side arches 272 x 432
+   (narrower and relatively taller than the centre), the outfits as before. */
+@media (min-width: 769px) {
+  .runway-slot { aspect-ratio: auto; width: calc(var(--arch-h) * 0.725); height: calc(var(--arch-h) * 1.015); }
+  .runway-slot.is-left, .runway-slot.is-right { transform: translateX(-50%) scale(0.7, 0.8); }
+}
+/* A lighter floor at the bottom of each niche, as in the reference. */
+.runway-slot .runway-arch::after { background: linear-gradient(180deg, #c4ae97 0%, #c4ae97 88%, #d6c7b3 88.4%, #ddd0be 100%); }
