@@ -537,3 +537,5 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
   /* Stacked layout: the floor stays under the arch, above the look's details. */
   .ls-stage::before { bottom: 0; }
 }
+/* Owner's niche colour, flat (same as the runway). */
+.ls-arch-niche { background: #c4ae97; }

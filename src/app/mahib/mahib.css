@@ -624,3 +624,13 @@ button.runway-card-btn { background: none; cursor: pointer; }
 .runway-model::after { display: none; }
 /* Slightly deeper niche (owner's request). */
 .runway-slot .runway-arch::after { background: linear-gradient(180deg, #ccb797 0%, #d3c0a3 100%); }
+/* Owner's niche colour, flat. */
+.runway-slot .runway-arch::after { background: #c4ae97; }
+/* Soft shade in the top corners of the screen, as in the reference. */
+.mahib-runway {
+  background:
+    radial-gradient(ellipse 38% 45% at 0% 0%, rgba(120, 95, 65, 0.16), transparent 70%),
+    radial-gradient(ellipse 38% 45% at 100% 0%, rgba(120, 95, 65, 0.16), transparent 70%),
+    radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255, 252, 245, 0.95), transparent 70%),
+    linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-warm) 55%, var(--color-ivory-sand) 100%);
+}
