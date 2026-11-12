@@ -77,6 +77,24 @@ export function ShopIcons() {
   );
 }
 
+const RECENT_KEY = "mbm-recent-searches";
+function readRecent(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]") as string[];
+  } catch {
+    return [];
+  }
+}
+/** Remember a search on this phone (latest first, up to 6). */
+function remember(term: string) {
+  const t = term.trim();
+  if (t.length < 2) return;
+  try {
+    const next = [t, ...readRecent().filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, 6);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch {}
+}
+
 type Lens = { status: "loading" | "done" | "error"; preview: string; answer?: LensAnswer; error?: string };
 
 /** Search box with instant suggestions (Enter shows all results), and photo search: take or pick a
@@ -85,6 +103,11 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ProductCard[] | null>(null);
   const [lens, setLens] = useState<Lens | null>(null);
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    const t = window.setTimeout(() => setRecent(readRecent()), 0);
+    return () => window.clearTimeout(t);
+  }, []);
 
   const byPhoto = (file: File | undefined) => {
     if (!file) return;
@@ -141,6 +164,7 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
         onSubmit={(e) => {
           e.preventDefault();
           if (!q.trim()) return;
+          remember(q);
           onClose();
           router.push(`/search?q=${encodeURIComponent(q.trim())}`);
         }}
@@ -180,6 +204,30 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
                 Saw an outfit you love? Snap it or pick a screenshot and we&rsquo;ll find the closest pieces.
               </span>
             </label>
+            {recent.length ? (
+              <>
+                <p className="search-hint-title">
+                  Recent
+                  <button
+                    type="button"
+                    className="co-link search-clear"
+                    onClick={() => {
+                      try {
+                        localStorage.removeItem(RECENT_KEY);
+                      } catch {}
+                      setRecent([]);
+                    }}
+                  >
+                    Clear
+                  </button>
+                </p>
+                {recent.map((h) => (
+                  <button key={h} type="button" className="sf-chip" onClick={() => setQ(h)}>
+                    {h}
+                  </button>
+                ))}
+              </>
+            ) : null}
             <p className="search-hint-title">Popular</p>
             {["Sherwani", "Safa", "Mojri", "Kurta", "MAHIB"].map((h) => (
               <button key={h} type="button" className="sf-chip" onClick={() => setQ(h)}>
@@ -192,7 +240,14 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
             <ul>
               {shown.map((p) => (
                 <li key={p.slug}>
-                  <Link href={`/product/${p.slug}`} onClick={onClose} className="search-item">
+                  <Link
+                    href={`/product/${p.slug}`}
+                    onClick={() => {
+                      remember(q);
+                      onClose();
+                    }}
+                    className="search-item"
+                  >
                     <span className="search-item-img">
                       {p.thumbnail ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -210,7 +265,14 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
                 </li>
               ))}
             </ul>
-            <Link href={`/search?q=${encodeURIComponent(q.trim())}`} onClick={onClose} className="search-all">
+            <Link
+              href={`/search?q=${encodeURIComponent(q.trim())}`}
+              onClick={() => {
+                remember(q);
+                onClose();
+              }}
+              className="search-all"
+            >
               See all results for &ldquo;{q.trim()}&rdquo; &rarr;
             </Link>
           </>

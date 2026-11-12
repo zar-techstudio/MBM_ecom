@@ -199,7 +199,7 @@ export function HeaderClient({
 
       {/* Help button. Not on product pages (their order bar sits there on phones) or the contact
           page (it lists WhatsApp and phone itself). */}
-      {path.startsWith("/product/") || path === "/contact" ? null : (
+      {path.startsWith("/product/") || ["/contact", "/bag", "/checkout"].includes(path) ? null : (
         <a className="wa-float" href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d={WA_ICON} fill="currentColor" />

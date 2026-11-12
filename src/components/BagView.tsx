@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { shop, useShop, type BagLine } from "@/lib/shop-store";
-import { formatINR, imageUrl, whatsappLink } from "@/lib/site";
+import type { Look } from "@/lib/catalogue";
+import { shop, toSaved, useShop, type BagLine } from "@/lib/shop-store";
+import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
 import { pickable, priceOf, useLive, type Live } from "@/lib/use-live";
 import { RecentlyViewed } from "./RecentlyViewed";
 
@@ -24,7 +25,7 @@ function problem(line: BagLine, l: Live | undefined) {
  * The bag: every line is checked against live prices and stock. Ordering happens on WhatsApp
  * until online checkout (phone + OTP, payment) is connected; see docs/ECOMMERCE_ROADMAP.md.
  */
-export function BagView({ whatsappNumber, siteUrl }: { whatsappNumber: string; siteUrl: string }) {
+export function BagView({ whatsappNumber, siteUrl, looks = [] }: { whatsappNumber: string; siteUrl: string; looks?: Look[] }) {
   const { bag } = useShop();
   const live = useLive(bag.map((l) => l.slug));
   const ready = live !== null;
@@ -180,8 +181,65 @@ export function BagView({ whatsappNumber, siteUrl }: { whatsappNumber: string; s
             </ul>
           </aside>
         </div>
+        <CompleteYourLook looks={looks} inBag={bag.map((l) => l.slug)} />
+        {/* Phones: total and Checkout always at hand. */}
+        <div className="sf-mbar" role="region" aria-label="Checkout">
+          <span className="sf-mbar-total">
+            <small>
+              {items} {items === 1 ? "piece" : "pieces"}
+            </small>
+            {ready ? formatINR(subtotal) : "…"}
+          </span>
+          <Link
+            href="/checkout"
+            className={`sf-mbar-btn${!ready || blocked || !items ? " is-off" : ""}`}
+            aria-disabled={!ready || blocked || !items}
+          >
+            {blocked ? "Fix your bag" : "Checkout"}
+          </Link>
+        </div>
         <RecentlyViewed />
       </div>
     </main>
+  );
+}
+
+/** Pieces from outfits that a bag item belongs to, which aren't in the bag yet. */
+function CompleteYourLook({ looks, inBag }: { looks: Look[]; inBag: string[] }) {
+  const have = new Set(inBag);
+  const seen = new Set<string>();
+  const picks: { look: string; role: string; product: Look["pieces"][number]["product"] }[] = [];
+  for (const l of looks) {
+    if (!l.pieces.some((p) => have.has(p.product.slug))) continue;
+    for (const p of l.pieces) {
+      const slug = p.product.slug;
+      if (!slug || have.has(slug) || seen.has(slug) || p.product.sold_out) continue;
+      seen.add(slug);
+      picks.push({ look: l.name, role: p.role, product: p.product });
+    }
+  }
+  if (!picks.length) return null;
+  return (
+    <section className="sf-recent" aria-label="Complete your look">
+      <h2 className="sf-recent-title">Complete your look</h2>
+      <div className="sf-recent-row">
+        {picks.slice(0, 8).map((p) => (
+          <div key={p.product.slug} className="sf-recent-item">
+            <Link href={`/product/${p.product.slug}`} className="sf-recent-img">
+              {p.product.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageUrl(p.product.thumbnail, "card") ?? ""} alt="" loading="lazy" />
+              ) : null}
+            </Link>
+            <span className="runway-piece-role">{p.role}</span>
+            <span className="sf-recent-name">{p.product.title}</span>
+            <span className="sf-recent-price">{priceText(p.product)}</span>
+            <button type="button" className="sf-recent-add" onClick={() => shop.add(toSaved(p.product), null, 1, p.look)}>
+              + Add
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

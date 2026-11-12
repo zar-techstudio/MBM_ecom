@@ -7,7 +7,6 @@ import type { ProductCard, SizeOption } from "@/lib/catalogue";
 import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
 import { SizeGuide, guideFor } from "./SizeGuide";
-import { WishHeart } from "./WishHeart";
 
 type Props = {
   title: string;
@@ -127,7 +126,6 @@ ${url}`);
             <span>Buy now</span>
           </button>
         ) : null}
-        <WishHeart product={card} className="wish-heart sf-order-wish" />
       </div>
       {buyable ? (
         <ul className="sf-order-trust">
@@ -141,6 +139,25 @@ ${url}`);
           </li>
         </ul>
       ) : null}
+      {kind === "fabric" ? null : (
+        <a
+          className="sf-video-call"
+          href={whatsappLink(whatsappNumber, `Hello, I'd like a video call to see this piece: ${title}
+${url}`)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2.5" y="6" width="13" height="12" rx="2" />
+            <path d="M15.5 10.5l6-3.5v10l-6-3.5z" />
+          </svg>
+          <span>
+            <strong>See it live on a video call</strong>
+            <br />
+            We&rsquo;ll show you the fabric, embroidery and fit from the showroom.
+          </span>
+        </a>
+      )}
       {kind === "fabric" ? null : (
         <p className="sf-order-note">
           Prefer the showroom? <Link href="/contact">Visit us near Charminar</Link>, open every day 9 am – 11 pm.

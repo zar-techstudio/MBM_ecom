@@ -119,7 +119,7 @@ export function CheckoutView() {
           <h1 className="sf-bag-title">Checkout</h1>
 
           {/* 1. Who */}
-          <section className={`co-step${signed ? " is-done" : ""}`}>
+          <section id="co-1" className={`co-step${signed ? " is-done" : ""}`}>
             <div className="co-step-head">
               <span className="co-num">1</span>
               <h2>Your mobile</h2>
@@ -141,7 +141,7 @@ export function CheckoutView() {
           </section>
 
           {/* 2. Where */}
-          <section className={`co-step${signed ? "" : " is-locked"}`}>
+          <section id="co-2" className={`co-step${signed ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">2</span>
               <h2>Delivery address</h2>
@@ -184,7 +184,7 @@ export function CheckoutView() {
           </section>
 
           {/* 3. Pay */}
-          <section className={`co-step${signed && address ? "" : " is-locked"}`}>
+          <section id="co-3" className={`co-step${signed && address ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">3</span>
               <h2>Payment</h2>
@@ -344,6 +344,32 @@ export function CheckoutView() {
               {error}
             </p>
           ) : null}
+          {/* Phones: total and the next step always at hand. */}
+          <div className="sf-mbar" role="region" aria-label="Pay">
+            <span className="sf-mbar-total">
+              <small>Total</small>
+              {q ? rupees(q.total_paise) : "…"}
+            </span>
+            <button
+              type="button"
+              className={`sf-mbar-btn${placing ? " is-off" : ""}`}
+              onClick={() => {
+                if (canPlace) return void place();
+                const step = !signed ? "co-1" : !address ? "co-2" : null;
+                if (step) document.getElementById(step)?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              {placing
+                ? "Placing…"
+                : !signed
+                  ? "Continue"
+                  : !address
+                    ? "Add address"
+                    : pay === "cod"
+                      ? "Place order"
+                      : `Pay ${q ? rupees(q.total_paise) : ""}`}
+            </button>
+          </div>
           <p className="co-small co-terms">
             Online orders are not exchanged. By placing the order you agree to our{" "}
             <Link href="/policies/terms">terms</Link> and <Link href="/policies/returns">returns policy</Link>.

@@ -110,6 +110,11 @@ export function ProductGallery({ images, title, overlay }: { images: Img[]; titl
             <span className="sf-gallery-count" aria-hidden="true">
               {at + 1} / {count}
             </span>
+            <span className="sf-gallery-dots" aria-hidden="true">
+              {images.map((_, i) => (
+                <span key={i} className={i === at ? "on" : undefined} />
+              ))}
+            </span>
           </>
         ) : null}
         {overlay ? (

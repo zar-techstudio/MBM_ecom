@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, STATUS_TEXT, api, useAccount, type Order } from "@/lib/account";
 import { openRazorpay, type PayInfo } from "@/lib/razorpay";
+import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, imageUrl } from "@/lib/site";
 import { SignIn } from "./SignIn";
 
@@ -12,12 +13,14 @@ const STEPS = ["Confirmed", "Packed", "Shipped", "Delivered"];
 const stepOf = (s: Order["status"]) =>
   s === "delivered" ? 3 : s === "shipped" ? 2 : s === "packed" ? 1 : s === "paid" || s === "placed" ? 0 : -1;
 const CANCELLABLE: Order["status"][] = ["awaiting_payment", "paid", "placed"];
+const AGAIN: Order["status"][] = ["delivered", "cancelled", "refunded", "returned", "payment_not_received"];
 const when = (iso: string) =>
   new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
 
 /** One order: status in words, progress, items, address, tracking; pay, wait for payment, or cancel. */
 export function OrderView({ code }: { code: string }) {
   const params = useSearchParams();
+  const router = useRouter();
   const { status } = useAccount();
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(params.get("payerror"));
@@ -159,6 +162,18 @@ export function OrderView({ code }: { code: string }) {
           {order.status === "awaiting_payment" && !checking ? (
             <button type="button" className="co-btn" onClick={() => void payNow()} disabled={busy}>
               Pay {formatINR(order.total_paise)} now
+            </button>
+          ) : null}
+          {AGAIN.includes(order.status) && order.items.some((it) => it.product?.slug) ? (
+            <button
+              type="button"
+              className="co-btn"
+              onClick={() => {
+                order.items.forEach((it) => it.product?.slug && shop.add(toSaved(it.product), it.size));
+                router.push("/bag");
+              }}
+            >
+              Buy again
             </button>
           ) : null}
           {CANCELLABLE.includes(order.status) && !checking ? (

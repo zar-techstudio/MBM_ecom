@@ -43,7 +43,13 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
 - Listing pages: category bubbles with photos; filter chips that scroll sideways.
 - Product page: rating, wishlist and share on the photo; size guide; highlights, details and
   delivery & returns as open/close sections; "More like this"; Add to bag + Buy now bar on phones.
-- Home: Recently viewed. Returns: unboxing video for damaged or wrong items (48 hours).
+- Home: Recently viewed; "Shop by ceremony" row (opens that look on the MAHIB runway). Returns:
+  unboxing video for damaged or wrong items (48 hours).
+- Phones only: a short intro video once per device on the home page (skipped on slow data or
+  reduced motion; Skip button); product photo edge to edge with dots; a fixed bar with the total
+  and Checkout / Pay on the bag and checkout pages (no WhatsApp bubble there).
+- Product page: "See it live on a video call" (WhatsApp). Bag: "Complete your look" suggestions.
+  Search: recent searches; a search box on the results page. Orders: "Buy again".
 - Contact page with map; Shipping, Exchanges & returns, Privacy, Terms (grievance officer
   Moghny Maqdoom). **Wording is a draft: the owner should read it once.**
 

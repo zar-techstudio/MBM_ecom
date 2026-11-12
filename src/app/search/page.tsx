@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ProductGrid } from "@/components/ProductCard";
+import { SearchBar } from "@/components/SearchBar";
 import { getProducts } from "@/lib/catalogue";
 import { searchProducts } from "@/lib/search";
 
@@ -13,6 +14,7 @@ export default async function SearchPage({ searchParams }: PageProps<"/search">)
     <main className="sf-listing">
       <section className="sf-page-head">
         <div className="container">
+          <SearchBar placeholder={q ? `Search again (now: ${q})` : undefined} />
           <div className="section-label">Search</div>
           <h1 className="sf-page-title">{q ? `“${q}”` : "Search"}</h1>
           <p className="sf-page-intro">

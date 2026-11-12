@@ -108,6 +108,15 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
   );
   const go = useCallback((step: number) => show(act + step), [act, show]);
 
+  // A link like /mahib?look=the-nikah opens on that outfit.
+  useEffect(() => {
+    const want = new URLSearchParams(window.location.search).get("look");
+    const i = want ? looks.findIndex((l) => l.slug === want) : -1;
+    if (i < 0) return;
+    const t = window.setTimeout(() => setActive(i), 0);
+    return () => window.clearTimeout(t);
+  }, [looks]);
+
   // Next outfit every 5 seconds, unless the shopper is looking at something or prefers less motion.
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

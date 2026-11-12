@@ -318,7 +318,7 @@
   .sf-footer .container { grid-template-columns: 1fr; gap: 1.5rem; }
   .sf-footer-logo { height: 46px; }
   .sf-footer-col a { font-size: 0.82rem; }
-  .sf-footer-copy { padding-bottom: 4.5rem; } /* room for the floating button */
+  .sf-footer-copy { padding-bottom: 0.25rem; text-align: left; padding-right: 72px; } /* left, so the floating button on the right never covers it */
 }
 
 /* Contact and policy pages */

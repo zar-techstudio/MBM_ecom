@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCategories, getHomeFeatured, getSettings, type Category } from "@/lib/catalogue";
+import { getCategories, getHomeFeatured, getLooks, getSettings, type Category } from "@/lib/catalogue";
 import { SITE_NAME, imageUrl, sectionPath, whatsappLink } from "@/lib/site";
 import { HeroCycler } from "@/components/HeroCycler";
 import { CategoryRing } from "@/components/CategoryRing";
@@ -7,6 +7,7 @@ import { GoldenThread } from "@/components/GoldenThread";
 import { HERO_OUTFITS } from "@/lib/hero";
 import { ProductGrid } from "@/components/ProductCard";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
+import { HomeLooks } from "@/components/HomeLooks";
 
 /* Design artwork for categories until the e-commerce team adds banners in the ERP. */
 const DESIGN_ART: [RegExp, string][] = [
@@ -25,7 +26,12 @@ function categoryArt(c: Category) {
 const isFabric = (c: Category) => /fabric|thaan/.test(`${c.slug} ${c.name}`.toLowerCase());
 
 export default async function HomePage() {
-  const [main, featured, settings] = await Promise.all([getCategories("main"), getHomeFeatured(), getSettings()]);
+  const [main, featured, settings, looks] = await Promise.all([
+    getCategories("main"),
+    getHomeFeatured(),
+    getSettings(),
+    getLooks("mahib"),
+  ]);
   const fabrics = main.find(isFabric);
   const fabricsHref = fabrics ? sectionPath("main", fabrics.slug) : "/shop";
   const tailoringHref = whatsappLink(
@@ -190,6 +196,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* 4b. COMPLETE LOOKS: the MAHIB outfits, one per ceremony (each opens in the runway) */}
+      {looks.length ? <HomeLooks looks={looks} /> : null}
 
       {/* 5. FABRICS */}
       <section className="fabrics-section" id="fabrics" aria-label="Fabric Collection">

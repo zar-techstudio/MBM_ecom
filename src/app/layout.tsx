@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { IntroSplash } from "@/components/IntroSplash";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./design.css";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <div id="content">{children}</div>
         <SiteFooter />
+        <IntroSplash />
       </body>
     </html>
   );
