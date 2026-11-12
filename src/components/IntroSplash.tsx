@@ -61,7 +61,6 @@ export function IntroSplash() {
     <div className={`intro${leaving ? " is-leaving" : ""}`} aria-hidden="true">
       <video
         ref={video}
-        src="/images/intro.webm"
         muted
         playsInline
         autoPlay
@@ -69,7 +68,12 @@ export function IntroSplash() {
         onLoadedMetadata={(e) => (e.currentTarget.playbackRate = SPEED)}
         onEnded={close}
         onError={close}
-      />
+      >
+        {/* VP9 for most phones, H.264 for older iPhones. Both silent (~1.3 MB). */}
+        <source src="/images/intro.webm" type="video/webm" />
+        {/* The error of the last source is the one that means "nothing plays". */}
+        <source src="/images/intro.mp4" type="video/mp4" onError={close} />
+      </video>
       {canSkip ? (
         <button type="button" className="intro-skip" onClick={close}>
           Skip
