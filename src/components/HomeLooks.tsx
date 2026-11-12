@@ -53,6 +53,9 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
 
   return (
     <section className="ls" aria-label="Shop by ceremony">
+      {/* Sheer fabric falling into the top-left and bottom-right corners. */}
+      <span className="ls-drape is-tl" aria-hidden="true" />
+      <span className="ls-drape is-br" aria-hidden="true" />
       <div className="container">
         <div className="ls-head">
           <div className="ls-label">Shop by ceremony</div>

@@ -622,3 +622,5 @@ button.runway-card-btn { background: none; cursor: pointer; }
 }
 .runway-slot::after { box-shadow: none; background: #ece2d2; }
 .runway-model::after { display: none; }
+/* Slightly deeper niche (owner's request). */
+.runway-slot .runway-arch::after { background: linear-gradient(180deg, #ccb797 0%, #d3c0a3 100%); }
