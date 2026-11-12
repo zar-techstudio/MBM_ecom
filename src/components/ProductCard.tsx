@@ -46,7 +46,7 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
 
 /** Adds the piece with no size yet (the bag asks for it, and picks a single size by itself).
  * Fabric is sold by length, so it opens the product page instead. */
-function AddToBag({ product }: { product: Card }) {
+export function AddToBag({ product }: { product: Card }) {
   const { bag } = useShop();
   if (product.sold_out) return <span className="pc-add is-off">Sold out</span>;
   if (product.kind !== "garment")

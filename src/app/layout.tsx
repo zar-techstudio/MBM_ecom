@@ -7,6 +7,7 @@ import "./design.css";
 import "./globals.css";
 import "./refine.css";
 import "./shop.css";
+import "./home.css";
 
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-cinzel" });
 const cormorant = Cormorant_Garamond({

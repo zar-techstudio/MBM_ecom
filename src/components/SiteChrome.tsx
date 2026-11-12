@@ -35,6 +35,9 @@ export async function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer sf-footer" id="siteFooter">
+      {/* Line drawing of the showroom (shown on the home page's light footer). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/mall-line.svg" alt="" className="sf-footer-art" loading="lazy" aria-hidden="true" />
       <div className="container">
         <div className="sf-footer-brand">
           <Link href="/" aria-label={`${SITE_NAME} home`}>
@@ -52,9 +55,18 @@ export function SiteFooter() {
               </span>
             </a>
             <a href={STORE.phoneHref} className="sf-footer-phone">
-              {STORE.phone}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6.6 3.5h2.6l1.4 4-1.9 1.3a11.5 11.5 0 0 0 6.5 6.5l1.3-1.9 4 1.4v2.6c0 1.1-.9 2-2 2A16.4 16.4 0 0 1 4.6 5.5c0-1.1.9-2 2-2z" />
+              </svg>
+              <span>{STORE.phone}</span>
             </a>
-            <span className="sf-footer-hours">{STORE.hours}</span>
+            <span className="sf-footer-hours">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M12 7.5V12l3 2" />
+              </svg>
+              <span>{STORE.hours}</span>
+            </span>
           </div>
           <div className="sf-footer-social">
             {STORE.instagram.map((i) => (

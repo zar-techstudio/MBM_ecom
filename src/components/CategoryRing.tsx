@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-export type RingCard = { href: string; name: string; img: string; desc?: string | null };
+export type RingCard = {
+  href: string;
+  name: string;
+  img: string;
+  desc?: string | null;
+};
 
 const MIN_CARDS = 12; // categories are repeated so the wide ring always looks full
 const SPEED = 9; // degrees per second when turning by itself
@@ -16,21 +21,32 @@ const SPEED = 9; // degrees per second when turning by itself
 export function CategoryRing({ cards }: { cards: RingCard[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
+  const nudge = useRef<(dir: number) => void>(() => {});
 
   const repeat = Math.max(1, Math.ceil(MIN_CARDS / Math.max(1, cards.length)));
-  const items = Array.from({ length: repeat }, (_, r) => cards.map((c) => ({ ...c, copy: r }))).flat();
+  const items = Array.from({ length: repeat }, (_, r) =>
+    cards.map((c) => ({ ...c, copy: r })),
+  ).flat();
   const n = items.length;
   const step = 360 / n;
 
   useEffect(() => {
-    const st = stage.current, rg = ring.current;
+    const st = stage.current,
+      rg = ring.current;
     if (!st || !rg) return;
     const els = Array.from(rg.children) as HTMLElement[];
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let angle = 0;
     let velocity = 0; // after a swipe, degrees per second
     let hovered = false;
-    let drag: { id: number; x: number; angle: number; moved: number; t: number; lastX: number } | null = null;
+    let drag: {
+      id: number;
+      x: number;
+      angle: number;
+      moved: number;
+      t: number;
+      lastX: number;
+    } | null = null;
     let raf = 0;
     let last = performance.now();
     let visible = true;
@@ -50,7 +66,7 @@ export function CategoryRing({ cards }: { cards: RingCard[] }) {
 
     const paint = () => {
       els.forEach((el, i) => {
-        const rel = (((i * step - angle) % 360) + 540) % 360 - 180; // -180..180, 0 = front
+        const rel = ((((i * step - angle) % 360) + 540) % 360) - 180; // -180..180, 0 = front
         const rad = (rel * Math.PI) / 180;
         const facing = Math.cos(rad); // 1 front, -1 back
         // an oval as wide as the section: cards spread to the edges and turn to face the middle
@@ -83,7 +99,14 @@ export function CategoryRing({ cards }: { cards: RingCard[] }) {
 
     const down = (e: PointerEvent) => {
       if (e.button > 0) return;
-      drag = { id: e.pointerId, x: e.clientX, angle, moved: 0, t: performance.now(), lastX: e.clientX };
+      drag = {
+        id: e.pointerId,
+        x: e.clientX,
+        angle,
+        moved: 0,
+        t: performance.now(),
+        lastX: e.clientX,
+      };
       velocity = 0;
     };
     const move = (e: PointerEvent) => {
@@ -119,18 +142,29 @@ export function CategoryRing({ cards }: { cards: RingCard[] }) {
           ev.stopPropagation();
         };
         st.addEventListener("click", swallow, { capture: true, once: true });
-        window.setTimeout(() => st.removeEventListener("click", swallow, { capture: true }), 400);
+        window.setTimeout(
+          () => st.removeEventListener("click", swallow, { capture: true }),
+          400,
+        );
       }
     };
     const enter = () => (hovered = true);
     const leave = () => (hovered = false);
     // keyboard: bring a focused card to the front
     const focus = (e: FocusEvent) => {
-      const i = els.indexOf((e.target as HTMLElement).closest(".ring-card") as HTMLElement);
+      const i = els.indexOf(
+        (e.target as HTMLElement).closest(".ring-card") as HTMLElement,
+      );
       if (i < 0) return;
       velocity = 0;
       angle = i * step;
       paint();
+    };
+
+    // arrows: glide one card along (the swipe glide covers about a third of its speed)
+    nudge.current = (dir: number) => {
+      velocity = dir * step * 3.3;
+      last = performance.now();
     };
 
     layout();
@@ -168,31 +202,60 @@ export function CategoryRing({ cards }: { cards: RingCard[] }) {
   }, [n, step]);
 
   return (
-    <div className="ring-stage" ref={stage}>
-      <div className="ring" ref={ring}>
-        {items.map((c, i) => (
-          <Link
-            key={`${c.copy}-${c.href}-${i}`}
-            href={c.href}
-            className="category-card ring-card"
-            draggable={false}
-            aria-hidden={c.copy > 0 ? true : undefined}
-            tabIndex={c.copy > 0 ? -1 : undefined}
-          >
-            <div className="category-img-box">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt={c.copy > 0 ? "" : `${c.name} collection`} decoding="async" draggable={false} />
-            </div>
-            <div className="category-info-box">
-              <div className="cat-text-wrap">
-                <h3 className="category-name">{c.name.toUpperCase()}</h3>
-                {c.desc ? <span className="category-subtext">{c.desc}</span> : null}
-              </div>
-              <div className="category-arrow-circle">&rarr;</div>
-            </div>
-          </Link>
-        ))}
+    <>
+      <div className="ring-nav">
+        <button
+          type="button"
+          aria-label="Previous categories"
+          onClick={() => nudge.current(-1)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5m6-6-6 6 6 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          aria-label="More categories"
+          onClick={() => nudge.current(1)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14m-6-6 6 6-6 6" />
+          </svg>
+        </button>
       </div>
-    </div>
+      <div className="ring-stage" ref={stage}>
+        <div className="ring" ref={ring}>
+          {items.map((c, i) => (
+            <Link
+              key={`${c.copy}-${c.href}-${i}`}
+              href={c.href}
+              className="category-card ring-card"
+              draggable={false}
+              aria-hidden={c.copy > 0 ? true : undefined}
+              tabIndex={c.copy > 0 ? -1 : undefined}
+            >
+              <div className="category-img-box">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={c.img}
+                  alt={c.copy > 0 ? "" : `${c.name} collection`}
+                  decoding="async"
+                  draggable={false}
+                />
+              </div>
+              <div className="category-info-box">
+                <div className="cat-text-wrap">
+                  <h3 className="category-name">{c.name.toUpperCase()}</h3>
+                  {c.desc ? (
+                    <span className="category-subtext">{c.desc}</span>
+                  ) : null}
+                </div>
+                <div className="category-arrow-circle">&rarr;</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
