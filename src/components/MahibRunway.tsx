@@ -8,13 +8,12 @@ import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText } from "@/lib/site";
 
 const pad = (n: number) => String(n).padStart(2, "0");
-const ARCH = 0.62; // width / height of an arch (matches .runway-model in mahib.css)
+const ARCH = 0.7; // width / height of an arch (matches .runway-model in mahib.css)
 const MAX_W = 1.3; // a wide photo may spill this far past the arch's sides
 const ADVANCE_MS = 5000;
 
 /** Where a look sits relative to the one in front: 0 centre, -1 left, 1 right, else hidden. */
 function offsetOf(i: number, active: number, count: number) {
-  if (count === 2 && i !== active) return i < active ? -1 : 1; // the other look waits on its own side
   let d = (i - active + count) % count;
   if (d > count / 2) d -= count;
   return d;
@@ -71,25 +70,27 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
+/* Rounded shoulders rising to a small point (same shape as the mask in mahib.css). */
+const ARCH_PATH = "M1 400 V150 C1 62 52 24 100 2 C148 24 199 62 199 150 V400";
+
 /** Thin gold outline of a Hyderabadi pointed arch, stretched to its box. */
 function ArchLine() {
   return (
     <svg className="runway-arch-line" viewBox="0 0 200 400" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M1 400 V150 C1 78 58 46 100 2 C142 46 199 78 199 150 V400" vectorEffect="non-scaling-stroke" />
+      <path d={ARCH_PATH} vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
 
 /**
- * MAHIB runway: every published outfit stands in a courtyard arch. It moves on every 5 seconds
- * (paused while the shopper is looking at something), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "Customize your look" slides in a narrow panel from the
+ * MAHIB runway: three fixed courtyard arches; the outfits step from arch to arch every 5 seconds
+ * (paused only while a piece or the panel is open), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "Customize your look" slides in a narrow panel from the
  * right with every piece. Each piece is a normal product that can be bought alone.
  */
 export function MahibRunway({ looks }: { looks: Look[] }) {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
   const [pick, setPick] = useState<number | null>(null); // piece shown in the product card
-  const [hovering, setHovering] = useState(false);
   const router = useRouter();
   const [added, setAdded] = useState<string | null>(null); // piece just added from its card
   const [aspects, setAspects] = useState<Record<string, number>>({});
@@ -97,9 +98,14 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
   const drag = useRef<{ x: number; id: number } | null>(null);
   const swiped = useRef(false);
   const count = looks.length;
-  const act = count ? Math.min(active, count - 1) : 0; // stays valid if the list gets shorter
-  const look = looks[act];
-  const paused = open || pick !== null || hovering || count < 2;
+  // The three arches never move and are never empty: with two looks, each also stands in the
+  // third arch (the list is repeated); the outfits step from arch to arch.
+  const slots = count === 2 ? [...looks, ...looks] : looks;
+  const n = slots.length;
+  const act = n ? Math.min(active, n - 1) : 0; // stays valid if the list gets shorter
+  const look = slots[act];
+  const lookNo = count ? act % count : 0;
+  const paused = open || pick !== null || count < 2;
 
   const measure = useCallback((slug: string, img: HTMLImageElement) => {
     const { naturalWidth: w, naturalHeight: h } = img;
@@ -109,10 +115,10 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
   }, []);
   const show = useCallback(
     (i: number) => {
-      setActive(((i % count) + count) % count);
+      setActive(((i % n) + n) % n);
       setPick(null);
     },
-    [count],
+    [n],
   );
   const go = useCallback((step: number) => show(act + step), [act, show]);
 
@@ -151,8 +157,6 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
     router.push("/bag");
   };
   const total = lookTotal(look.pieces);
-  // Only the spots an outfit stands in get an arch (two looks: no empty arch on the left).
-  const used = new Set(looks.map((_, i) => offsetOf(i, act, count)));
   const picked = pick !== null ? look.pieces[pick] : null;
 
   return (
@@ -175,8 +179,6 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
 
       <div
         className="runway-stage"
-        onPointerEnter={(e) => e.pointerType === "mouse" && setHovering(true)}
-        onPointerLeave={(e) => e.pointerType === "mouse" && setHovering(false)}
         onPointerDown={(e) => {
           swiped.current = false;
           if (e.pointerType === "mouse") return;
@@ -194,19 +196,20 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         }}
         onPointerCancel={() => (drag.current = null)}
       >
-        <div className={`runway-scene${count === 2 ? (used.has(1) ? " is-pair-r" : " is-pair-l") : ""}`}>
+        <div className="runway-scene">
           <div className="runway-floor" aria-hidden="true" />
           {/* The arches stay put; the outfits move from arch to arch on top of them. */}
           <div className="runway-arches" aria-hidden="true">
-            {(["left", "center", "right"] as const).map((pos, n) => (
-              <span key={pos} className={`runway-slot is-${pos}${used.has(n - 1) ? "" : " is-empty"}`}>
+            {(["left", "center", "right"] as const).map((pos) => (
+              <span key={pos} className={`runway-slot is-${pos}`}>
                 <span className="runway-arch" />
+                <ArchLine />
                 <ArchLine />
               </span>
             ))}
           </div>
-          {looks.map((l, i) => {
-            const off = offsetOf(i, act, count);
+          {slots.map((l, i) => {
+            const off = offsetOf(i, act, n);
             const pos = off === 0 ? "center" : off === -1 ? "left" : off === 1 ? "right" : "away";
             const photo = Boolean(solid[l.slug]);
             const box = photoBox(aspects[l.slug] ?? 0.5, photo);
@@ -228,7 +231,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
               />
             );
             return (
-              <div key={l.slug} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
+              <div key={`${l.slug}-${i}`} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
                 {/* A cut-out stands over the arch and may rise past it (a tall safa is never cut);
                     a normal photo is kept inside the arch's shape. */}
                 {photo ? <span className="runway-arch runway-arch-clip">{img}</span> : img}
@@ -245,7 +248,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
                 />
                 <span className="runway-tag" aria-hidden="true">
                   <span className="runway-tag-num">
-                    {pad(i + 1)}
+                    {pad((i % count) + 1)}
                     {l.occasion ? ` / ${l.occasion}` : ""}
                   </span>
                   <span className="runway-tag-name">{l.name}</span>
@@ -360,7 +363,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
       <div className="container runway-bar" aria-live="polite">
         <div className="runway-feat">
           <span className="runway-eyebrow">
-            Featured look <i>&middot;</i> {pad(act + 1)} / {pad(count)}
+            Featured look <i>&middot;</i> {pad(lookNo + 1)} / {pad(count)}
           </span>
           <h3 className="runway-name" key={look.slug}>
             {look.name}

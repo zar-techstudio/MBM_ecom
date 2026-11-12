@@ -67,7 +67,7 @@
   bottom: 3%;
   left: 50%;
   height: 94%;
-  aspect-ratio: 0.62; /* ARCH in MahibRunway.tsx */
+  aspect-ratio: 0.7; /* ARCH in MahibRunway.tsx */
   transform-origin: 50% 100%;
   transform: translateX(-50%);
 }
@@ -90,8 +90,8 @@
   background:
     radial-gradient(ellipse 80% 45% at 50% 20%, rgba(255, 250, 240, 0.9), transparent 70%),
     linear-gradient(180deg, var(--rw-sand) 0%, var(--rw-sand-deep) 100%);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 78 58 46 100 0c42 46 100 78 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 78 58 46 100 0c42 46 100 78 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 .runway-arch-clip { background: none; }
 /* Outfit image and dot layer share the same size (set inline) and position. */
@@ -437,10 +437,6 @@ button.runway-card-btn { background: none; cursor: pointer; }
 .runway-slot.is-left, .runway-model.is-left { left: 26%; transform: translateX(-50%) scale(0.8); }
 .runway-slot.is-right, .runway-model.is-right { left: 74%; transform: translateX(-50%) scale(0.8); }
 .runway-slot.is-left, .runway-slot.is-right { opacity: 0.9; }
-.runway-slot.is-empty { opacity: 0; }
-/* Two looks: the pair is centred as a whole. */
-.runway-scene.is-pair-r { transform: translateX(-12%); }
-.runway-scene.is-pair-l { transform: translateX(12%); }
 .runway-model.is-left,
 .runway-model.is-right { opacity: 0.88; filter: saturate(0.85); }
 
@@ -528,7 +524,6 @@ button.runway-card-btn { background: none; cursor: pointer; }
   .runway-title { font-size: 1.45rem; }
   .runway-sub { font-size: 0.92rem; padding: 0 1rem; }
   .runway-stage { height: min(520px, 62svh); }
-  .runway-scene.is-pair-r, .runway-scene.is-pair-l { transform: none; }
   .runway-slot, .runway-model { bottom: 13%; height: 84%; }
   .runway-slot.is-left, .runway-model.is-left { left: 2%; transform: translateX(-50%) scale(0.72); }
   .runway-slot.is-right, .runway-model.is-right { left: 98%; transform: translateX(-50%) scale(0.72); }
@@ -543,3 +538,35 @@ button.runway-card-btn { background: none; cursor: pointer; }
 }
 .runway-order { background: var(--rw-maroon); }
 .runway-order:hover { background: #561520; color: var(--color-ivory); }
+
+/* Arches as in the owner's reference: wider, rounded shoulders, a sand recess and a double gold line. */
+.runway-slot.is-left, .runway-model.is-left { left: 24%; }
+.runway-slot.is-right, .runway-model.is-right { left: 76%; }
+.runway-slot.is-left, .runway-slot.is-right { opacity: 1; }
+.runway-model.is-left, .runway-model.is-right { opacity: 1; filter: none; }
+.runway-arch {
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 12%, rgba(255, 250, 240, 0.55), transparent 70%),
+    linear-gradient(180deg, #e3d3bb 0%, #d6c2a4 70%, #cdb795 100%);
+  box-shadow: inset 0 0 40px rgba(120, 90, 50, 0.18);
+}
+.runway-slot::after {
+  content: "";
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: -3%;
+  height: 3%;
+  background: linear-gradient(180deg, #efe4d3, #e2d3bd);
+  box-shadow: 0 6px 14px rgba(70, 45, 20, 0.12);
+}
+.runway-arch-line path { stroke-width: 1.6px; opacity: 1; }
+.runway-slot .runway-arch-line + .runway-arch-line { inset: 0; width: 100%; height: 100%; }
+.runway-slot .runway-arch-line + .runway-arch-line path { stroke-width: 1px; opacity: 0.55; }
+@media (max-width: 768px) {
+  .runway-slot.is-left, .runway-model.is-left { left: 2%; }
+  .runway-slot.is-right, .runway-model.is-right { left: 98%; }
+}
+/* Side labels stay the same size as the centre one (their arch is drawn smaller). */
+.runway-model.is-left .runway-tag,
+.runway-model.is-right .runway-tag { transform: translateX(-50%) scale(1.25); transform-origin: 50% 0; }

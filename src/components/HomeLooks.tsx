@@ -7,7 +7,9 @@ import type { Look } from "@/lib/catalogue";
 import { shop, toSaved, useShop } from "@/lib/shop-store";
 import { formatINR, imageUrl } from "@/lib/site";
 
-const ADVANCE_MS = 6000;
+const ADVANCE_MS = 5000;
+/* Rounded shoulders rising to a small point: the MAHIB runway's arch. */
+const ARCH_PATH = "M1 400 V150 C1 62 52 24 100 2 C148 24 199 62 199 150 V400";
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
@@ -17,12 +19,11 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-/** Home page "Shop by ceremony": one MAHIB look at a time in a gold arch on a pedestal, with its
- * pieces, total, Shop the look (everything into the bag) and Add to wishlist. Moves on every few
- * seconds unless the shopper is looking at it; the photo opens that look on the MAHIB runway. */
+/** Home page "Shop by ceremony": a fixed gold arch on a pedestal; the MAHIB looks take turns in it
+ * every 5 seconds (an arrow or dot restarts the count), with the look's pieces, total, Shop the look
+ * (everything into the bag) and Add to wishlist. The photo opens that look on the MAHIB runway. */
 export function HomeLooks({ looks }: { looks: Look[] }) {
   const [at, setAt] = useState(0);
-  const [hold, setHold] = useState(false);
   const { wish } = useShop();
   const router = useRouter();
   const count = looks.length;
@@ -30,10 +31,10 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
   const go = (step: number) => setAt((i) => (((i + step) % count) + count) % count);
 
   useEffect(() => {
-    if (hold || count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = window.setTimeout(() => setAt((i) => (i + 1) % count), ADVANCE_MS);
     return () => window.clearTimeout(t);
-  }, [at, hold, count]);
+  }, [at, count]);
 
   if (!look) return null;
   const pieces = look.pieces.filter((p) => p.product.slug);
@@ -51,14 +52,7 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
   };
 
   return (
-    <section
-      className="ls"
-      aria-label="Shop by ceremony"
-      onPointerEnter={(e) => e.pointerType === "mouse" && setHold(true)}
-      onPointerLeave={(e) => e.pointerType === "mouse" && setHold(false)}
-      onFocus={() => setHold(true)}
-      onBlur={() => setHold(false)}
-    >
+    <section className="ls" aria-label="Shop by ceremony">
       <div className="container">
         <div className="ls-head">
           <div className="ls-label">Shop by ceremony</div>
@@ -74,9 +68,22 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
               </button>
             ) : null}
             <Link href={runway} className="ls-arch" aria-label={`See ${look.name} on the MAHIB runway`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img key={look.slug} src={imageUrl(look.image) ?? ""} alt={look.image_alt ?? look.name} loading="lazy" />
+              <span className="ls-arch-bg" aria-hidden="true" />
+              <svg className="ls-arch-line" viewBox="0 0 200 400" preserveAspectRatio="none" aria-hidden="true">
+                <path d={ARCH_PATH} vectorEffect="non-scaling-stroke" />
+              </svg>
               <span className="ls-pedestal" aria-hidden="true" />
+              {/* Every outfit is in place; only the one in turn is shown, so the arch never moves. */}
+              {looks.map((l, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={l.slug}
+                  src={imageUrl(l.image) ?? ""}
+                  alt={i === at ? (l.image_alt ?? l.name) : ""}
+                  className={i === at ? "on" : undefined}
+                  loading="lazy"
+                />
+              ))}
             </Link>
             {count > 1 ? (
               <button type="button" className="ls-arrow is-next" aria-label="Next look" onClick={() => go(1)}>
