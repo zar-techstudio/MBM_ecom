@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
 import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
+import { Stars } from "./Stars";
 import { WishHeart } from "./WishHeart";
 
 /** Product card: full-bleed 4:5 photo (hold or hover shows the 2nd photo or video), wishlist heart,
@@ -26,7 +27,15 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
         <div className="pc-info">
           <span className="pc-cat">{product.category.name}</span>
           <h3 className="pc-title">{product.title}</h3>
-          <span className={`pc-price${product.sold_out ? " is-out" : ""}`}>{priceText(product)}</span>
+          <span className="pc-bottom">
+            <span className={`pc-price${product.sold_out ? " is-out" : ""}`}>{priceText(product)}</span>
+            {product.rating?.count ? (
+              <span className="pc-rating" aria-label={`Rated ${product.rating.average.toFixed(1)} from ${product.rating.count} reviews`}>
+                <Stars value={product.rating.average} size={11} />
+                <span>({product.rating.count})</span>
+              </span>
+            ) : null}
+          </span>
         </div>
       </Link>
     </article>

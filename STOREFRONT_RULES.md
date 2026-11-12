@@ -10,14 +10,17 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 1. **Public key only.** Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or
    secret database key to this project, its `.env` files or Cloudflare. The one shared secret is
    `SHOP_API_SECRET` (set by the ERP), used only on this site's server (`src/lib/shop-api.ts`) to
-   ask the ERP to send a sign-in code or start a payment.
+   ask the ERP to send a sign-in code, start a payment, or store a review photo.
 2. **No migrations here.** No `supabase/` folder, no SQL. Database changes are made in the ERP repo.
 3. **Storefront functions only.** Direct table reads are blocked for the public role, by design.
    - Catalogue (no sign-in): `storefront_settings`, `storefront_categories`, `storefront_products`,
      `storefront_products_page` (not used yet), `storefront_home_featured`, `storefront_product`,
      `storefront_looks` (outfits; each piece has an optional dot `x`, `y` in % of the photo).
-   - Sign-in, account, quote, orders: see `STOREFRONT_API.md` (`storefront_verify_otp`,
-     `storefront_me`, `storefront_quote`, `storefront_place_order`, `storefront_order`, …).
+   - Sign-in, account, quote, orders, invoices, points: see `STOREFRONT_API.md`
+     (`storefront_verify_otp`, `storefront_me`, `storefront_quote`, `storefront_place_order`,
+     `storefront_order`, `storefront_invoice`, `storefront_points`, …).
+   - Reviews: `storefront_review_form`, `storefront_submit_review`, `storefront_reviews`;
+     product cards carry `rating`.
 4. **Amounts come from the ERP.** Prices are in paise and **include GST** (the showroom selling
    price staff enter). Checkout totals, discounts, delivery, GST split and cash-on-delivery
    availability come only from `storefront_quote`; the website never calculates a charge.
@@ -59,7 +62,9 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 - **Ordering:** product page (size → Add to bag / Buy now) → `/bag` (live prices and stock) →
   `/checkout` (mobile + one-time code, first time a name; address; review with coupon; pay online or
   cash on delivery when the quote allows it) → `/orders/<code>` (status, pay now, cancel before
-  packing, tracking). `/account` has orders, profile, addresses, points, sign out. WhatsApp ordering
+  packing, tracking, invoice once shipped). `/account` has orders, loyalty points (balance, value,
+  history), profile, addresses, sign out. Checkout offers "Use my points" (priced by the quote,
+  like a coupon). WhatsApp ordering
   stays as a link on the bag. Fabrics are enquire-only (the ERP refuses them in a quote).
 - **Shop owner settings that affect checkout** (ERP checkout settings): delivery charge,
   free delivery from an amount, cash on delivery on/off with an optional limit.
@@ -74,6 +79,8 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 | `/product/<slug>` | Photos (swipe, hold or hover to zoom, full-screen pinch), size, Add to bag / Buy now, trust row, Complete the look, Recently viewed |
 | `/search?q=` | Search results (header search shows suggestions as you type) |
 | `/wishlist`, `/bag`, `/checkout`, `/orders/<code>`, `/account` | Shopping and account |
+| `/orders/<code>/invoice` | The saved GST invoice, laid out to print or save as PDF (after shipping) |
+| `/review/<code>` | One-time review link for a bill (online or showroom): stars, comment, photo; Google review link for showroom bills |
 | `/contact`, `/policies/{shipping,returns,privacy,terms}` | Store details, map, policies (owner should review the wording) |
 
 ### Server routes
@@ -83,6 +90,7 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 | `POST /api/shop/<action>` | All sign-in, account and checkout calls (JSON only; `src/app/api/shop/[action]/route.ts`) |
 | `GET /api/products?slugs=` | Live sizes, prices, stock for the bag and wishlist |
 | `GET /api/search?q=` | Search suggestions (title, category, store) |
+| `POST /api/review-photo?token=` | A review photo (WebP/JPEG, resized to ~1200 px in the browser), passed to the ERP |
 
 ### Main pieces of code
 
@@ -91,7 +99,11 @@ contract is `mbm_inv_v2/docs/STOREFRONT_API.md`.
 - `ProductCard` / `CardMedia`: catalogue-style cards in a hairline grid; hold (phone) or hover
   (desktop) shows the 2nd photo or video; 12 cards at a time, more on scroll; sort and filters.
 - `ProductGallery`: swipe, hold-to-zoom, hover zoom, full-screen viewer.
-- `OrderPanel`, `BagView`, `CheckoutView`, `OrderView`, `AccountView`, `SignIn`, `AddressForm`.
+- `OrderPanel`, `BagView`, `CheckoutView`, `OrderView`, `InvoiceView`, `AccountView`, `SignIn`,
+  `AddressForm`.
+- Reviews: `ReviewView` (the review link page), `ProductReviews` (product page: average, verified
+  reviews, Show more, photos), `Stars`; ratings on cards; `aggregateRating` and reviews in the
+  product's structured data for Google.
 - `SiteChrome`: header (search, wishlist, account, bag) and the minimal footer.
 - Styles: `design.css` (original design), `globals.css` (storefront additions), `refine.css`
   (tweaks), `shop.css` (checkout, orders, account), `src/app/mahib/mahib.css` (runway).

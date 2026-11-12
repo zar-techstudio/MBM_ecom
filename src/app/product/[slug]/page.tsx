@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getLooks, getProduct, getProductLive, getSettings, type Product } from "@/lib/catalogue";
+import { getLooks, getProduct, getProductLive, getReviews, getSettings, type Product, type Reviews } from "@/lib/catalogue";
 import { SITE_NAME, SITE_URL, imageUrl, priceText, sectionPath } from "@/lib/site";
 import { ProductGallery } from "@/components/ProductGallery";
 import { OrderPanel } from "@/components/OrderPanel";
 import { CompleteTheLook } from "@/components/CompleteTheLook";
+import { ProductReviews } from "@/components/ProductReviews";
+import { Stars } from "@/components/Stars";
 import { RecentlyViewed, TrackView } from "@/components/RecentlyViewed";
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
@@ -27,11 +29,12 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params;
-  const [product, settings, mahibLooks, mainLooks] = await Promise.all([
+  const [product, settings, mahibLooks, mainLooks, reviews] = await Promise.all([
     getProduct(slug),
     getSettings(),
     getLooks("mahib"),
     getLooks("main"),
+    getReviews(slug),
   ]);
   if (!product) notFound();
   // Outfits this piece belongs to: their other pieces are offered as "Complete the look".
@@ -71,6 +74,14 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
           <div className="sf-product-info">
             <div className="section-label">{product.category.name.toUpperCase()}</div>
             <h1 className="sf-product-title">{product.title}</h1>
+            {reviews.rating?.count ? (
+              <a href="#reviews" className="sf-product-rating">
+                <Stars value={reviews.rating.average} size={16} />
+                <span>
+                  {reviews.rating.average.toFixed(1)} · {reviews.rating.count} {reviews.rating.count === 1 ? "review" : "reviews"}
+                </span>
+              </a>
+            ) : null}
             <Suspense fallback={panel(product, true)}>
               <LivePanel slug={product.slug} render={panel} />
             </Suspense>
@@ -91,6 +102,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             {/* Tags are not shown: they feed search and the structured data below. */}
           </div>
         </div>
+        <ProductReviews slug={slug} initial={reviews} />
         {looks.map((l) => (
           <CompleteTheLook key={l.slug} look={l} current={slug} />
         ))}
@@ -100,7 +112,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
       <script
         type="application/ld+json"
         // JSON-LD for search engines; "<" is escaped so text can't close the script tag.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(product, url, images[0]?.large)).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(product, url, images[0]?.large, reviews)).replace(/</g, "\\u003c") }}
       />
     </main>
   );
@@ -113,7 +125,7 @@ async function LivePanel({ slug, render }: { slug: string; render: (p: Product) 
   return render(live);
 }
 
-function jsonLd(p: Product, url: string, image?: string) {
+function jsonLd(p: Product, url: string, image?: string, reviews?: Reviews) {
   const prices = p.sizes.map((s) => s.price_paise).filter((x): x is number => x != null);
   const availability = p.sold_out ? "https://schema.org/OutOfStock" : "https://schema.org/InStock";
   const offers =
@@ -140,6 +152,19 @@ function jsonLd(p: Product, url: string, image?: string) {
     brand: { "@type": "Brand", name: SITE_NAME },
     category: p.category.name,
     keywords: p.tags.length ? p.tags.join(", ") : undefined,
+    // Verified buyers' ratings (Google can show stars in search results).
+    aggregateRating: reviews?.rating?.count
+      ? { "@type": "AggregateRating", ratingValue: reviews.rating.average.toFixed(1), reviewCount: reviews.rating.count, bestRating: 5, worstRating: 1 }
+      : undefined,
+    review: reviews?.reviews.length
+      ? reviews.reviews.slice(0, 5).map((v) => ({
+          "@type": "Review",
+          author: { "@type": "Person", name: v.name },
+          datePublished: v.at.slice(0, 10),
+          reviewRating: { "@type": "Rating", ratingValue: v.stars, bestRating: 5, worstRating: 1 },
+          reviewBody: v.body || undefined,
+        }))
+      : undefined,
     additionalProperty: p.highlights?.length
       ? p.highlights.map((h) => ({ "@type": "PropertyValue", name: "Highlight", value: h }))
       : undefined,

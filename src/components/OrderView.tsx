@@ -105,7 +105,7 @@ export function OrderView({ code }: { code: string }) {
     );
 
   const step = stepOf(order.status);
-  const stopped = ["cancelled", "refund_due", "refunded", "payment_not_received"].includes(order.status);
+  const stopped = ["cancelled", "refund_due", "refunded", "payment_not_received", "returned"].includes(order.status);
   const fresh = params.get("new") === "1" || params.get("check") === "1";
 
   return (
@@ -221,7 +221,11 @@ export function OrderView({ code }: { code: string }) {
               <dd>{formatINR(order.total_paise)}</dd>
             </div>
           </dl>
-          {order.bill ? <p className="co-small">Invoice {order.bill}</p> : null}
+          {order.bill ? (
+            <p className="co-small">
+              Invoice {order.bill} · <Link href={`/orders/${order.code}/invoice`}>View or download</Link>
+            </p>
+          ) : null}
         </section>
 
         {order.address ? (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { STATUS_TEXT, api, refreshMe, setMe, signOut, useAccount, type Address, type Me, type Order } from "@/lib/account";
+import { STATUS_TEXT, api, refreshMe, setMe, signOut, useAccount, type Address, type Me, type Order, type Points } from "@/lib/account";
 import { formatINR } from "@/lib/site";
 import { AddressForm } from "./AddressForm";
 import { SignIn } from "./SignIn";
@@ -11,6 +11,7 @@ import { SignIn } from "./SignIn";
 export function AccountView() {
   const { status, me } = useAccount();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [points, setPoints] = useState<Points | null>(null);
   const [editing, setEditing] = useState<Partial<Address> | null>(null);
   const [profile, setProfile] = useState<{ name: string; email: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +22,9 @@ export function AccountView() {
     api<Order[]>("orders")
       .then((o) => live && setOrders(o ?? []))
       .catch(() => live && setOrders([]));
+    api<Points>("points")
+      .then((p) => live && setPoints(p))
+      .catch(() => {});
     return () => {
       live = false;
     };
@@ -80,14 +84,7 @@ export function AccountView() {
           </button>
         </div>
 
-        {me.points != null ? (
-          <section className="ord-box acc-points">
-            <h2>Loyalty points</h2>
-            <p>
-              <strong>{me.points}</strong> points · use them online or at the showroom
-            </p>
-          </section>
-        ) : null}
+        {points ? <PointsBox p={points} /> : null}
 
         <section className="ord-box">
           <h2>Orders</h2>
@@ -203,5 +200,51 @@ export function AccountView() {
         </p>
       </div>
     </main>
+  );
+}
+
+const KIND: Record<Points["history"][number]["kind"], string> = {
+  earn: "Earned",
+  take_back: "Taken back (return)",
+  use: "Used",
+  give_back: "Given back",
+  expire: "Expired",
+  adjust: "Adjusted",
+};
+
+/** Loyalty points: the same balance online and at the showroom. */
+function PointsBox({ p }: { p: Points }) {
+  const worth = p.balance * p.point_value_paise;
+  return (
+    <section className="ord-box acc-points">
+      <h2>Loyalty points</h2>
+      <p className="acc-points-bal">
+        <strong>{p.balance}</strong> points{worth ? <span> · worth {formatINR(worth)}</span> : null}
+      </p>
+      <p className="co-small">
+        Earn 1 point for every {formatINR(p.earn_per_paise)} you spend, online or at the showroom. Use them at checkout
+        {p.min_bill_paise ? ` on orders from ${formatINR(p.min_bill_paise)}` : ""}
+        {p.max_share_bps ? `, for up to ${p.max_share_bps / 100}% of the order` : ""}.
+        {p.expiry_months ? ` Points last ${p.expiry_months} months.` : ""}
+      </p>
+      {p.history.length ? (
+        <ul className="acc-points-hist">
+          {p.history.slice(0, 12).map((h, i) => (
+            <li key={i}>
+              <span>
+                {KIND[h.kind] ?? h.kind}
+                {h.order ? ` · order ${h.order}` : h.bill ? ` · bill ${h.bill}` : ""}
+                <br />
+                <time dateTime={h.at}>{new Date(h.at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</time>
+              </span>
+              <span className={h.points < 0 ? "is-minus" : "is-plus"}>
+                {h.points > 0 ? "+" : ""}
+                {h.points}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   );
 }

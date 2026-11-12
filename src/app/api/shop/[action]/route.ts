@@ -97,6 +97,34 @@ const actions: Record<string, (b: Body, req: Request) => Promise<unknown>> = {
   async cancel(b) {
     return rpc("storefront_cancel_order", { p_session: await requireSession(), p_code: str(b.code, 20) });
   },
+  async invoice(b) {
+    return rpc("storefront_invoice", { p_session: await requireSession(), p_code: str(b.code, 20) });
+  },
+
+  // ---- loyalty ----
+  async points() {
+    return rpc("storefront_points", { p_session: await requireSession() });
+  },
+
+  // ---- reviews (the link's code is the permission; no sign-in needed) ----
+  async "review-form"(b) {
+    return rpc("storefront_review_form", { p_token: str(b.token, 80) });
+  },
+  async "review-submit"(b) {
+    const stars = Math.round(Number(b.stars));
+    if (!(stars >= 1 && stars <= 5)) throw new ShopError("Choose 1 to 5 stars");
+    return rpc("storefront_submit_review", {
+      p_token: str(b.token, 80),
+      p_slug: str(b.slug, 120),
+      p_stars: stars,
+      p_body: str(b.body, 2000) || null,
+      p_photo: str(b.photo, 200) || null,
+    });
+  },
+  async reviews(b) {
+    const limit = Math.min(Math.max(Number(b.limit) || 10, 1), 30);
+    return rpc("storefront_reviews", { p_slug: str(b.slug, 120), p_limit: limit, p_offset: Math.max(Number(b.offset) || 0, 0) });
+  },
 };
 
 export async function POST(request: Request, ctx: { params: Promise<{ action: string }> }) {

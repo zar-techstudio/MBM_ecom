@@ -84,3 +84,18 @@ export async function erpPost<T>(path: string, body: unknown, ip?: string | null
   }
   return data;
 }
+
+/** Forward a review photo (raw image bytes) to the ERP, which stores it. */
+export async function erpReviewPhoto(token: string, type: string, body: ArrayBuffer) {
+  const secret = process.env.SHOP_API_SECRET;
+  if (!secret) throw new ShopError("Photos can't be added right now", 503);
+  const res = await fetch(`${ERP_URL}/api/shop/review-photo`, {
+    method: "POST",
+    headers: { "content-type": type, "x-shop-key": secret, "x-review-token": token },
+    body,
+    cache: "no-store",
+  });
+  const data = (await res.json().catch(() => ({}))) as { photo?: string; error?: string };
+  if (!res.ok || !data.photo) throw new ShopError(data.error || "The photo couldn't be added. Try another one.", res.status === 503 ? 503 : 400);
+  return { photo: data.photo };
+}

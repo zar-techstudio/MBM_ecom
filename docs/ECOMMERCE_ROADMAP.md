@@ -1,6 +1,6 @@
 # MAQDOOM'S Big Mall: e-commerce roadmap (website)
 
-Updated 12 Nov 2026. Goal: a complete shop where only the payment gateway and courier keys are
+Updated 12 Nov 2026 (points, invoices and reviews added). Goal: a complete shop where only the payment gateway and courier keys are
 left to plug in. This file tracks the **website** (`MBM_03`). Items that need the ERP
 (`mbm_inv_v2`, which owns the database) are marked **[ERP]**; the ERP keeps its own records.
 How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/STOREFRONT_API.md`.
@@ -53,7 +53,15 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
 - Checkout: saved or new address (state decides GST), quote from the ERP (lines, problems,
   coupon, discount, delivery, GST included, total), online or cash on delivery.
 - Order page: status in plain words, progress, tracking, items, totals, history; Pay now while
-  awaiting payment; Cancel before packing. Account page: orders, profile, addresses, points.
+  awaiting payment; Cancel before packing; printable GST invoice once shipped.
+- Account page: orders, loyalty points (balance, value, how to earn, history), profile, addresses.
+
+**Loyalty and reviews (Phase C, website side)**
+- "Use my points" at checkout (the ERP prices it, like a coupon); points shown in the account.
+- `/review/<code>`: the one-time link staff create for a bill (WhatsApp will send it later): stars,
+  comment and photo per product; showroom customers are then asked to review on Google.
+- Product pages: average rating near the title, verified reviews with photos and Show more;
+  stars on product cards; ratings in Google's structured data.
 
 ### Waiting on settings or keys (no website work needed)
 - **Cash on delivery is switched off** in the ERP's checkout settings: turn it on (optionally with
@@ -62,13 +70,11 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
 - **Sign-in codes are in test mode** [ERP]: switch on WhatsApp/SMS sending.
 - **Razorpay keys** [ERP]: until set, online payment says it isn't available yet.
 - **Courier (Shiprocket)** [ERP]: tracking numbers then appear on the order page by themselves.
+- **WhatsApp messages** [ERP, C3]: review links and order updates sent automatically.
 
 ### Not done yet (website)
 - Size and fit block (model height, size worn) and a size guide: needs these fields from the [ERP].
 - Delivery-date estimate by PIN code: needs the courier API [ERP].
-- Loyalty points: the account shows points once the ERP sends them; "use points" at checkout to
-  be added when loyalty (C1) is live [ERP first].
-- Reviews: `/review/<token>` page and stars on product pages, once reviews (C2) exist [ERP first].
 - Use `storefront_products_page` for very large catalogues (the site pages in the browser today,
   fine for hundreds of products).
 - Share button on product pages; filters by size and colour (need size/colour data).

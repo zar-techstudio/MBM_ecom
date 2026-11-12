@@ -36,6 +36,8 @@ export type ProductCard = {
   hover_image?: string | null;
   /** Short muted clip played on hold/hover instead of hover_image. Bucket path or full URL. */
   video?: string | null;
+  /** Average stars from verified reviews, or null when there are none yet. */
+  rating?: { average: number; count: number } | null;
 };
 
 /** One piece of a complete outfit, e.g. role "Safa" with its product card. The product may come
@@ -141,6 +143,20 @@ export async function getLooks(section: Section): Promise<Look[]> {
         return (await import("./sample-looks")).SAMPLE_LOOKS;
       }
       return [];
+    }
+  });
+}
+
+export type Review = { name: string; stars: number; body: string | null; photo: string | null; at: string; verified: boolean };
+export type Reviews = { rating: { average: number; count: number } | null; reviews: Review[] };
+
+/** Verified reviews for a product (first page), kept for a minute. Empty if the ERP has none. */
+export async function getReviews(slug: string): Promise<Reviews> {
+  return remember(`reviews:${slug}`, MINUTE, async () => {
+    try {
+      return (await call<Reviews>("storefront_reviews", { p_slug: slug, p_limit: 10, p_offset: 0 })) ?? { rating: null, reviews: [] };
+    } catch {
+      return { rating: null, reviews: [] };
     }
   });
 }

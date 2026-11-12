@@ -57,7 +57,18 @@ export type Quote = {
   total_paise: number;
   gst: { taxable_paise: number; cgst_paise: number; sgst_paise: number; igst_paise: number; total_paise: number };
   cod_available: boolean;
-  points: unknown;
+  /** Present when points were asked for: how many are used and what they take off (already in discount_paise). */
+  points: { balance: number; used: number; discount_paise: number } | null;
+};
+
+export type Points = {
+  balance: number;
+  point_value_paise: number;
+  earn_per_paise: number;
+  min_bill_paise: number | null;
+  max_share_bps: number | null;
+  expiry_months: number | null;
+  history: { kind: "earn" | "take_back" | "use" | "give_back" | "expire" | "adjust"; points: number; at: string; expires_at: string | null; bill: string | null; order: string | null }[];
 };
 
 export type OrderStatus =
@@ -70,7 +81,8 @@ export type OrderStatus =
   | "delivered"
   | "cancelled"
   | "refund_due"
-  | "refunded";
+  | "refunded"
+  | "returned";
 
 export type Order = {
   code: string;
@@ -102,6 +114,7 @@ export const STATUS_TEXT: Record<OrderStatus, string> = {
   cancelled: "Cancelled",
   refund_due: "Cancelled · your money is being returned",
   refunded: "Cancelled · your money has been returned",
+  returned: "Returned to us · nothing to pay",
 };
 
 export class ApiError extends Error {

@@ -27,6 +27,7 @@ export function CheckoutView() {
   const [adding, setAdding] = useState(false);
   const [couponText, setCouponText] = useState("");
   const [coupon, setCoupon] = useState<string | null>(null);
+  const [usePoints, setUsePoints] = useState(false);
   const [method, setMethod] = useState<"online" | "cod">("online");
   const [quote, setQuote] = useState<{ key: string; q: Quote } | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
@@ -39,12 +40,12 @@ export function CheckoutView() {
     addresses.find((a) => a.id === addressId) ?? addresses.find((a) => a.is_default) ?? addresses[0] ?? null;
 
   const items = bag.map((l) => ({ slug: l.slug, size: l.size, qty: l.qty }));
-  const key = JSON.stringify([items, signed ? address?.id ?? null : null, coupon, status]);
+  const key = JSON.stringify([items, signed ? address?.id ?? null : null, coupon, usePoints, status]);
 
   useEffect(() => {
     if (!items.length || status === "unknown") return;
     let live = true;
-    api<Quote>("quote", { items, address: signed ? address?.id ?? null : null, coupon })
+    api<Quote>("quote", { items, address: signed ? address?.id ?? null : null, coupon, use_points: usePoints })
       .then((q) => {
         if (!live) return;
         setQuote({ key, q });
@@ -71,7 +72,7 @@ export function CheckoutView() {
       // A quote is kept for 15 minutes: ask again if it has run out.
       let quoteId = q.quote_id;
       if (q.expires_at && new Date(q.expires_at).getTime() < Date.now() + 30_000) {
-        const again = await api<Quote>("quote", { items, address: address?.id, coupon });
+        const again = await api<Quote>("quote", { items, address: address?.id, coupon, use_points: usePoints });
         setQuote({ key, q: again });
         if (!again.quote_id || again.problems.length) {
           setError("Prices or stock changed. Please check your order and try again.");
@@ -285,7 +286,22 @@ export function CheckoutView() {
               </button>
             )}
           </form>
-          {!signed ? <p className="co-small">Sign in to use a coupon.</p> : null}
+          {!signed ? <p className="co-small">Sign in to use a coupon or your points.</p> : null}
+          {signed && (me.points ?? 0) > 0 ? (
+            <label className="co-points">
+              <input type="checkbox" checked={usePoints} onChange={(e) => setUsePoints(e.target.checked)} />
+              <span>
+                Use my points <em>({me.points} available)</em>
+                {usePoints && q?.points && fresh ? (
+                  <small>
+                    {q.points.used
+                      ? ` · ${q.points.used} points = ${rupees(q.points.discount_paise)} off`
+                      : " · this order is below the minimum for points"}
+                  </small>
+                ) : null}
+              </span>
+            </label>
+          ) : null}
           {q?.coupon && fresh ? <p className="co-ok">{q.coupon.code}: {q.coupon.description} applied</p> : null}
           {q?.coupon_error && fresh ? <p className="co-error">{q.coupon_error}</p> : null}
 
