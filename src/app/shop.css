@@ -302,6 +302,8 @@ p.sf-tools-count { width: auto; margin: 0 0 0.8rem; font-size: 0.72rem; }
 @keyframes sg-up { from { transform: translateY(40px); opacity: 0; } }
 @media (min-width: 640px) { .sg-back { place-items: center; } .sg { border-radius: 10px; } }
 .sg-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+.sg-close { width: 36px; height: 36px; display: grid; place-items: center; border: 0; background: none; color: var(--color-espresso); font-size: 1.7rem; line-height: 1; cursor: pointer; }
+.sg-close:hover { color: #6e1f2a; }
 .sg-head h2 { font-family: var(--font-serif-display); font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase; }
 .sg-table { width: 100%; border-collapse: collapse; margin: 0.9rem 0; font-size: 0.9rem; }
 .sg-table th { text-align: left; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--color-espresso); padding: 0.45rem 0.5rem; }

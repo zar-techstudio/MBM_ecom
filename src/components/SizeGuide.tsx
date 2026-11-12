@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export type GuideKind = "garment" | "footwear" | "headwear";
 
@@ -28,12 +29,13 @@ export function SizeGuide({ kind, onClose, ask }: { kind: GuideKind; onClose: ()
     };
   }, [onClose]);
 
-  return (
+  // Drawn on the page body: inside the buy box it sat in a lower layer than the photo's buttons.
+  return createPortal(
     <div className="sg-back" role="dialog" aria-modal="true" aria-label="Size guide" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="sg">
         <div className="sg-head">
           <h2>Size guide</h2>
-          <button type="button" className="runway-close" aria-label="Close" onClick={onClose}>
+          <button type="button" className="sg-close" aria-label="Close" onClick={onClose}>
             &times;
           </button>
         </div>
@@ -144,6 +146,7 @@ export function SizeGuide({ kind, onClose, ask }: { kind: GuideKind; onClose: ()
           and we&rsquo;ll confirm the size.
         </p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
