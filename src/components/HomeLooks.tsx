@@ -9,7 +9,7 @@ import { formatINR, imageUrl } from "@/lib/site";
 
 const ADVANCE_MS = 5000;
 /* Rounded shoulders rising to a small point: the MAHIB runway's arch. */
-const ARCH_PATH = "M1 400 V150 C1 62 52 24 100 2 C148 24 199 62 199 150 V400";
+const ARCH_PATH = "M1 400 V105 C1 48 48 18 100 1 C152 18 199 48 199 105 V400";
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (

@@ -71,7 +71,7 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
 }
 
 /* Rounded shoulders rising to a small point (same shape as the mask in mahib.css). */
-const ARCH_PATH = "M1 400 V150 C1 62 52 24 100 2 C148 24 199 62 199 150 V400";
+const ARCH_PATH = "M1 400 V105 C1 48 48 18 100 1 C152 18 199 48 199 105 V400";
 
 /** Thin gold outline of a Hyderabadi pointed arch, stretched to its box. */
 function ArchLine() {

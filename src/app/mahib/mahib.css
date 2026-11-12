@@ -90,8 +90,8 @@
   background:
     radial-gradient(ellipse 80% 45% at 50% 20%, rgba(255, 250, 240, 0.9), transparent 70%),
     linear-gradient(180deg, var(--rw-sand) 0%, var(--rw-sand-deep) 100%);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 .runway-arch-clip { background: none; }
 /* Outfit image and dot layer share the same size (set inline) and position. */
@@ -580,15 +580,45 @@ button.runway-card-btn { background: none; cursor: pointer; }
 .runway-slot .runway-arch::after {
   content: "";
   position: absolute;
-  inset: 5.5% 7.5% 0;
+  inset: 2.5% 3.5% 0;
   background:
     radial-gradient(ellipse 85% 30% at 50% 0%, rgba(110, 80, 45, 0.3), transparent 72%),
     linear-gradient(180deg, #d7c3a5 0%, #e3d3bb 45%, #e8dac5 78%, #dccab0 100%);
   box-shadow: inset 16px 0 22px -12px rgba(90, 62, 30, 0.28), inset -16px 0 22px -12px rgba(90, 62, 30, 0.28);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 .runway-slot .runway-arch-line { inset: 0; width: 100%; height: 100%; }
 .runway-slot .runway-arch-line path { stroke-width: 2px; opacity: 1; }
-.runway-slot .runway-arch-line + .runway-arch-line { inset: 5.5% auto auto 7.5%; width: 85%; height: 94.5%; }
+.runway-slot .runway-arch-line + .runway-arch-line { inset: 2.5% auto auto 3.5%; width: 93%; height: 97.5%; }
 .runway-slot .runway-arch-line + .runway-arch-line path { stroke-width: 1px; opacity: 0.75; }
+
+/* Desktop proportions measured from the owner's reference: the centre arch about 23% of the
+   screen width, side arches at 27% / 73% (a narrow gap), raised a little, arrows at ~12% / 88%. */
+@media (min-width: 769px) {
+  .mahib-runway { padding-top: clamp(0.9rem, 2.2vh, 1.6rem); }
+  .runway-title { font-size: clamp(1.6rem, 2.7vw, 2.6rem); margin-top: 0.3rem; }
+  .runway-sub { margin-top: 0.2rem; }
+  .runway-stage {
+    --arch-h: min(32vw, calc(100vh - 395px), 640px);
+    height: calc(var(--arch-h) + 6rem);
+    margin-top: clamp(0.25rem, 1vh, 0.75rem);
+  }
+  .runway-slot, .runway-model { height: var(--arch-h); bottom: 4.5rem; transform-origin: 50% 62%; }
+  .runway-slot.is-left, .runway-model.is-left { left: 27%; transform: translateX(-50%) scale(0.78); }
+  .runway-slot.is-right, .runway-model.is-right { left: 73%; transform: translateX(-50%) scale(0.78); }
+  .runway-model.is-away { left: 50%; transform: translateX(-50%) scale(0.6); }
+  .runway-arrow { top: calc(1.5rem + var(--arch-h) / 2 - 27px); }
+  .runway-arrow.is-prev { left: calc(11.7% - 27px); }
+  .runway-arrow.is-next { right: calc(11.7% - 27px); }
+  .runway-model.is-left .runway-tag,
+  .runway-model.is-right .runway-tag { transform: translateX(-50%) scale(1.28); }
+  .mahib-runway.is-open .runway-scene { transform: translateX(-12%); }
+}
+/* As in the reference: a flat niche (no shading at the top or the sides) and no shadow under the arches. */
+.runway-slot .runway-arch::after {
+  background: linear-gradient(180deg, #ddcdb6 0%, #e2d4bf 100%);
+  box-shadow: none;
+}
+.runway-slot::after { box-shadow: none; background: #ece2d2; }
+.runway-model::after { display: none; }

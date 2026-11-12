@@ -132,13 +132,13 @@
 /* The arch, as in the reference: an ivory wall edged in gold, a recessed niche (shaded at the
    top and sides) with its own thin gold line, and a round marble pedestal standing in front. */
 .ls-arch-wall,
-.ls-arch-niche { position: absolute; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V150C0 62 52 22 100 0c48 22 100 62 100 150v250z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.ls-arch-niche { position: absolute; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 400V105C0 47 48 17 100 0c52 17 100 47 100 105v295z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
 .ls-arch-wall {
   inset: 0;
   background: linear-gradient(90deg, #efe4d2 0%, #f8f1e6 18%, #f8f1e6 82%, #ece0cc 100%);
 }
 .ls-arch-niche {
-  inset: 5.5% 7.5% 0;
+  inset: 2.5% 3.5% 0;
   background:
     radial-gradient(ellipse 85% 30% at 50% 0%, rgba(110, 80, 45, 0.3), transparent 72%),
     linear-gradient(180deg, #d7c3a5 0%, #e3d3bb 45%, #e8dac5 78%, #dccab0 100%);
@@ -148,7 +148,7 @@
 .ls-arch-line path { fill: none; stroke: var(--color-gold-rich); }
 .ls-arch-line.is-outer { inset: 0; width: 100%; height: 100%; }
 .ls-arch-line.is-outer path { stroke-width: 2.2px; }
-.ls-arch-line.is-inner { left: 7.5%; top: 5.5%; width: 85%; height: 94.5%; }
+.ls-arch-line.is-inner { left: 3.5%; top: 2.5%; width: 93%; height: 97.5%; }
 .ls-arch-line.is-inner path { stroke-width: 1px; opacity: 0.75; }
 .ls-arch img {
   position: absolute;
@@ -474,3 +474,6 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
 @media (min-width: 900px) {
   body:has(main.home) .sf-footer-art { right: clamp(2rem, 8vw, 11rem); }
 }
+/* As in the reference: a flat niche, no shading at the top or sides, no shadow under the arch. */
+.ls-arch-niche { background: linear-gradient(180deg, #ddcdb6 0%, #e2d4bf 100%); box-shadow: none; }
+.ls-pedestal { filter: none; }
