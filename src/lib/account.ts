@@ -21,9 +21,14 @@ export type Address = {
 };
 
 export type Me = {
-  phone: string;
+  /** Null when the shopper signed in with an email and has not added a mobile yet. */
+  phone: string | null;
   name: string | null;
   email: string | null;
+  /** A mobile number confirmed with a code: needed before an order can be placed. */
+  phone_verified?: boolean;
+  /** The email the shopper signed in with (it cannot be changed in the profile). */
+  email_verified?: boolean;
   addresses: Address[];
   bag: { size: string | null; qty: number; product: ProductCard }[];
   wishlist: ProductCard[];

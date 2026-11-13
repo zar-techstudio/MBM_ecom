@@ -22,6 +22,9 @@ export function CheckoutView() {
   const { status, me } = useAccount();
   const { bag } = useShop();
   const signed = status === "signed" && me;
+  // An order needs a confirmed mobile number (an email sign-in adds one here first).
+  const phoneOk = Boolean(signed && me.phone && me.phone_verified !== false);
+  const [joined, setJoined] = useState(false);
 
   const [addressId, setAddressId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -63,7 +66,7 @@ export function CheckoutView() {
   const fresh = quote?.key === key;
   const codOk = Boolean(q?.cod_available);
   const pay = method === "cod" && !codOk ? "online" : method;
-  const canPlace = Boolean(signed && address && q && fresh && q.quote_id && !q.estimate && q.lines.length && !placing);
+  const canPlace = Boolean(signed && phoneOk && address && q && fresh && q.quote_id && !q.estimate && q.lines.length && !placing);
 
   const place = async () => {
     if (!q?.quote_id) return;
@@ -123,7 +126,7 @@ export function CheckoutView() {
           </div>
           <ol className="ck-track" aria-label="Steps">
             {[
-              ["Mobile", signed ? "done" : "on"],
+              ["Mobile", phoneOk ? "done" : "on"],
               ["Address", signed && address ? "done" : signed ? "on" : ""],
               ["Payment", signed && address ? "on" : ""],
             ].map(([label, state], i) => (
@@ -135,32 +138,42 @@ export function CheckoutView() {
           </ol>
 
           {/* 1. Who */}
-          <section id="co-1" className={`co-step${signed ? " is-done" : ""}`}>
+          <section id="co-1" className={`co-step${phoneOk ? " is-done" : ""}`}>
             <div className="co-step-head">
               <span className="co-num">1</span>
               <div className="ck-step-text">
-                <h2>Verify Your Mobile</h2>
-                {signed ? null : <p>Enter your mobile number to receive a one-time verification code on WhatsApp or SMS.</p>}
+                <h2>{signed && !phoneOk ? "Add Your Mobile Number" : "Verify Your Mobile"}</h2>
+                {!signed ? (
+                  <p>Enter your mobile number or email to receive a one-time verification code.</p>
+                ) : !phoneOk ? (
+                  <p>We need your mobile number for delivery updates. Confirm it with a one-time code.</p>
+                ) : null}
               </div>
             </div>
             {status === "unknown" ? (
               <p className="co-small">Loading…</p>
+            ) : signed && !phoneOk ? (
+              <SignIn title="" mode="phone" onDone={(i) => setJoined(Boolean(i?.joined))} />
             ) : signed ? (
-              <div className="co-done">
-                <span>
-                  {me.name ? `${me.name} · ` : ""}+91 {me.phone.replace(/\D/g, "").slice(-10)}
-                </span>
-                <button type="button" className="co-link" onClick={() => void signOut()}>
-                  Not you?
-                </button>
-              </div>
+              <>
+                <div className="co-done">
+                  <span>
+                    {me.name ? `${me.name} · ` : ""}
+                    {me.phone ? `+91 ${me.phone.replace(/\D/g, "").slice(-10)}` : me.email}
+                  </span>
+                  <button type="button" className="co-link" onClick={() => void signOut()}>
+                    Not you?
+                  </button>
+                </div>
+                {joined ? <p className="co-ok">Your showroom account is now linked: your points and past bills are here.</p> : null}
+              </>
             ) : (
               <SignIn title="" />
             )}
           </section>
 
           {/* 2. Where */}
-          <section id="co-2" className={`co-step${signed ? "" : " is-locked"}`}>
+          <section id="co-2" className={`co-step${phoneOk ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">2</span>
               <div className="ck-step-text">
@@ -171,11 +184,11 @@ export function CheckoutView() {
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </div>
-            {signed ? (
+            {signed && phoneOk ? (
               adding || !addresses.length ? (
                 <AddressForm
                   defaultName={me.name}
-                  defaultPhone={me.phone}
+                  defaultPhone={me.phone ?? ""}
                   onSaved={(a) => {
                     setAddressId(a.id);
                     setAdding(false);
@@ -209,7 +222,7 @@ export function CheckoutView() {
           </section>
 
           {/* 3. Pay */}
-          <section id="co-3" className={`co-step${signed && address ? "" : " is-locked"}`}>
+          <section id="co-3" className={`co-step${phoneOk && address ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">3</span>
               <div className="ck-step-text">
@@ -220,7 +233,7 @@ export function CheckoutView() {
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </div>
-            {signed && address ? (
+            {phoneOk && address ? (
               <div className="co-pay" role="radiogroup" aria-label="Payment method">
                 <label className={`co-addr${pay === "online" ? " active" : ""}`}>
                   <input type="radio" name="pay" checked={pay === "online"} onChange={() => setMethod("online")} />

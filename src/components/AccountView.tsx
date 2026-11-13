@@ -54,7 +54,7 @@ export function AccountView() {
     if (!profile) return;
     setError(null);
     try {
-      setMe(await api<Me>("profile", { name: profile.name, email: profile.email }));
+      setMe(await api<Me>("profile", { name: profile.name, email: me?.email_verified ? null : profile.email }));
       setProfile(null);
     } catch (e) {
       setError((e as Error).message);
@@ -86,7 +86,7 @@ export function AccountView() {
 
         {points ? <PointsBox p={points} /> : null}
 
-        <section className="ord-box">
+        <section className="ord-box" id="orders">
           <h2>Orders</h2>
           {orders === null ? (
             <p className="co-small">Loading…</p>
@@ -113,6 +113,8 @@ export function AccountView() {
           )}
         </section>
 
+        <WhatsAppPrefs />
+
         <section className="ord-box">
           <h2>Profile</h2>
           {profile ? (
@@ -126,10 +128,17 @@ export function AccountView() {
                 <span>Name</span>
                 <input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value.slice(0, 80) })} required />
               </label>
-              <label className="field">
-                <span>Email (optional, for invoices)</span>
-                <input type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value.slice(0, 120) })} />
-              </label>
+              {me.email_verified ? (
+                <p className="field">
+                  <span>Email</span>
+                  <span className="acc-readonly">{me.email} · used to sign in, so it can&rsquo;t be changed here</span>
+                </p>
+              ) : (
+                <label className="field">
+                  <span>Email (optional, for invoices)</span>
+                  <input type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value.slice(0, 120) })} />
+                </label>
+              )}
               <div className="addr-actions">
                 <button className="co-btn">Save</button>
                 <button type="button" className="co-link" onClick={() => setProfile(null)}>
@@ -139,7 +148,8 @@ export function AccountView() {
             </form>
           ) : (
             <p className="co-small">
-              {me.name ?? "—"} · +91 {me.phone.replace(/\D/g, "").slice(-10)}
+              {me.name ?? "—"}
+              {me.phone ? ` · +91 ${me.phone.replace(/\D/g, "").slice(-10)}` : ""}
               {me.email ? ` · ${me.email}` : ""}{" "}
               <button type="button" className="co-link" onClick={() => setProfile({ name: me.name ?? "", email: me.email ?? "" })}>
                 Edit
@@ -154,7 +164,7 @@ export function AccountView() {
             <AddressForm
               initial={editing}
               defaultName={me.name}
-              defaultPhone={me.phone}
+              defaultPhone={me.phone ?? ""}
               onSaved={() => setEditing(null)}
               onCancel={() => setEditing(null)}
             />
@@ -245,6 +255,70 @@ function PointsBox({ p }: { p: Points }) {
           ))}
         </ul>
       ) : null}
+    </section>
+  );
+}
+
+/** Two switches: order updates on WhatsApp, and reminders about a bag left behind. */
+function WhatsAppPrefs() {
+  const [prefs, setPrefs] = useState<{ order_updates: boolean; offers: boolean } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    api<{ order_updates: boolean; offers: boolean }>("wa-prefs")
+      .then((p) => live && setPrefs(p))
+      .catch(() => live && setPrefs(null));
+    return () => {
+      live = false;
+    };
+  }, []);
+  if (!prefs) return null;
+  const change = async (next: { order_updates: boolean; offers: boolean }) => {
+    const before = prefs;
+    setPrefs(next);
+    setSaving(true);
+    setError(null);
+    try {
+      setPrefs(await api<{ order_updates: boolean; offers: boolean }>("wa-prefs-set", next));
+    } catch (e) {
+      setPrefs(before);
+      setError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <section className="ord-box acc-wa">
+      <h2>WhatsApp messages</h2>
+      <label className="acc-switch">
+        <input
+          type="checkbox"
+          role="switch"
+          checked={prefs.order_updates}
+          disabled={saving}
+          onChange={(e) => void change({ ...prefs, order_updates: e.target.checked, offers: e.target.checked && prefs.offers })}
+        />
+        <span>
+          <strong>Order updates on WhatsApp</strong>
+          <small>Order confirmed, shipped with tracking, delivered. Off means no WhatsApp messages at all.</small>
+        </span>
+      </label>
+      <label className={`acc-switch${prefs.order_updates ? "" : " is-off"}`}>
+        <input
+          type="checkbox"
+          role="switch"
+          checked={prefs.offers}
+          disabled={saving || !prefs.order_updates}
+          onChange={(e) => void change({ ...prefs, offers: e.target.checked })}
+        />
+        <span>
+          <strong>Reminders about my bag</strong>
+          <small>A message if you leave pieces in your bag.</small>
+        </span>
+      </label>
+      <p className="co-small">You can also reply STOP on WhatsApp at any time.</p>
+      {error ? <p className="co-error">{error}</p> : null}
     </section>
   );
 }

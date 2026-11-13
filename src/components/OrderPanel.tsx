@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ProductCard, SizeOption } from "@/lib/catalogue";
 import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
+import { NotifyBack } from "./NotifyBack";
 import { SizeGuide, guideFor } from "./SizeGuide";
 
 type Props = {
@@ -117,7 +118,10 @@ ${url}`);
       ) : null}
       {checking ? <p className="sf-order-note">Checking showroom stock…</p> : null}
       {soldOut && kind !== "fabric" ? (
-        <p className="sf-order-note">Sold out for now. Message us and we&rsquo;ll tell you when it&rsquo;s back.</p>
+        <>
+          <p className="sf-order-note">Sold out for now. We can message you on WhatsApp when it&rsquo;s back.</p>
+          <NotifyBack slug={card.slug} />
+        </>
       ) : null}
       <div ref={actionRef} className="sf-order-actions">
         <ActionButton action={action} className="sf-order-btn" />

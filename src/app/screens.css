@@ -455,3 +455,27 @@
   .sf-footer-reach { font-size: 0.74rem; }
   .sf-footer-social { padding-left: 0.6rem; }
 }
+
+/* ---------- Sign-in choices, WhatsApp switches, back-in-stock ---------- */
+.signin-ways { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0.8rem 0 0.2rem; font-size: 0.9rem; color: var(--text-secondary); }
+.signin-ways > span { margin-right: 0.2rem; }
+.signin-ways label { padding: 0.45rem 0.95rem; border: 1px solid #d8c7a8; border-radius: 999px; background: #fff; font-weight: 600; color: var(--sx-ink, #2b1417); cursor: pointer; }
+.signin-ways label.on { border-color: var(--sx-maroon, #6e1f2a); background: var(--sx-maroon, #6e1f2a); color: #fff; }
+.signin-ways input { position: absolute; opacity: 0; pointer-events: none; }
+.field-phone.is-email > input { padding-left: 1rem; }
+.acc-readonly { display: block; padding: 0.6rem 0; color: var(--text-secondary); }
+.acc-switch { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.7rem 0; cursor: pointer; }
+.acc-switch + .acc-switch { border-top: 1px solid var(--color-ivory-sand); }
+.acc-switch.is-off { opacity: 0.55; }
+.acc-switch input { appearance: none; flex: none; position: relative; width: 44px; height: 26px; margin-top: 0.1rem; border-radius: 999px; background: #d8cfc2; cursor: pointer; transition: background 0.2s ease; }
+.acc-switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s ease; }
+.acc-switch input:checked { background: var(--sx-maroon, #6e1f2a); }
+.acc-switch input:checked::after { transform: translateX(18px); }
+.acc-switch span { display: flex; flex-direction: column; gap: 0.15rem; }
+.acc-switch small { font-size: 0.82rem; color: var(--text-secondary); }
+.notify-back { width: 100%; margin: 0.6rem 0 0.4rem; }
+.notify-back-signin { margin: 0.6rem 0; padding: 1rem; border: 1px solid var(--color-ivory-sand); border-radius: 10px; background: #fff; }
+.notify-back-ok { margin: 0.6rem 0; }
+.signin-send { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; }
+.signin-send svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.signin-send svg .fill { fill: currentColor; stroke: none; }

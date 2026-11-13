@@ -17,19 +17,36 @@ type Body = Record<string, unknown>;
 const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
 const actions: Record<string, (b: Body, req: Request) => Promise<unknown>> = {
-  // ---- sign-in ----
+  // ---- sign-in (a mobile number or an email; the code comes by WhatsApp, SMS or email) ----
+  async "signin-options"() {
+    return rpc<{ channels: string[]; test_mode: boolean }>("storefront_sign_in_options", {});
+  },
   async otp(b, req) {
     const ip = req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
-    return erpPost("/api/shop/otp", { phone: str(b.phone, 20) }, ip);
+    const channel = ["whatsapp", "sms", "email"].includes(str(b.channel)) ? str(b.channel) : "whatsapp";
+    // "phone" asks for a code to add a mobile number to the signed-in account (before checkout).
+    const session = b.purpose === "phone" ? await requireSession() : undefined;
+    return erpPost("/api/shop/otp", { target: str(b.target, 120), channel, ...(session ? { session } : {}) }, ip);
   },
   async verify(b) {
-    const r = await rpc<{ ok: boolean; session?: string; expires_in_days?: number; needs_name?: boolean; error?: string }>(
-      "storefront_verify_otp",
-      { p_phone: str(b.phone, 20), p_code: str(b.code, 10) },
-    );
+    const r = await rpc<{
+      ok: boolean;
+      session?: string;
+      expires_in_days?: number;
+      needs_name?: boolean;
+      needs_phone?: boolean;
+      error?: string;
+    }>("storefront_verify_code", { p_target: str(b.target, 120), p_code: str(b.code, 10) });
     if (!r.ok || !r.session) return { ok: false, error: r.error ?? "That code didn't work. Please try again." };
     await setSession(r.session, r.expires_in_days ?? 60);
-    return { ok: true, needs_name: Boolean(r.needs_name) };
+    return { ok: true, needs_name: Boolean(r.needs_name), needs_phone: Boolean(r.needs_phone) };
+  },
+  async "verify-phone"(b) {
+    return rpc("storefront_verify_phone", {
+      p_session: await requireSession(),
+      p_phone: str(b.phone, 20),
+      p_code: str(b.code, 10),
+    });
   },
   async signout() {
     const s = await getSession();
@@ -79,11 +96,18 @@ const actions: Record<string, (b: Body, req: Request) => Promise<unknown>> = {
     });
   },
   async place(b) {
-    return rpc("storefront_place_order", {
+    const order = await rpc("storefront_place_order", {
       p_session: await requireSession(),
       p_quote: str(b.quote, 60),
       p_method: b.method === "cod" ? "cod" : "online",
     });
+    // Ask the ERP to send the "order confirmed" WhatsApp now (it would otherwise go within 10
+    // minutes). Never holds up or fails the order: at most 3 seconds, errors ignored.
+    await Promise.race([
+      erpPost("/api/whatsapp/send", {}).catch(() => null),
+      new Promise((r) => setTimeout(r, 3000)),
+    ]);
+    return order;
   },
   async pay(b) {
     return erpPost("/api/shop/pay", { session: await requireSession(), code: str(b.code, 20) });
@@ -99,6 +123,21 @@ const actions: Record<string, (b: Body, req: Request) => Promise<unknown>> = {
   },
   async invoice(b) {
     return rpc("storefront_invoice", { p_session: await requireSession(), p_code: str(b.code, 20) });
+  },
+
+  // ---- WhatsApp messages ----
+  async "wa-prefs"() {
+    return rpc("storefront_whatsapp_prefs", { p_session: await requireSession() });
+  },
+  async "wa-prefs-set"(b) {
+    return rpc("storefront_set_whatsapp_prefs", {
+      p_session: await requireSession(),
+      p_order_updates: b.order_updates !== false,
+      p_offers: b.offers === true,
+    });
+  },
+  async "notify-back"(b) {
+    return rpc("storefront_notify_back_in_stock", { p_session: await requireSession(), p_slug: str(b.slug, 120) });
   },
 
   // ---- loyalty ----

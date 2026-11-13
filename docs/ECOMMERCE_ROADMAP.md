@@ -59,7 +59,15 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
   later, remove; Checkout button; WhatsApp ordering kept as a link.
 
 **Accounts and checkout (Phase B, website side)**
-- Sign in with a mobile number and a one-time code (name asked once for new numbers).
+- Sign in with a mobile number or an email and a one-time code: WhatsApp or SMS for a mobile (switches
+  to SMS by itself when a number is not on WhatsApp), email for an email; only the ways the ERP
+  offers are shown. Name asked once for new accounts.
+- Mobile before checkout: an email sign-in (or an account without a confirmed mobile) adds and
+  confirms a mobile in checkout step 1; if that number has showroom bills, the accounts are linked.
+- Account page: WhatsApp switches (order updates; reminders about my bag); an email used to sign
+  in is shown read-only. `/orders` (linked from WhatsApp messages) opens the order list.
+- Sold-out product page: "Tell me when it's back" (one WhatsApp message when it is on sale again).
+- After an order is placed, the ERP is asked to send the "order confirmed" WhatsApp at once.
 - Bag and wishlist merge into the account on sign-in and stay in sync.
 - Checkout: saved or new address (state decides GST), quote from the ERP (lines, problems,
   coupon, discount, delivery, GST included, total), online or cash on delivery.
