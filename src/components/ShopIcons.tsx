@@ -66,11 +66,9 @@ export function ShopIcons() {
       </Link>
       <Link href="/bag" className="shop-icon" aria-label={`Bag, ${bag} items`}>
         {Icon.bag}
-        {bag ? (
-          <span className="shop-count" key={bag}>
-            {bag}
-          </span>
-        ) : null}
+        <span className={`shop-count${bag ? "" : " is-zero"}`} key={bag}>
+          {bag}
+        </span>
       </Link>
       {search ? <SearchOverlay photo={search.photo} onClose={() => setSearch(null)} /> : null}
     </>

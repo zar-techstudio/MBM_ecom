@@ -74,7 +74,7 @@ export function SignIn({ title = "Sign in with your mobile", onDone }: { title?:
 
   return (
     <div className="signin">
-      <h2 className="co-h">{step === "name" ? "Welcome! What should we call you?" : title}</h2>
+      {step === "name" || title ? <h2 className="co-h">{step === "name" ? "Welcome! What should we call you?" : title}</h2> : null}
       {step === "phone" ? (
         <form
           onSubmit={(e) => {
@@ -92,15 +92,19 @@ export function SignIn({ title = "Sign in with your mobile", onDone }: { title?:
                 autoComplete="tel-national"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^\d+ ]/g, "").slice(0, 15))}
-                placeholder="98765 43210"
+                placeholder="10-digit mobile number"
                 required
                 autoFocus
               />
             </div>
           </label>
-          <p className="co-small">We&rsquo;ll send a one-time code on WhatsApp or SMS. No password needed.</p>
-          <button className="co-btn" disabled={busy || phone.replace(/\D/g, "").length < 10}>
-            {busy ? "Sending…" : "Send code"}
+          <p className="co-small signin-note">We&rsquo;ll send a one-time code on WhatsApp or SMS. No password needed.</p>
+          <button className="co-btn signin-send" disabled={busy || phone.replace(/\D/g, "").length < 10}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3.2a8.7 8.7 0 0 0-7.5 13.1L3.3 20.8l4.6-1.2A8.7 8.7 0 1 0 12 3.2z" />
+              <path className="fill" d="M8.9 7.9c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.4l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.6 1 1.4 1.8 2.4 2.3.3.2.4.1.6-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.4.4 0 .5-.2 1.1-.6 1.4-.5.4-1.4.7-2.3.5-1-.2-2.4-.8-3.7-2-1.3-1.2-2.1-2.6-2.3-3.5-.2-.9 0-1.7.4-2.1z" />
+            </svg>
+            {busy ? "Sending…" : "Send Verification Code"}
           </button>
         </form>
       ) : step === "code" ? (

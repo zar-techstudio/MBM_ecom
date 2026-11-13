@@ -5,15 +5,19 @@ import { imageUrl, sectionPath } from "@/lib/site";
 import { ProductGrid } from "./ProductCard";
 import { SearchBar } from "./SearchBar";
 
-export const SECTION_COPY: Record<Section, { label: string; title: string; intro: string }> = {
+export const SECTION_COPY: Record<Section, { label: string; title: string; intro: string; tagline: string; search: string }> = {
   main: {
     label: "THE COLLECTION",
     title: "SHOP ALL",
+    tagline: "Every piece, in our showroom today.",
+    search: "Search the collection",
     intro: "Sherwanis, kurtas, waistcoats, fabrics and more — every piece here is in our showroom today.",
   },
   mahib: {
     label: "A MAQDOOM’S EXCLUSIVE",
     title: "MAHIB",
+    tagline: "Complete Looks. Timeless Details.",
+    search: "Search the MAHIB collection",
     intro: "Elevated designs and exceptional fabrics, chosen for those who appreciate the extraordinary.",
   },
 };
@@ -59,14 +63,22 @@ export async function CatalogueListing({
     : products;
 
   return (
-    <main className={`sf-listing${section === "mahib" ? " sf-listing-mahib" : ""}`}>
+    <main className={`sf-listing lx${section === "mahib" ? " sf-listing-mahib" : ""}`}>
       {lead}
       <section className="sf-page-head" id="catalogue">
         <div className="container">
           <div className="section-label">{copy.label}</div>
           <h1 className="sf-page-title">{current ? current.name.toUpperCase() : copy.title}</h1>
-          <p className="sf-page-intro">{current?.description || copy.intro}</p>
-          <SearchBar />
+          <span className="lx-ornament" aria-hidden="true">
+            <svg viewBox="0 0 120 12">
+              <path d="M2 6h46M72 6h46" />
+              <path d="M60 1.5 64.5 6 60 10.5 55.5 6z" />
+              <path d="M50 6c2.5-3 5-3 7.5 0M70 6c-2.5-3-5-3-7.5 0" />
+            </svg>
+          </span>
+          <p className="lx-tagline">{current?.description || copy.tagline}</p>
+          <p className="sf-page-intro">{copy.intro}</p>
+          <SearchBar placeholder={copy.search} />
           {categories.length ? (
             <nav className="sf-bubbles" aria-label="Categories">
               {[{ slug: undefined, name: "All" }, ...categories].map((c) => {

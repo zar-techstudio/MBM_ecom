@@ -58,12 +58,12 @@ export function AddToBag({ product }: { product: Card }) {
   if (bag.some((l) => l.slug === product.slug))
     return (
       <Link href="/bag" className="pc-add is-in">
-        In bag &middot; View
+        In Bag &middot; View
       </Link>
     );
   return (
     <button type="button" className="pc-add" onClick={() => shop.add(toSaved(product), null)}>
-      Add to bag
+      Add to Bag
     </button>
   );
 }

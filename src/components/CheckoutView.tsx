@@ -26,6 +26,7 @@ export function CheckoutView() {
   const [addressId, setAddressId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [couponText, setCouponText] = useState("");
+  const [couponOpen, setCouponOpen] = useState(false);
   const [coupon, setCoupon] = useState<string | null>(null);
   const [usePoints, setUsePoints] = useState(false);
   const [method, setMethod] = useState<"online" | "cod">("online");
@@ -113,16 +114,34 @@ export function CheckoutView() {
     );
 
   return (
-    <main className="co">
+    <main className="co ck">
       <div className="container co-grid">
         <div className="co-steps">
-          <h1 className="sf-bag-title">Checkout</h1>
+          <div className="ck-head">
+            <h1 className="bx-title">Checkout</h1>
+            <p className="ck-sub">Complete your order in three simple steps.</p>
+          </div>
+          <ol className="ck-track" aria-label="Steps">
+            {[
+              ["Mobile", signed ? "done" : "on"],
+              ["Address", signed && address ? "done" : signed ? "on" : ""],
+              ["Payment", signed && address ? "on" : ""],
+            ].map(([label, state], i) => (
+              <li key={label} className={state ? `is-${state}` : undefined}>
+                <span>{i + 1}</span>
+                {label}
+              </li>
+            ))}
+          </ol>
 
           {/* 1. Who */}
           <section id="co-1" className={`co-step${signed ? " is-done" : ""}`}>
             <div className="co-step-head">
               <span className="co-num">1</span>
-              <h2>Your mobile</h2>
+              <div className="ck-step-text">
+                <h2>Verify Your Mobile</h2>
+                {signed ? null : <p>Enter your mobile number to receive a one-time verification code on WhatsApp or SMS.</p>}
+              </div>
             </div>
             {status === "unknown" ? (
               <p className="co-small">Loading…</p>
@@ -136,7 +155,7 @@ export function CheckoutView() {
                 </button>
               </div>
             ) : (
-              <SignIn title="Continue with your mobile number" />
+              <SignIn title="" />
             )}
           </section>
 
@@ -144,7 +163,13 @@ export function CheckoutView() {
           <section id="co-2" className={`co-step${signed ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">2</span>
-              <h2>Delivery address</h2>
+              <div className="ck-step-text">
+                <h2>Delivery Address</h2>
+                <p>Add a delivery address to get your order.</p>
+              </div>
+              <svg className="ck-chev" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
             </div>
             {signed ? (
               adding || !addresses.length ? (
@@ -179,7 +204,7 @@ export function CheckoutView() {
                 </>
               )
             ) : (
-              <p className="co-small">Sign in first.</p>
+              null
             )}
           </section>
 
@@ -187,7 +212,13 @@ export function CheckoutView() {
           <section id="co-3" className={`co-step${signed && address ? "" : " is-locked"}`}>
             <div className="co-step-head">
               <span className="co-num">3</span>
-              <h2>Payment</h2>
+              <div className="ck-step-text">
+                <h2>Payment</h2>
+                <p>Choose your preferred payment method.</p>
+              </div>
+              <svg className="ck-chev" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
             </div>
             {signed && address ? (
               <div className="co-pay" role="radiogroup" aria-label="Payment method">
@@ -209,14 +240,19 @@ export function CheckoutView() {
                 </label>
               </div>
             ) : (
-              <p className="co-small">Add a delivery address first.</p>
+              null
             )}
           </section>
         </div>
 
         {/* Summary */}
         <aside className="co-summary" aria-label="Order summary">
-          <h2>Your order</h2>
+          <div className="ck-sum-head">
+            <h2>Your Order</h2>
+            <span>
+              {bag.reduce((n, l) => n + l.qty, 0)} {bag.reduce((n, l) => n + l.qty, 0) === 1 ? "Item" : "Items"}
+            </span>
+          </div>
           <ul className="co-lines">
             {bag.map((l) => {
               const same = (x: { slug: string; size: string | null }) => x.slug === l.slug && (x.size ?? null) === (l.size ?? null);
@@ -233,7 +269,7 @@ export function CheckoutView() {
                   </span>
                   <span className="co-line-text">
                     <span className="co-line-title">{l.title}</span>
-                    <span className="co-line-meta">{l.size ? `Size ${l.size}` : "One size"}</span>
+                    <span className="co-line-meta">{l.size ? `Size: ${l.size}` : "One size"}</span>
                     {problem ? <span className="co-line-issue">{problem.error}</span> : null}
                   </span>
                   <span className="co-line-price">
@@ -255,7 +291,18 @@ export function CheckoutView() {
             </p>
           ) : null}
 
+          <button type="button" className="ck-coupon-toggle" aria-expanded={couponOpen || Boolean(coupon)} onClick={() => setCouponOpen(!couponOpen)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3.5 12.5 11 5h8v8l-7.5 7.5z" />
+              <circle cx="15" cy="9" r="1.4" />
+            </svg>
+            <span>Have a Coupon Code?</span>
+            <svg className="ck-coupon-chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </button>
           <form
+            hidden={!couponOpen && !coupon}
             className="co-coupon"
             onSubmit={(e) => {
               e.preventDefault();
@@ -286,7 +333,7 @@ export function CheckoutView() {
               </button>
             )}
           </form>
-          {!signed ? <p className="co-small">Sign in to use a coupon or your points.</p> : null}
+          {!signed && couponOpen ? <p className="co-small">Sign in to use a coupon or your points.</p> : null}
           {signed && (me.points ?? 0) > 0 ? (
             <label className="co-points">
               <input type="checkbox" checked={usePoints} onChange={(e) => setUsePoints(e.target.checked)} />
@@ -307,7 +354,7 @@ export function CheckoutView() {
 
           <dl className="co-totals">
             <div>
-              <dt>Items</dt>
+              <dt>Items ({bag.reduce((n, l) => n + l.qty, 0)})</dt>
               <dd>{q ? rupees(q.subtotal_paise) : "…"}</dd>
             </div>
             {q?.discount_paise ? (
@@ -318,7 +365,7 @@ export function CheckoutView() {
             ) : null}
             <div>
               <dt>Delivery</dt>
-              <dd>{q ? (q.delivery_paise ? rupees(q.delivery_paise) : "Free") : "…"}</dd>
+              <dd>{q ? (q.estimate ? "Calculated at checkout" : q.delivery_paise ? rupees(q.delivery_paise) : "Free") : "…"}</dd>
             </div>
             <div className="is-total">
               <dt>Total</dt>
@@ -344,35 +391,15 @@ export function CheckoutView() {
               {error}
             </p>
           ) : null}
-          {/* Phones: total and the next step always at hand. */}
-          <div className="sf-mbar" role="region" aria-label="Pay">
-            <span className="sf-mbar-total">
-              <small>Total</small>
-              {q ? rupees(q.total_paise) : "…"}
-            </span>
-            <button
-              type="button"
-              className={`sf-mbar-btn${placing ? " is-off" : ""}`}
-              onClick={() => {
-                if (canPlace) return void place();
-                const step = !signed ? "co-1" : !address ? "co-2" : null;
-                if (step) document.getElementById(step)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-            >
-              {placing
-                ? "Placing…"
-                : !signed
-                  ? "Continue"
-                  : !address
-                    ? "Add address"
-                    : pay === "cod"
-                      ? "Place order"
-                      : `Pay ${q ? rupees(q.total_paise) : ""}`}
-            </button>
-          </div>
           <p className="co-small co-terms">
-            Online orders are not exchanged. By placing the order you agree to our{" "}
-            <Link href="/policies/terms">terms</Link> and <Link href="/policies/returns">returns policy</Link>.
+            <svg className="bx-info" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v6M12 7.6v.01" />
+            </svg>
+            <span>
+              Online orders are not exchanged. By placing the order you agree to our{" "}
+              <Link href="/policies/terms">Terms</Link> and <Link href="/policies/returns">Returns Policy</Link>.
+            </span>
           </p>
         </aside>
       </div>
