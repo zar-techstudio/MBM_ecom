@@ -153,7 +153,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
 
   // Every available piece goes into the bag (sizes are chosen there), then the bag opens.
   const buyLook = () => {
-    look.pieces.filter((p) => p.product.slug && !p.product.sold_out).forEach((p) => shop.add(toSaved(p.product), null, 1, look.name));
+    shop.addLook(look.pieces.map((p) => p.product), look.name);
     router.push("/bag");
   };
   const total = lookTotal(look.pieces);

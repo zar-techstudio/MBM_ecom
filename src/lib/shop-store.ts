@@ -93,6 +93,14 @@ const pick = (p: SavedProduct): SavedProduct => ({
 const sameLine = (a: BagLine, slug: string, size: string | null) => a.slug === slug && a.size === size;
 
 export const shop = {
+  /** "Buy the look": adds only the pieces that are not in the bag yet (in any size), so a piece
+   * the shopper already added is never doubled. Returns how many pieces were added. */
+  addLook(products: (Parameters<typeof toSaved>[0] & { sold_out?: boolean })[], look: string) {
+    load();
+    const missing = products.filter((p) => p.slug && !p.sold_out && !state.bag.some((l) => l.slug === p.slug));
+    missing.forEach((p) => shop.add(toSaved(p), null, 1, look));
+    return missing.length;
+  },
   /** Add to the bag (one more if the same piece and size is already there). */
   add(p: SavedProduct, size: string | null, qty = 1, look?: string) {
     load();

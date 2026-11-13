@@ -43,7 +43,7 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
   const runway = `/mahib?look=${encodeURIComponent(look.slug)}#runway`;
 
   const shopLook = () => {
-    pieces.filter((p) => !p.product.sold_out).forEach((p) => shop.add(toSaved(p.product), null, 1, look.name));
+    shop.addLook(pieces.map((p) => p.product), look.name);
     router.push("/bag");
   };
   const saveLook = () => {

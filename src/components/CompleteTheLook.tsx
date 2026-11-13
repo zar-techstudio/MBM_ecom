@@ -3,15 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Look } from "@/lib/catalogue";
-import { shop, toSaved } from "@/lib/shop-store";
+import { shop, useShop } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText } from "@/lib/site";
 
 /** On a product page: the other pieces of an outfit this product belongs to, with "Buy the full look". */
 export function CompleteTheLook({ look, current }: { look: Look; current: string }) {
   const router = useRouter();
+  const { bag } = useShop();
   const others = look.pieces.filter((p) => p.product.slug && p.product.slug !== current);
   if (!others.length) return null;
   const total = look.pieces.reduce((n, p) => n + (p.product.price_min_paise ?? 0), 0);
+  // Pieces the shopper has not put in the bag yet: only these are added.
+  const missing = look.pieces.filter((p) => p.product.slug && !p.product.sold_out && !bag.some((l) => l.slug === p.product.slug));
+  const have = look.pieces.length - missing.length;
   return (
     <section className="sf-ctl" aria-label={`Complete the look: ${look.name}`}>
       <div className="sf-ctl-head">
@@ -25,13 +29,17 @@ export function CompleteTheLook({ look, current }: { look: Look; current: string
             type="button"
             className="btn-primary"
             onClick={() => {
-              look.pieces
-                .filter((p) => p.product.slug && !p.product.sold_out)
-                .forEach((p) => shop.add(toSaved(p.product), null, 1, look.name));
+              shop.addLook(look.pieces.map((p) => p.product), look.name);
               router.push("/bag");
             }}
           >
-            <span>Buy the full look</span>
+            <span>
+              {!missing.length
+                ? "Whole look in your bag · View bag"
+                : have
+                  ? `Add the other ${missing.length} ${missing.length === 1 ? "piece" : "pieces"}`
+                  : "Buy the full look"}
+            </span>
           </button>
         </div>
       </div>
