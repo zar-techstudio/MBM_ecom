@@ -383,3 +383,75 @@
 .bx-sum-row .bx-info { display: inline-block; margin-left: 0.2rem; }
 .bx-act { white-space: nowrap; }
 .bx-qty button { width: 34px; height: 36px; }
+
+/* ---------- Bag on narrow phones (owner's reference): nothing runs off the screen ---------- */
+.bx-ctl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.6rem;
+  row-gap: 0.55rem;
+  margin-top: 0.15rem;
+}
+.bx-ctl .bx-act { justify-self: end; }
+.bx-line, .bx-line-info, .bx-line-name, .bx-summary, .bx-pcard { min-width: 0; }
+.bx-line-name { overflow-wrap: anywhere; }
+.bx-act { font-size: 1rem; gap: 0.3rem; }
+.bx-act svg { width: 17px; height: 17px; }
+.bx-head .bx-title { white-space: nowrap; }
+.bx-head .bx-more { text-align: right; line-height: 1.15; }
+.bx-pcard .pc-add { white-space: nowrap; font-size: 0.95rem; }
+@media (max-width: 420px) {
+  .bx-wrap { padding-left: 12px; padding-right: 12px; }
+  .bx-title { font-size: 1.85rem; }
+  .bx-head { gap: 0.5rem; }
+  .bx-head .bx-more { font-size: 1rem; }
+  .bx-head .bx-more .bx-arrow { flex: none; }
+  .bx-line { grid-template-columns: 32% minmax(0, 1fr); gap: 0.7rem; padding: 0.75rem; }
+  .bx-line-name { font-size: 1.12rem; }
+  .bx-line-price { font-size: 1.15rem; }
+  .bx-size { font-size: 1rem; }
+  .bx-size select { padding-right: 1.4rem; background-size: 15px; }
+  .bx-qty button { width: 30px; height: 32px; font-size: 1.1rem; }
+  .bx-qty span { min-width: 1.5rem; font-size: 0.95rem; }
+  .bx-act { font-size: 0.92rem; }
+  .bx-summary { padding: 1rem; }
+  .bx-summary h2 { font-size: 1.5rem; color: var(--sx-maroon); }
+  .bx-sum-row { font-size: 1.02rem; }
+  .bx-sum-row.is-total { font-size: 1.4rem; }
+  .bx-summary .bx-btn { font-size: 1.12rem; padding: 0.85rem 0.6rem; }
+  .bx-trust li { font-size: 0.78rem; padding: 0 0.25rem; }
+  .bx-trust svg { width: 22px; height: 22px; }
+  .bx-section-head h2 { font-size: 1.45rem; }
+  .bx-section-head .bx-more { font-size: 1rem; }
+  .bx-cards { gap: 0.45rem; }
+  .bx-pcard-name { font-size: 0.95rem; padding: 0.45rem 0.45rem 0; }
+  .bx-pcard-price { font-size: 0.98rem; padding: 0.15rem 0.45rem 0; }
+  .bx-pcard .pc-add { margin: 0.45rem; padding: 0.4rem 0.2rem; font-size: 0.85rem; }
+}
+
+/* ---------- Phone footer (owner's reference): logo | address, phone, hours | social ---------- */
+@media (max-width: 760px) {
+  .sf-footer .container { gap: 1.1rem; }
+  .sf-footer-brand {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(197, 168, 105, 0.25);
+  }
+  .sf-footer-logo { height: 40px; }
+  .sf-footer-reach { margin-top: 0; gap: 0.3rem; font-size: 0.78rem; }
+  .sf-footer-addr svg, .sf-footer-phone svg, .sf-footer-hours svg { width: 15px; height: 15px; }
+  .sf-footer-social { margin-top: 0; flex-direction: column; gap: 0.5rem; padding-left: 0.8rem; border-left: 1px solid rgba(197, 168, 105, 0.25); }
+  .sf-footer-social a { width: 32px; height: 32px; }
+  .sf-footer-copy { text-align: center; padding-right: 0; }
+}
+@media (max-width: 760px) {
+  .sf-footer-brand { gap: 0.7rem; }
+  .sf-footer-logo { height: 30px; }
+  .sf-footer-phone { white-space: nowrap; }
+  .sf-footer-reach { font-size: 0.74rem; }
+  .sf-footer-social { padding-left: 0.6rem; }
+}

@@ -17,11 +17,6 @@ const I = {
       <path d="M4 12h15m-6-6 6 6-6 6" />
     </svg>
   ),
-  bookmark: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6.5 3.5h11v17L12 16.5l-5.5 4z" />
-    </svg>
-  ),
   trash: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4 6.5h16M9.5 6.5V4h5v2.5M6.5 6.5l1 14h9l1-14M10 10.5v6.5M14 10.5v6.5" />
@@ -192,24 +187,30 @@ export function BagView({
                     {line.title}
                   </Link>
                   <span className="bx-line-price">{unit != null ? formatINR(unit * line.qty) : ""}</span>
-                  {sizes.some((s) => s.size) ? (
-                    <label className="bx-size">
-                      <span>Size:</span>
-                      <select
-                        value={size ?? ""}
-                        aria-label={`Size for ${line.title}`}
-                        onChange={(e) => e.target.value && e.target.value !== line.size && shop.setSize(line.slug, line.size, e.target.value)}
-                      >
-                        {size ? null : <option value="">Choose</option>}
-                        {sizes.map((s) => (
-                          <option key={s.size ?? "one"} value={s.size ?? ""}>
-                            {s.size}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  ) : null}
-                  <div className="bx-line-row">
+                  {/* Size and quantity on the left; Save for later and Remove beside them on the right. */}
+                  <div className="bx-ctl">
+                    {sizes.some((s) => s.size) ? (
+                      <label className="bx-size">
+                        <span>Size:</span>
+                        <select
+                          value={size ?? ""}
+                          aria-label={`Size for ${line.title}`}
+                          onChange={(e) => e.target.value && e.target.value !== line.size && shop.setSize(line.slug, line.size, e.target.value)}
+                        >
+                          {size ? null : <option value="">Choose</option>}
+                          {sizes.map((s) => (
+                            <option key={s.size ?? "one"} value={s.size ?? ""}>
+                              {s.size}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    ) : (
+                      <span />
+                    )}
+                    <button type="button" className="bx-act" onClick={() => shop.saveForLater(line.slug, line.size)}>
+                      <span>Save for Later</span>
+                    </button>
                     <div className="bx-qty" aria-label="Quantity">
                       <button type="button" aria-label="One less" onClick={() => shop.setQty(line.slug, line.size, line.qty - 1)} disabled={line.qty <= 1}>
                         &minus;
@@ -219,16 +220,10 @@ export function BagView({
                         +
                       </button>
                     </div>
-                    <span className="bx-line-acts">
-                      <button type="button" className="bx-act" onClick={() => shop.saveForLater(line.slug, line.size)}>
-                        {I.bookmark}
-                        <span>Save for Later</span>
-                      </button>
-                      <button type="button" className="bx-act" onClick={() => shop.remove(line.slug, line.size)}>
-                        {I.trash}
-                        <span>Remove</span>
-                      </button>
-                    </span>
+                    <button type="button" className="bx-act" onClick={() => shop.remove(line.slug, line.size)}>
+                      {I.trash}
+                      <span>Remove</span>
+                    </button>
                   </div>
                   {issue ? <p className="bx-issue">{issue}</p> : null}
                 </div>
