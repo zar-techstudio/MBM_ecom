@@ -1,0 +1,333 @@
+# MAQDOOM'S Big Mall: the e-commerce website
+
+The one document for the website (`MBM_03`): where it stands, what is left, what is built, how it
+is built, and what it needs from the ERP. Updated 16 Nov 2026.
+
+- Live: https://maqdoomsbigmall.com (Cloudflare Worker `mbm-website`).
+- The ERP (`E:\Projects\LEADS\Maqdooms\mbm_inv_v2`, erp.maqdoomsbigmall.com) owns the database,
+  the products and the orders. Its side of the contract: `mbm_inv_v2/docs/STOREFRONT_API.md`.
+
+Contents: 1. Where things stand · 2. Before launch · 3. Owner decisions · 4. What is built ·
+5. How the site is built · 6. What the ERP should add next · 7. Ideas for later
+
+---
+
+## 1. Where things stand
+
+- **The website is finished and live.** Every screen is built: browsing, MAHIB runway, search
+  (with photo search), bag, checkout, orders, invoices, account, loyalty points, reviews, WhatsApp
+  choices. No website code is waiting.
+- **It cannot take orders yet**, only because of keys and settings on the ERP side (section 2):
+  sign-in codes are in test mode, and Razorpay, WhatsApp, SMS, email and Shiprocket keys are not in.
+- **Catalogue today:** 32 products, all MAHIB; the main shop (Maqdoom's) has none. 5 pieces are
+  picked for the home page.
+- **Not tested yet:** the screens that need a real signed-in shopper (adding a mobile at checkout,
+  WhatsApp switches, "Tell me when it's back") and a full order. Both need the keys first.
+
+---
+
+## 2. Before launch
+
+Keys are secrets on the ERP server, added by whoever has the server login (with the keys from the
+Owner); settings are in the ERP. Each feature says "not set up" until its key is in. None of this
+needs website work.
+
+### Keys
+- **Sign-in codes are in test mode.** Switch them live only after a sender has its keys, or no code
+  is sent and nobody can sign in:
+  - email (Resend; quickest, the mail domain is ready): shoppers can **sign in**;
+  - SMS (MSG91 with DLT) or WhatsApp (Meta, with templates): needed to **confirm a mobile**, and an
+    order cannot be placed without one. So taking orders needs SMS or WhatsApp, not email alone.
+- **Razorpay**: until set, online payment says it isn't available yet.
+- **Shiprocket**: courier booking is built in the ERP; tracking then appears on the order page by
+  itself.
+- **WhatsApp (Meta)**: order updates, review links and back-in-stock messages go once it is in.
+
+### Owner settings in the ERP
+- Cash on delivery: **off** today; turn it on (optionally with a limit).
+- Delivery charge (₹0 today) and the free-delivery amount (none set).
+- Shiprocket pickup name and box size.
+
+### Checks
+1. Owner reads and approves the policy pages (shipping, returns, privacy, terms, grievance
+   officer). The wording is a draft.
+2. Publish Maqdoom's (main shop) products.
+3. **ERP clean start** (removing test data) may unpublish the current products and looks: after it,
+   publish the real MAHIB and Maqdoom's stock and looks, and pick the home-featured pieces again.
+4. One full test order after the keys and settings: sign-in, adding a mobile, an address, a
+   Razorpay test payment and a cash-on-delivery order (place one, cancel one), then the WhatsApp
+   message, the invoice and the courier booking.
+5. Look at the site on a real iPhone and a real Android phone.
+6. Decide whether to hide the site from search engines until launch (it is open now).
+7. Later: Google Business profile and Search Console (product structured data is already on product
+   pages); uptime and error alerts for the website (the ERP already has them); HSN codes per
+   product for the GST invoice [ERP].
+
+### This computer
+- Drive C: has only about 2 GB free. Builds work because their temp files go to drive E (see 5.3).
+  The folder `E:\Projects\LEADS\Maqdooms\.build-tmp` can be deleted between builds.
+
+---
+
+## 3. Owner decisions
+
+| Question | Decision |
+|---|---|
+| Cash on delivery | **Yes** (turn it on in the ERP's checkout settings) |
+| Free delivery amount | To be confirmed with the Owner |
+| Online exchanges | **None** (damaged or wrong items replaced or refunded; unboxing video within 48 hours); showroom: 2 days |
+| Loyalty | **Both showroom and online**, linked by mobile number |
+| Sign-in | Mobile (WhatsApp or SMS code) or email (email code) |
+| Payment and courier | Razorpay and Shiprocket keys added last, before launch |
+| Grievance officer | **Moghny Maqdoom**, +91 96104 15415 (call or WhatsApp) |
+| Instagram | @maqdooms_bigmall and @mahib_by_moghnymaqdoom |
+| Showroom hours | Every day, 9 am – 11 pm |
+
+Still open: loyalty rates (points per ₹100, value, expiry), international delivery charges.
+
+---
+
+## 4. What is built (live)
+
+### Look
+- Colours: warm ivory, deep maroon buttons and bands, thin gold lines; serif headings.
+- **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
+  menus, Feel the Fabric, search, wishlist, account, bag.
+- **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;
+  rows for Custom Tailoring, My Account & Orders, Wishlist, Contact & Store; WhatsApp button.
+- **Footer:** address with map pin, phone, hours, Instagram, Shop / Help / About. On the home page
+  it is light with the showroom line drawing in gold; on phones it is compact (logo | details |
+  social).
+- **Intro video** on phones, once per device on the home page (1.2 MB WebM, MP4 for older iPhones;
+  skipped on slow data or reduced motion; Skip button).
+- Every new page opens at the top; Back keeps your place.
+
+### Home page
+Shorter hero (outfits change by themselves); maroon category ring with rounded cards and arrows;
+"Since 1895" story; MAHIB banner; **Shop by ceremony** (one fixed gold arch on a marble stage with
+a marble floor and fabric drapes; the looks swap every 5 seconds; pieces, total, Shop the look, Add
+to wishlist); fabrics; **Featured** (arch-topped cards, the pieces staff pick in the ERP, else the
+newest); custom tailoring with step icons; Recently viewed.
+
+### MAHIB
+- **Runway** on `/mahib` and every MAHIB category: three fixed arches sized from the Owner's
+  reference (centre 388 × 542 at 1672 px wide), niche colour `#c4ae97`, double gold line, shaded
+  top corners; outfits step from arch to arch every 5 seconds (paused only while a piece or the
+  panel is open); "01 / Occasion" and the name under each arch; piece dots with a product card;
+  bar with the look, its pieces, price, Shop complete look, Customize your look (side panel).
+- Listing head: spaced label, large MAHIB, gold ornament, "Complete Looks. Timeless Details.",
+  section search, category bubbles.
+
+### Browsing
+- Product cards: soft boxes with a gap, wishlist heart, Add to Bag (In Bag · View after); hold
+  (0.18 s, phone) or hover (0.1 s, desktop) shows the 2nd photo or video; grid / list switch
+  (remembered); 12 at a time, more on scroll; sort by price, price ranges, in stock.
+- Product page: swipe photos, hold-to-zoom (0.16 s), hover zoom, full-screen pinch; rating,
+  wishlist and share on the photo; size, size guide (over the whole page), Add to bag, Buy now;
+  trust row; "See it live on a video call"; highlights, details, delivery & returns; Complete the
+  look; More like this; Recently viewed; "Tell me when it's back" when sold out.
+- **Buy the look** (product page, runway, home) adds only the pieces not already in the bag; the
+  product page says "Add the other N pieces" when some are there.
+- Search with suggestions, recent searches and a results page; **AI photo search** (camera: snap
+  or upload a photo, Gemini picks the closest pieces).
+- Contact page with map; policy pages.
+
+### Shopping, accounts and checkout
+- Bag and wishlist on the device without an account; merged into the account on sign-in and kept
+  in sync.
+- **Bag:** a card per piece (size drop-down, quantity, Save for Later, Remove), live prices and
+  stock, Order Summary with Proceed to Checkout, trust row, Complete Your Look / You May Also Like;
+  empty bag with Recently Viewed and suggestions. Fits phones down to 340 px.
+- **Sign-in:** a mobile number or an email and a one-time code; WhatsApp or SMS for a mobile
+  (switches to SMS by itself when a number is not on WhatsApp), email for an email; only the ways
+  the ERP offers. Name asked once.
+- **Checkout:** 1-2-3 tracker; step 1 sign-in, and a mobile confirmed before ordering (an email
+  sign-in adds one; "Your showroom account is now linked" when it matches showroom bills); step 2
+  saved or new address (state decides GST); step 3 online or cash on delivery; order card with
+  coupon, points, delivery, GST, total, all from the ERP's quote.
+- **Orders:** status in plain words, progress, tracking, Pay now while awaiting payment, cancel
+  before packing, Buy again, printable GST invoice once shipped. `/orders` opens the list.
+- **Account:** orders, loyalty points (balance, value, history), WhatsApp switches (order updates,
+  reminders about my bag), profile (an email used to sign in is read-only), addresses, sign out.
+- After an order is placed, the ERP is asked to send the "order confirmed" WhatsApp at once.
+
+### Loyalty and reviews
+- "Use my points" at checkout (priced by the ERP like a coupon); points in the account.
+- `/review/<code>`: the one-time link for a bill: stars, comment and photo per product; showroom
+  customers are then asked to review on Google.
+- Product pages: average rating, verified reviews with photos; stars on cards; ratings in Google's
+  structured data.
+
+---
+
+## 5. How the site is built
+
+### 5.1 Hard rules
+1. **Public key only.** Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or
+   secret database key to this project, its `.env` files or Cloudflare. The one shared secret is
+   `SHOP_API_SECRET` (set by the ERP), used only on this site's server (`src/lib/shop-api.ts`) to
+   ask the ERP to send a code, start a payment, store a review photo or send a WhatsApp now.
+2. **No migrations here.** No `supabase/` folder, no SQL. Database changes are made in the ERP repo.
+3. **Storefront functions only.** Direct table reads are blocked for the public role, by design.
+   - Catalogue (no sign-in): `storefront_settings`, `storefront_categories`, `storefront_products`,
+     `storefront_products_page` (not used yet), `storefront_home_featured`, `storefront_product`,
+     `storefront_looks` (outfits; each piece has an optional dot `x`, `y` in % of the photo).
+   - Sign-in: `storefront_sign_in_options`, `storefront_verify_code`, `storefront_verify_phone`,
+     `storefront_sign_out`.
+   - Account, quote, orders, invoices, points: `storefront_me`, `storefront_quote`,
+     `storefront_place_order`, `storefront_order`, `storefront_invoice`, `storefront_points`, …
+   - WhatsApp: `storefront_whatsapp_prefs`, `storefront_set_whatsapp_prefs`,
+     `storefront_notify_back_in_stock`.
+   - Reviews: `storefront_review_form`, `storefront_submit_review`, `storefront_reviews`; product
+     cards carry `rating`.
+4. **Amounts come from the ERP.** Prices are in paise and **include GST** (the showroom selling
+   price staff enter). Totals, discounts, delivery, GST split and cash-on-delivery availability
+   come only from `storefront_quote`; the website never calculates a charge. Payment status comes
+   only from the ERP (Razorpay tells the ERP directly).
+5. **Photos** are in the public `ecommerce-images` bucket, already WebP (converted in the ERP
+   before upload): large `<id>.webp` (1600×2000) and card `<id>.card.webp` (600×750). Outfit photos
+   are cut-outs of any shape. Use `imageUrl(path, "large" | "card")` from `src/lib/site.ts`.
+6. **The session stays on the server.** The shopper's session lives only in the HttpOnly cookie
+   `mbs`, set and read by `POST /api/shop/<action>`. Never pass it to page scripts.
+
+### 5.2 Environment
+
+| Variable | Where | What |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env` (built in) | ERP database, public key |
+| `NEXT_PUBLIC_SITE_URL` | deploy command | `https://maqdoomsbigmall.com` |
+| `SHOP_API_SECRET` | `.env`, and a secret on the `mbm-website` Worker | server-to-ERP calls only |
+| `GEMINI_API_KEY` | `.env`, and a secret on the `mbm-website` Worker | AI photo search (same key as the ERP) |
+
+`.env` lists every value with a note. Worker secrets: `npx wrangler secret put NAME --name mbm-website`,
+listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the Worker in step.
+
+### 5.3 Hosting and deploy
+- Cloudflare Workers (ZAR account), Worker `mbm-website`, at https://maqdoomsbigmall.com and www.
+- Deploy: `NEXT_PUBLIC_SITE_URL=https://maqdoomsbigmall.com npm run deploy` (OpenNext; `wrangler
+  login` as the ZAR account). While drive C: is nearly full, run it with `TEMP` and `TMP` pointing
+  to a folder on drive E and `NODE_OPTIONS=--max-old-space-size=4096`, and stop the dev server.
+- If only the upload fails (network, Cloudflare login refresh), `npx opennextjs-cloudflare deploy`
+  retries it without building again.
+- The build uses 3 workers (`experimental.cpus` in `next.config.ts`) so it fits in 8 GB.
+- Next.js "Cache Components" are off (the Cloudflare adapter does not support them yet).
+- This Next.js version differs from older ones: read `node_modules/next/dist/docs/` before using an
+  API (see `AGENTS.md`). After adding a route, run `npx next typegen` so `PageProps<…>` types exist.
+
+### 5.4 How it works
+- **Freshness:** catalogue content is kept in memory for a minute, settings for an hour
+  (`remember()` in `src/lib/catalogue.ts`); pages are built on each visit, so staff changes show
+  within a minute without a deploy. Sizes and stock on product pages are read live.
+- **Guests browse freely.** Bag, wishlist and recently viewed are kept on the device
+  (`src/lib/shop-store.ts`, localStorage key `mbm-shop-v1`). Signing in merges them into the
+  account and keeps them in sync (`src/lib/account.ts`). Other device keys: `mbm-recent-searches`,
+  `mbm-intro-seen`, `mbm-hold-hint-seen`, `mbm-grid-view`.
+- **Ordering:** product page → `/bag` → `/checkout` (sign-in, mobile, address, payment) →
+  `/orders/<code>`. Fabrics are enquire-only (the ERP refuses them in a quote). WhatsApp ordering
+  stays as a link on the bag.
+- **Owner settings that affect checkout** (ERP): delivery charge, free delivery from an amount,
+  cash on delivery on/off with an optional limit.
+
+### 5.5 Pages
+
+| Path | What |
+|---|---|
+| `/` | Home |
+| `/shop`, `/shop/<category>` | Maqdoom's collection |
+| `/mahib`, `/mahib/<category>` | MAHIB: runway, then heading, category bubbles, products |
+| `/product/<slug>` | Product page |
+| `/search?q=` | Search results |
+| `/wishlist`, `/bag`, `/checkout`, `/account` | Shopping and account |
+| `/orders` | Opens the order list on `/account` (linked from WhatsApp messages) |
+| `/orders/<code>`, `/orders/<code>/invoice` | One order; its GST invoice to print or save as PDF (after shipping) |
+| `/review/<code>` | One-time review link for a bill |
+| `/contact`, `/policies/{shipping,returns,privacy,terms}` | Store details, map, policies |
+
+### 5.6 Server routes
+
+| Route | What |
+|---|---|
+| `POST /api/shop/<action>` | All sign-in, account, checkout, WhatsApp and review calls (JSON only; `src/app/api/shop/[action]/route.ts`) |
+| `GET /api/products?slugs=` | Live sizes, prices, stock for the bag and wishlist |
+| `GET /api/search?q=` | Search suggestions |
+| `POST /api/lens` | AI photo search (`src/lib/lens.ts`; fast model first; 12 searches per device per 10 minutes) |
+| `POST /api/review-photo?token=` | A review photo (resized to ~1200 px in the browser), passed to the ERP |
+
+### 5.7 Main pieces of code
+- `MahibRunway` / `MahibLead`: the runway. `HomeLooks`: Shop by ceremony. `FeaturedRail`: Featured.
+  `CategoryRing`: home categories.
+- `ProductCard` / `CardMedia`: cards, hold/hover preview, Add to Bag. `ProductGallery`: photos.
+- `OrderPanel`, `SizeGuide`, `NotifyBack`, `CompleteTheLook`, `PhotoActions`, `ProductRail`.
+- `BagView`, `CheckoutView`, `SignIn`, `AddressForm`, `OrderView`, `InvoiceView`, `AccountView`.
+- Reviews: `ReviewView`, `ProductReviews`, `Stars`.
+- `SiteChrome` (header, footer), `HeaderClient` (menus, phone menu), `ShopIcons` (search, photo
+  search), `SearchBar`, `ScrollToTop`, `IntroSplash`.
+- Styles: `design.css` (original design), `globals.css`, `refine.css`, `shop.css` (checkout,
+  orders, account), `home.css` (home page), `screens.css` (bag, checkout, phone menu and header,
+  listing head), `src/app/mahib/mahib.css` (runway).
+- Artwork in `public/images`: `mall-line.svg` (showroom drawing), `marble.svg`, `drape.svg`,
+  `intro.webm` / `intro.mp4`.
+
+### 5.8 Testing notes
+- Sign-in codes in test mode: the code is shown in the ERP under Commerce → Orders → Customers &
+  Loyalty.
+- Online payment answers "not available" until the Razorpay keys are set.
+- In Claude's built-in browser pane, streamed parts of a page may not appear while the pane is in
+  the background. Real browsers are not affected; check on a phone.
+
+### 5.9 Photo guide for staff
+- **Outfit photo:** the complete outfit on a mannequin with a head form, full length from the top
+  of the safa to the shoes, cut out on a transparent background. A normal photo also works; it then
+  fills the arch.
+- **Piece photos:** each item alone on a plain background, 4:5. Photo 1 the whole piece (front);
+  photo 2 a close-up of embroidery or the back (shown on hold/hover); shoes at a 3/4 angle with
+  space around them; safa on a head form.
+- **Video (optional):** one 5–8 second clip per product, played on hold/hover.
+- **Intro video:** 720×1280, no sound; send it in and it is compressed to about 1–2 MB.
+
+### 5.10 Original design
+`reference/` has the original static design (`index.html`, `app.js`, `styles.css`);
+`src/app/design.css` is that stylesheet.
+
+---
+
+## 6. What the ERP should add next
+
+For the ERP project (`mbm_inv_v2`). The website side of each is ready to build as soon as the ERP
+sends the data; until then the website shows nothing for it. Please add each as **new keys** on
+the existing storefront functions (same names and arguments).
+
+1. **MRP and % off:** `mrp_paise` on cards and the product page (null when none). Website shows
+   ~~₹3,999~~ **₹2,999** and "25% off".
+2. **Colour variants:** `storefront_product` gets `variants: [{ slug, colour, thumbnail, sold_out }]`.
+   Website: "Colour: Tan" with photo swatches.
+3. **Size chart per category (or product):** `size_chart: { unit, columns, rows, note }` on
+   `storefront_product`. Website: the Size guide shows it instead of the general guide.
+4. **Fit details:** `fit: { model_height, model_size, fit, fabric, care }`. Website: a "Size & fit"
+   line and a row in Details.
+5. **Delivery date by PIN code (Shiprocket):** `storefront_delivery_check(p_pincode, p_slug?)` →
+   `{ deliverable, cod, estimate_from, estimate_to }`. Website: "Deliver to 500002 · by Thu" on the
+   product page and bag.
+6. **Review tags:** `storefront_reviews` gets `breakdown: {5: n, …}` and `aspects: [{ name, average }]`.
+   Website: star bars and aspect chips.
+7. **Questions and answers** (later): shoppers ask, staff answer in the ERP, answers show publicly.
+8. **Stock signal:** optional product-level `low_stock`, so cards can say "Only 2 left".
+9. **Damage claims:** a place in the ERP to attach the shopper's unboxing video to the order.
+10. **Occasion on looks:** fill in `occasion` for each look, so the runway shows "01 / Wedding".
+11. **Filters:** size and colour data per product, for size and colour filters on listings.
+
+Done: home featured for both sections (staff pick any piece; the website shows exactly those).
+
+---
+
+## 7. Ideas for later
+
+**Principles** (from Amazon, Myntra, Flipkart, Blinkit, Zepto): browse freely, sign in only to
+pay; the phone number is the identity, the same customer as at the showroom; fewest steps to pay;
+answer size and fit doubts before they become questions; thumb-reachable actions on phones;
+instant feedback; give before you ask; raise order value with outfits; bring people back with the
+wishlist, recently viewed, WhatsApp updates (with consent) and loyalty.
+
+**Ideas:** size finder, outfit builder, scratch-card welcome offer, family matching sets, gift
+cards, showroom fitting appointments, analytics with consent, `storefront_products_page` for very
+large catalogues (the site pages in the browser today, fine for hundreds of products).

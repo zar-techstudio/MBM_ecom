@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * Read-only access to the shared ERP database through its public storefront
- * functions (see STOREFRONT_RULES.md). Public key only; no table access.
+ * functions (see WEBSITE.md). Public key only; no table access.
  * Product content is kept in memory for a minute (settings for an hour); availability is read live.
  */
 
@@ -32,7 +32,7 @@ export type ProductCard = {
   featured_rank: number | null;
   home_featured: boolean;
   /** Shown while a shopper holds (phone) or rests the cursor on (desktop) the card.
-   * Not sent by the ERP yet; see the ERP note in STOREFRONT_RULES.md. */
+   * Not sent by the ERP yet; see WEBSITE.md, section 6. */
   hover_image?: string | null;
   /** Short muted clip played on hold/hover instead of hover_image. Bucket path or full URL. */
   video?: string | null;

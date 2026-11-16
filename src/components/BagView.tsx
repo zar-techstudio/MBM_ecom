@@ -70,7 +70,7 @@ function problem(line: BagLine, l: Live | undefined) {
 
 /**
  * The bag: every line is checked against live prices and stock. Ordering happens on WhatsApp
- * until online checkout (phone + OTP, payment) is connected; see docs/ECOMMERCE_ROADMAP.md.
+ * until online checkout (phone + OTP, payment) is connected; see WEBSITE.md.
  */
 export function BagView({
   whatsappNumber,

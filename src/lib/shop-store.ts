@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 
 /**
  * Bag, wishlist and recently viewed, kept on the shopper's device (no account needed).
- * When sign-in arrives (Phase B in docs/ECOMMERCE_ROADMAP.md) these lists are sent to the
+ * When sign-in arrives (see WEBSITE.md) these lists are sent to the
  * ERP and merged into the account. Prices here are only for display: the bag page re-reads
  * live prices and stock before ordering.
  */
