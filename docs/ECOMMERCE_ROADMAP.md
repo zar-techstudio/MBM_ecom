@@ -83,13 +83,29 @@ How the site is built: `STOREFRONT_RULES.md`. The ERP's API: `mbm_inv_v2/docs/ST
   stars on product cards; ratings in Google's structured data.
 
 ### Waiting on settings or keys (no website work needed)
-- **Cash on delivery is switched off** in the ERP's checkout settings: turn it on (optionally with
-  a limit). Until then checkout shows "Not available for this order".
-- **Delivery charge is ₹0** and no free-delivery amount is set: the owner decides both.
-- **Sign-in codes are in test mode** [ERP]: switch on WhatsApp/SMS sending.
-- **Razorpay keys** [ERP]: until set, online payment says it isn't available yet.
-- **Courier (Shiprocket)** [ERP]: tracking numbers then appear on the order page by themselves.
-- **WhatsApp messages** [ERP, C3]: review links and order updates sent automatically.
+Keys are secrets on the ERP server, added by whoever has the server login (with the keys from the
+Owner); settings are in the ERP. Each feature says "not set up" until its key is in.
+- **Sign-in codes are in test mode.** Switch them live only after a sender has its keys, or no
+  code is sent and nobody can sign in:
+  - email (Resend; quickest, the mail domain is ready): shoppers can **sign in**;
+  - SMS (MSG91 with DLT) or WhatsApp (Meta, with templates): needed to **confirm a mobile**, and an
+    order cannot be placed without one. So taking orders needs SMS or WhatsApp, not email alone.
+- **Razorpay keys**: until set, online payment says it isn't available yet.
+- **Shiprocket keys**: courier booking is built in the ERP; tracking then appears on the order page
+  by itself. Owner also sets the pickup name and box size.
+- **Cash on delivery is off** in the ERP's checkout settings: turn it on (optionally with a limit).
+- **Delivery charge is ₹0** and no free-delivery amount is set: the Owner decides both.
+- **WhatsApp messages** (order updates, review links, back in stock): go once Meta keys are in.
+- **ERP clean start** (removing test data) may unpublish the current products and looks: after it,
+  publish the real MAHIB and Maqdoom's stock and looks, and pick the home-featured pieces again.
+
+### Before launch (checks)
+- Owner approves the policy pages (shipping, returns, privacy, terms, grievance officer).
+- Publish Maqdoom's (main shop) products: today all 32 products are MAHIB.
+- One full test order after the keys and settings: sign-in, adding a mobile, an address, Razorpay
+  test payment and cash on delivery, then the WhatsApp message, invoice and courier booking.
+- Look at the site on a real iPhone and a real Android phone.
+- Decide whether to hide the site from search engines until launch (it is open now).
 
 ### Not done yet (website)
 - Waiting on the ERP (see `docs/ERP_REQUESTS.md`): MRP and % off, colour variants, size chart per
