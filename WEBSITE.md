@@ -211,18 +211,20 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
   retries it without building again.
 - The build uses 3 workers (`experimental.cpus` in `next.config.ts`) so it fits in 8 GB.
 - Next.js "Cache Components" are off (the Cloudflare adapter does not support them yet).
-- **Worker entry is `worker.ts`** (wrangler.jsonc `main`): it sends plain-http visits to https
-  (301 for GET and HEAD, 308 for anything else), then runs the OpenNext build
-  (`.open-next/worker.js`). It is left out of the app's type check (`tsconfig.json`). Files in
-  `public/` are served by Cloudflare before the worker runs, so they are not redirected; HSTS
-  covers browsers after their first visit.
+- **http → https:** Cloudflare's "Always Use HTTPS" (domain setting, on since 18 Nov 2026)
+  sends every plain-http request to https with a 301, before the website runs (pages, images and
+  the ERP alike). The **Worker entry `worker.ts`** (wrangler.jsonc `main`) has the same redirect as
+  a fallback if that setting is ever turned off (301 for GET and HEAD, 308 for anything else),
+  then runs the OpenNext build (`.open-next/worker.js`); it is left out of the app's type check
+  (`tsconfig.json`).
 - **Security headers** on every page and API answer (`next.config.ts`): HSTS (1 year, subdomains),
   `nosniff`, `X-Frame-Options: SAMEORIGIN`, CSP `frame-ancestors 'self'; base-uri 'self';
   object-src 'none'`, `strict-origin-when-cross-origin`, and a Permissions-Policy that turns off
   camera, microphone and location and allows payment only for this site and Razorpay. Photo search
   uses a file picker, so it still offers the phone camera. Checked: Razorpay Checkout opens with no
   blocked frames.
-- This Next.js version differs from older ones: read `node_modules/next/dist/docs/` before using an
+- Next.js 16.4.6 (16.4.3 had two cache advisories, which the site was not using). This version
+  differs from older ones: read `node_modules/next/dist/docs/` before using an
   API (see `AGENTS.md`). After adding a route, run `npx next typegen` so `PageProps<…>` types exist.
 
 ### 5.4 How it works
