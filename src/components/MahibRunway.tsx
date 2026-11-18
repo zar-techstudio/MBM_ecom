@@ -6,10 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Look, LookPiece } from "@/lib/catalogue";
 import { shop, toSaved } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText } from "@/lib/site";
+import "@/app/mahib/runway-photo.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
-const ARCH = 0.7; // width / height of an arch (matches .runway-model in mahib.css)
-const MAX_W = 1.3; // a wide photo may spill this far past the arch's sides
 const ADVANCE_MS = 5000;
 
 /** Where a look sits relative to the one in front: 0 centre, -1 left, 1 right, else hidden. */
@@ -17,17 +16,6 @@ function offsetOf(i: number, active: number, count: number) {
   let d = (i - active + count) % count;
   if (d > count / 2) d -= count;
   return d;
-}
-
-/** Size of the photo box inside the arch; the piece dots (in % of the photo) use the same box.
- * A cut-out is shown whole (never cropped). A normal photo (solid background) fills the whole arch
- * instead, like a portrait in a window, so its background never shows as a box. */
-function photoBox(aspect: number, fill: boolean) {
-  const w = aspect / ARCH;
-  if (fill) return w >= 1 ? { width: `${w * 100}%`, height: "100%" } : { width: "100%", height: `${(1 / w) * 100}%` };
-  return w <= MAX_W
-    ? { width: `${w * 100}%`, height: "100%" }
-    : { width: `${MAX_W * 100}%`, height: `${((MAX_W * ARCH) / aspect) * 100}%` };
 }
 
 /** True when the photo has an opaque background (a normal photo, not a cut-out): its corners
@@ -70,22 +58,12 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-/* Rounded shoulders rising to a small point (same shape as the mask in mahib.css). */
-const ARCH_PATH = "M1 400 V105 C1 48 48 18 100 1 C152 18 199 48 199 105 V400";
-
-/** Thin gold outline of a Hyderabadi pointed arch, stretched to its box. */
-function ArchLine() {
-  return (
-    <svg className="runway-arch-line" viewBox="0 0 200 400" preserveAspectRatio="none" aria-hidden="true">
-      <path d={ARCH_PATH} vectorEffect="non-scaling-stroke" />
-    </svg>
-  );
-}
-
 /**
- * MAHIB runway: three fixed courtyard arches; the outfits step from arch to arch every 5 seconds
- * (paused only while a piece or the panel is open), and can be swiped or stepped with the arrows. Dots on the photo open that piece; "Customize your look" slides in a narrow panel from the
- * right with every piece. Each piece is a normal product that can be bought alone.
+ * MAHIB runway: a palace hall photo with three teal niches (a wide, a tablet and a phone version);
+ * the outfits stand in the niches and step from niche to niche every 5 seconds (paused only while a
+ * piece or the panel is open), and can be swiped or stepped with the arrows. Dots on the photo open
+ * that piece; "Customize your look" slides in a narrow panel from the right with every piece. Each
+ * piece is a normal product that can be bought alone. Placement: runway-photo.css.
  */
 export function MahibRunway({ looks }: { looks: Look[] }) {
   const [active, setActive] = useState(0);
@@ -178,7 +156,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
       </div>
 
       <div
-        className="runway-stage"
+        className="runway-stage rw"
         onPointerDown={(e) => {
           swiped.current = false;
           if (e.pointerType === "mouse") return;
@@ -196,45 +174,57 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         }}
         onPointerCancel={() => (drag.current = null)}
       >
-        <div className="runway-scene">
-          <div className="runway-floor" aria-hidden="true" />
-          {/* The arches stay put; the outfits move from arch to arch on top of them. */}
-          <div className="runway-arches" aria-hidden="true">
-            {(["left", "center", "right"] as const).map((pos) => (
-              <span key={pos} className={`runway-slot is-${pos}`}>
-                <span className="runway-arch" />
-                <ArchLine />
-                <ArchLine />
-              </span>
-            ))}
-          </div>
+        {/* The hall photo and the outfits share one canvas with the photo's shape (runway-photo.css),
+            so the outfits always stand in the niches. Same screen rules as the canvas CSS. */}
+        <div className="rw-canvas">
+          <picture className="rw-bg">
+            <source media="(max-width: 767px)" srcSet="/images/mahib-bg-phone.webp" type="image/webp" />
+            <source media="(min-width: 768px) and (orientation: portrait)" srcSet="/images/mahib-bg-tablet.webp" type="image/webp" />
+            <img src="/images/mahib-bg-wide.webp" alt="" fetchPriority="high" decoding="async" draggable={false} />
+          </picture>
           {slots.map((l, i) => {
             const off = offsetOf(i, act, n);
             const pos = off === 0 ? "center" : off === -1 ? "left" : off === 1 ? "right" : "away";
             const photo = Boolean(solid[l.slug]);
-            const box = photoBox(aspects[l.slug] ?? 0.5, photo);
-            const img = (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={imageUrl(l.image) ?? ""}
-                alt={l.image_alt ?? l.name}
-                style={box}
-                className={photo ? "runway-photo" : "runway-sticker"}
-                crossOrigin="anonymous"
-                loading={i === 0 ? "eager" : "lazy"}
-                draggable={false}
-                ref={(el) => {
-                  // Photo already loaded before the page became interactive: onLoad won't fire.
-                  if (el?.complete && el.naturalWidth && !aspects[l.slug]) measure(l.slug, el);
-                }}
-                onLoad={(e) => measure(l.slug, e.currentTarget)}
-              />
-            );
+            const src = imageUrl(l.image) ?? "";
             return (
-              <div key={`${l.slug}-${i}`} className={`runway-model is-${pos}`} aria-hidden={pos === "away"}>
-                {/* A cut-out stands over the arch and may rise past it (a tall safa is never cut);
-                    a normal photo is kept inside the arch's shape. */}
-                {photo ? <span className="runway-arch runway-arch-clip">{img}</span> : img}
+              <div key={`${l.slug}-${i}`} className={`rw-model is-${pos}`} aria-hidden={pos === "away"}>
+                <span
+                  className={`rw-fig ${photo ? "is-photo" : "is-cut"}`}
+                  style={{ "--ar": aspects[l.slug] ?? 0.45 } as React.CSSProperties}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={l.image_alt ?? l.name}
+                    crossOrigin="anonymous"
+                    loading={i === act ? "eager" : "lazy"}
+                    draggable={false}
+                    ref={(el) => {
+                      // Photo already loaded before the page became interactive: onLoad won't fire.
+                      if (el?.complete && el.naturalWidth && !aspects[l.slug]) measure(l.slug, el);
+                    }}
+                    onLoad={(e) => measure(l.slug, e.currentTarget)}
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="rw-reflect" src={src} alt="" aria-hidden="true" loading="lazy" draggable={false} />
+                  {pos === "center" ? (
+                    <span className="runway-dots">
+                      {l.pieces.map((p, n) =>
+                        p.x != null && p.y != null ? (
+                          <button
+                            key={`${p.role}-${n}`}
+                            type="button"
+                            className={`runway-dot${pick === n ? " active" : ""}`}
+                            style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                            aria-label={`${p.role}: ${p.product.title}`}
+                            onClick={() => setPick(pick === n ? null : n)}
+                          />
+                        ) : null,
+                      )}
+                    </span>
+                  ) : null}
+                </span>
                 <button
                   type="button"
                   className="runway-hit"
@@ -246,29 +236,6 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
                     else show(i);
                   }}
                 />
-                <span className="runway-tag" aria-hidden="true">
-                  <span className="runway-tag-num">
-                    {pad((i % count) + 1)}
-                    {l.occasion ? ` / ${l.occasion}` : ""}
-                  </span>
-                  <span className="runway-tag-name">{l.name}</span>
-                </span>
-                {pos === "center" ? (
-                  <div className="runway-dots" style={box}>
-                    {l.pieces.map((p, n) =>
-                      p.x != null && p.y != null ? (
-                        <button
-                          key={`${p.role}-${n}`}
-                          type="button"
-                          className={`runway-dot${pick === n ? " active" : ""}`}
-                          style={{ left: `${p.x}%`, top: `${p.y}%` }}
-                          aria-label={`${p.role}: ${p.product.title}`}
-                          onClick={() => setPick(pick === n ? null : n)}
-                        />
-                      ) : null,
-                    )}
-                  </div>
-                ) : null}
               </div>
             );
           })}

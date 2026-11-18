@@ -119,12 +119,19 @@ to wishlist); fabrics; **Featured** (arch-topped cards, the pieces staff pick in
 newest); custom tailoring with step icons; Recently viewed.
 
 ### MAHIB
-- **Runway** on `/mahib` and every MAHIB category: three fixed arches sized from the Owner's
-  reference (centre 388 × 542 at 1672 px wide), niche colour `#c4ae97`, double gold line, shaded
-  top corners; outfits step from arch to arch every 5 seconds (paused only while a piece or the
-  panel is open); "01 / Occasion" and the name under each arch; piece dots with a product card;
-  dark teal band (from the owner's reference) with "Featured look 01 / 13", the look's name in spaced
-  capitals, price, a gold Shop the look and an outlined Customize your look (side panel).
+- **Runway** on `/mahib` and every MAHIB category: a palace hall photo (owner's artwork) with
+  three teal niches; the outfits stand in the niches on the marble floor (soft shadow, faint
+  reflection) and step from niche to niche every 5 seconds (paused only while a piece or the panel
+  is open); arrows on desktop, swipe on touch; piece dots with a product card; under it a dark
+  teal band with "Featured look 01 / 13", the look's name in spaced capitals, price, a gold Shop the
+  look and an outlined Customize your look (side panel). Three versions of the photo: wide
+  (desktops, laptops, phones sideways), 4:3 (tablets upright), tall (phones), each ~240 KB WebP in
+  `public/images/mahib-bg-*.webp`; originals in `reference/mahib-bg/`. The photo and the outfits
+  share one canvas with the photo's shape (`src/app/mahib/runway-photo.css`, positions measured
+  from the photos), so outfits always stand in the niches; on narrower screens the curtains are
+  cropped first. **If the photos are replaced, the niche positions must be measured again.**
+  Outfit photos look best as cut-outs (transparent background); a normal photo is shown as a
+  framed portrait in the niche.
 - Listing head: spaced label, large MAHIB, gold ornament, "Complete Looks. Timeless Details.",
   section search, category bubbles.
 

@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Photo runway (owner's backgrounds, 18 Nov 2026). The background and the outfits sit on one
+   canvas with the photo's exact shape, so each outfit always stands in its niche. Which photo is
+   used (phone / tablet portrait / wide) follows the same rules as the <picture> sources in
+   MahibRunway. The stage height keeps the niches and plants ("safe" share of the width) in view;
+   curtains at the sides are cropped first. Generated from measurements of the photos.
+   ========================================================================== */
+.runway-stage.rw { position: relative; height: var(--sh); margin-top: clamp(0.5rem, 1.5vh, 1.1rem); overflow: hidden; touch-action: pan-y; user-select: none; }
+.rw-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, calc(var(--sh) * var(--r)));
+  aspect-ratio: var(--r);
+  transform: translate(-50%, -50%);
+  background-size: cover;
+  transition: transform 0.6s var(--ease-luxury);
+}
+.rw-bg, .rw-bg img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.rw-model {
+  position: absolute;
+  z-index: 2;
+  transition: left 0.9s var(--ease-luxury), top 0.9s var(--ease-luxury), width 0.9s var(--ease-luxury), height 0.9s var(--ease-luxury), opacity 0.6s ease;
+}
+.rw-model.is-center { z-index: 3; }
+.rw-model.is-away { z-index: 1; opacity: 0; pointer-events: none; }
+/* The outfit: full height of its spot, width from the photo's own shape, standing on the floor. */
+.rw-fig { position: absolute; left: 50%; bottom: 0; height: 100%; aspect-ratio: var(--ar, 0.45); transform: translateX(-50%); pointer-events: none; }
+.rw-fig > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.rw-fig.is-cut > img:first-child { filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35)); }
+/* A normal photo (solid background) stands like a framed portrait in the niche. */
+.rw-fig.is-photo { border-radius: 999px 999px 6px 6px / 22% 22% 6px 6px; overflow: hidden; box-shadow: 0 0 0 2px rgba(212, 169, 87, 0.7), 0 18px 30px rgba(0, 0, 0, 0.35); }
+.rw-fig.is-photo > img { object-fit: cover; }
+/* Soft shadow at the feet and a faint reflection in the polished marble. */
+.rw-fig::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: -2.5%; height: 5%; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(40, 25, 10, 0.45), transparent 70%); z-index: -1; }
+.rw-fig > .rw-reflect {
+  inset: auto 0 auto 0;
+  top: 100%;
+  height: 100%;
+  transform: scaleY(-1);
+  opacity: 0.22;
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 28%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 28%);
+}
+.rw-fig.is-photo > .rw-reflect { display: none; }
+.rw-model:not(.is-center) .rw-fig { filter: brightness(0.94); }
+.rw .runway-hit { position: absolute; inset: 0; z-index: 2; }
+.rw .runway-dots { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.mahib-runway.is-open .rw-canvas { transform: translate(calc(-50% - 12%), -50%); }
+
+/* Wide photo: desktops, laptops, tablets and phones held sideways. */
+.runway-stage.rw { --sh: clamp(380px, min(calc(100vh - 340px), calc(100vw / (var(--safe) * var(--r)))), 820px); }
+  .runway-stage.rw { --r: 2.7025; --safe: 0.6159; }
+  .rw-canvas { background-image: url("data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAAAQBACdASoYAAkAPtFUo0uoJKMhsAgBABoJYgCdH8ACK8Y0RSazYVsAAAD9A1cz6K2nVDYVhnZ6Myb/7S2LUOS3HZh7dhg8vHMrxnRyp3cL1ydRU2ULjYMfNNAfZ5+j727CyHuXMsdBn8U84KGkq/avb9/cig8Hg3dRTR4cM1rWv3D4u+H+CGTDp4isl18RjG4NnmfWsnXJIxSKAAA="); }
+  .rw-model.is-left { left: 34.190%; width: 10.136%; top: 25.048%; height: 57.759%; }
+  .rw-model.is-center, .rw-model.is-away { left: 49.273%; width: 14.985%; top: 15.693%; height: 67.598%; }
+  .rw-model.is-right { left: 68.962%; width: 10.136%; top: 24.687%; height: 58.270%; }
+
+/* Tablet photo (4:3): tablets held upright. */
+@media (min-width: 768px) and (orientation: portrait) {
+  .runway-stage.rw { --r: 1.3333; --safe: 0.8688; }
+  .rw-canvas { background-image: url("data:image/webp;base64,UklGRvgAAABXRUJQVlA4IOwAAAAQBgCdASoYABIAPtFcp04oJSOiKAqpABoJZgCdMoR6boM3/xKZ4AAnSkw3mD04e36K0UNdSYBOdQAA/maNZZpItVZ5Cvi2whkVJZWnSzj6RxNIXcpzyNjb6zynlTbJ2SHOy9HQ37TnMFx61cZUG0HICdvPN8n1ZT1QiMtZDJWn3fjXUjLCJ/CGDGGKH7ciYW2U//WOrP8Srx7vLmW1mEsMo/fnk+lgXsDtzmHemf/lBz4hEpis1F55WG8Wsp3LBIL6Xsb9OWqem4qJaN2TJ0Crru18RbVpDs3IpoP68E9/msH/ISeLMApL8bOAAA=="); }
+  .rw-model.is-left { left: 8.425%; width: 19.061%; top: 31.372%; height: 53.419%; }
+  .rw-model.is-center, .rw-model.is-away { left: 36.740%; width: 26.588%; top: 23.934%; height: 61.229%; }
+  .rw-model.is-right { left: 72.514%; width: 19.061%; top: 31.285%; height: 53.508%; }
+  .runway-stage.rw { --sh: clamp(420px, min(calc(100vh - 360px), calc(100vw / (var(--safe) * var(--r)))), 1000px); }
+}
+
+/* Phone photo (tall). */
+@media (max-width: 767px) {
+  .runway-stage.rw { --r: 0.6451; --safe: 0.5829; }
+  .rw-canvas { background-image: url("data:image/webp;base64,UklGRj4BAABXRUJQVlA4IDIBAACwBwCdASoYACUAPslWoEunpSMhtVgIAPAZCWgAnTKEe1U/xur+AD0njw46X2VGtVQ/zqlxIbcFTWQxLgj3cTPOAHac4tQAAP3imuzXAtweB4PDQ5nfuKoKPXFOLdJHD10KBL3ArxK0Tr1oHoJwER9NABE2Bt9d5zl4imcLWokFgsd9i5AObWI7YEhkkg3j5ZzHziaU/yMgq3nN2jAqINQVsslrHXf8CO2rgNgrMHJy2Btdos5X/o14ivfC4N5geuH6YbryaMXLvSmrgPUbOQU51TVOQWCu/j9bH+DX3TobQZjpW2yzamaQOnj37LtxXJnp0bWPuWvP4XTUmVLzscmprKZh64eXZzY/abCcN7/xX0ynV93GcKWmfmshxmIyYO4Mvv1SyjmBxaOoXGyVjocjwAA="); }
+  .rw-model.is-left { left: -28.997%; width: 35.750%; top: 33.842%; height: 42.972%; }
+  .rw-model.is-center, .rw-model.is-away { left: 23.138%; width: 52.632%; top: 22.787%; height: 55.902%; }
+  .rw-model.is-right { left: 92.354%; width: 35.750%; top: 33.429%; height: 43.535%; }
+  .runway-stage.rw { --sh: min(calc(100vw / var(--r)), calc(100svh - 150px)); margin-top: 0.6rem; }
+}
+.runway-stage.rw .runway-arrow { top: 50%; transform: translateY(-50%); z-index: 5; }
+.runway-stage.rw .runway-arrow:hover { transform: translateY(-50%); }
+/* The dots sit exactly on the photo (an older rule centred the dot layer with a transform). */
+.rw .runway-dots { left: 0; top: 0; bottom: auto; width: 100%; height: 100%; transform: none; }
+/* Upright tablets swipe; the arrows would cover the side outfits. */
+@media (min-width: 768px) and (orientation: portrait) {
+  .runway-stage.rw .runway-arrow { display: none; }
+}
+/* Dots above the look's click area (the outfit itself lets clicks through to it). */
+.rw-fig { z-index: 3; }

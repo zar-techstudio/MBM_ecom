@@ -509,3 +509,10 @@ html[data-strip="off"] .topstrip { display: none; }
   .topstrip-side { display: none; }
   .topstrip { font-size: 0.74rem; }
 }
+/* Medium screens: the left side keeps its first two statements so it never reaches the middle. */
+@media (max-width: 1500px) {
+  .topstrip-side:not(.is-right) > :nth-child(n + 5) { display: none; }
+}
+@media (max-width: 1150px) {
+  .topstrip-side.is-right { display: none; }
+}
