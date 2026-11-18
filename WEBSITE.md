@@ -1,7 +1,7 @@
 # MAQDOOM'S Big Mall: the e-commerce website
 
 The one document for the website (`MBM_03`): where it stands, what is left, what is built, how it
-is built, and what it needs from the ERP. Updated 16 Nov 2026.
+is built, and what it needs from the ERP. Updated 18 Nov 2026.
 
 - Live: https://maqdoomsbigmall.com (Cloudflare Worker `mbm-website`).
 - The ERP (`E:\Projects\LEADS\Maqdooms\mbm_inv_v2`, erp.maqdoomsbigmall.com) owns the database,
@@ -21,6 +21,11 @@ Contents: 1. Where things stand · 2. Before launch · 3. Owner decisions · 4. 
   sign-in codes are in test mode, and Razorpay, WhatsApp, SMS, email and Shiprocket keys are not in.
 - **Catalogue today:** 32 products, all MAHIB; the main shop (Maqdoom's) has none. 5 pieces are
   picked for the home page.
+- **Security: done (18 Nov 2026).** All six security headers are live and match the ERP; every
+  plain-http request goes to https (Cloudflare "Always Use HTTPS", with `worker.ts` as the
+  fallback); Next.js is on 16.4.6. Confirmed by the owner; nothing more is planned on security.
+  The four npm warnings left are in OpenNext's build tools (only used on this computer while
+  building): update `@opennextjs/cloudflare` when OpenNext releases a fix.
 - **Not tested yet:** the screens that need a real signed-in shopper (adding a mobile at checkout,
   WhatsApp switches, "Tell me when it's back") and a full order. Both need the keys first.
 
