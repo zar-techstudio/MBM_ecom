@@ -48,6 +48,9 @@ async function buildAndStore(request: Request, env: Env, ctx: Ctx, key: Request)
   if (res.status !== 200 || res.headers.has("set-cookie") || !(res.headers.get("content-type") ?? "").includes("text/html")) return res;
   const copy = new Response(res.clone().body, res);
   copy.headers.set("cache-control", `public, max-age=${STALE_S}`);
+  // Next lists its in-app navigation headers in Vary; Cloudflare's cache then often skips or misses
+  // the copy. Those requests never use the copy (see cacheable), so the stored copy drops it.
+  copy.headers.delete("vary");
   copy.headers.set("x-mbm-built", String(Date.now()));
   ctx.waitUntil(caches.default.put(key, copy));
   return res;
