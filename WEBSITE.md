@@ -100,6 +100,8 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   shown (no close button). Its text scrolls slowly right to left: "Premium Ethnic Wear · Since
   1895 · Hyderabad · MAHIB — The Exclusive Edit (link) · Delivered across India & abroad · Style.
   Tradition. You."; pauses on hover, still for reduced motion. Only true statements go here.
+  Every overlay (search, side menu, drawers, photo viewer, size guide) starts below it
+  (`top: var(--strip-h)`); a new full-screen overlay must do the same.
 - **Footer drawing:** the showroom line drawing (`mall-line.svg`, used as a mask so its colour can
   change) is on every footer: darker gold on the light home footer, brighter gold on the dark ones.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:

@@ -577,3 +577,13 @@ html[data-strip="off"] .topstrip { display: block; }
   .topstrip { justify-content: center; }
   .topstrip-line + .topstrip-line { display: none; }
 }
+
+/* ---------- Overlays start below the pinned top strip, so nothing hides behind it ---------- */
+.search-overlay,
+.drawer-backdrop,
+.drawer-panel,
+.modal-backdrop,
+.sf-viewer,
+.pr-zoom,
+.sg-back { top: var(--strip-h); }
+.sg { max-height: calc(88vh - var(--strip-h)); }
