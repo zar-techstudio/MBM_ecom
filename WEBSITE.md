@@ -371,6 +371,12 @@ the existing storefront functions (same names and arguments).
    (`31536000`; file names are unique, so a photo never changes under the same name) and (b) save
    the large photo at most ~1200 px wide, ~150–250 KB WebP. Existing photos: re-save once with
    the new settings. The website already downloads a product's other photos in the background.
+   **Done in the ERP (18 Nov 2026):** every website upload (product, category and look photos,
+   videos, review photos) is saved with `max-age=31536000`; the large product photo is now
+   1200 × 1500 (look photos 1200 × 1800), about 150–250 KB WebP; card copies stay 600 × 750. All 214
+   existing files were re-saved in place with the year cache (same names, so no links change).
+   Existing large photos keep their old size until staff upload them again; the test products go
+   at the clean start, and the 12 category photos can be re-uploaded from the ERP if needed.
 
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
