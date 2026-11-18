@@ -96,11 +96,12 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
 
 ### Look
 - Colours: warm ivory, deep maroon buttons and bands, thin gold lines; serif headings.
-- **Top strip** (every page, `TopStrip`): thin dark teal bar above the header: "Premium Ethnic
-  Wear | Since 1895 · Hyderabad | Delivered across India & abroad", a MAHIB link in the middle,
-  "Style. Tradition. You." and a close button (remembered on the device, no flash). Phones show
-  only the MAHIB link. Only true statements go here. It stays pinned above the header while
-  scrolling (`--strip-h`, 0 when closed); pinned columns and section jumps sit below both.
+- **Top strip** (every page, `TopStrip`): thin dark teal bar pinned above the header, always
+  shown (no close button). Its text scrolls slowly right to left: "Premium Ethnic Wear · Since
+  1895 · Hyderabad · MAHIB — The Exclusive Edit (link) · Delivered across India & abroad · Style.
+  Tradition. You."; pauses on hover, still for reduced motion. Only true statements go here.
+- **Footer drawing:** the showroom line drawing (`mall-line.svg`, used as a mask so its colour can
+  change) is on every footer: darker gold on the light home footer, brighter gold on the dark ones.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;
@@ -129,8 +130,8 @@ newest); custom tailoring with step icons; Recently viewed.
   (desktops, laptops, phones sideways), 4:3 (tablets upright), tall (phones), each ~240 KB WebP in
   `public/images/mahib-bg-*.webp`; originals in `reference/mahib-bg/`. The photo and the outfits
   share one canvas with the photo's shape (`src/app/mahib/runway-photo.css`, positions measured
-  from the photos), so outfits always stand in the niches; on narrower screens the curtains are
-  cropped first. **If the photos are replaced, the niche positions must be measured again.**
+  from the photos), so outfits always stand in the niches; on wide screens the whole photo shows
+  (chandelier to floor); on narrower ones the curtains are cropped first. **If the photos are replaced, the niche positions must be measured again.**
   Outfit photos look best as cut-outs (transparent background); a normal photo is shown as a
   framed portrait in the niche.
 - Listing head: spaced label, large MAHIB, gold ornament, "Complete Looks. Timeless Details.",

@@ -35,9 +35,9 @@ export async function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="site-footer sf-footer" id="siteFooter">
-      {/* Line drawing of the showroom (shown on the home page's light footer). */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/mall-line.svg" alt="" className="sf-footer-art" loading="lazy" aria-hidden="true" />
+      {/* Line drawing of the showroom on every footer. The drawing is a shape (CSS mask), so its
+          colour follows the footer: darker gold on the light home footer, brighter gold on the dark ones. */}
+      <span className="sf-footer-art" aria-hidden="true" />
       <div className="container">
         <div className="sf-footer-brand">
           <Link href="/" aria-label={`${SITE_NAME} home`}>

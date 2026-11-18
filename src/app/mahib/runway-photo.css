@@ -49,7 +49,10 @@
 .mahib-runway.is-open .rw-canvas { transform: translate(calc(-50% - 12%), -50%); }
 
 /* Wide photo: desktops, laptops, tablets and phones held sideways. */
-.runway-stage.rw { --sh: clamp(380px, min(calc(100vh - 340px), calc(100vw / (var(--safe) * var(--r)))), 820px); }
+/* The whole photo shows on wide screens: height = width / photo shape (so nothing is cropped at the
+   top or bottom; the chandelier and the arch tops stay in view). Very wide screens stop at 860px
+   and crop a little from the bottom of the floor instead. */
+.runway-stage.rw { --sh: min(calc(100vw / var(--r)), 860px); }
   .runway-stage.rw { --r: 2.7025; --safe: 0.6159; }
   .rw-canvas { background-image: url("data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAAAQBACdASoYAAkAPtFUo0uoJKMhsAgBABoJYgCdH8ACK8Y0RSazYVsAAAD9A1cz6K2nVDYVhnZ6Myb/7S2LUOS3HZh7dhg8vHMrxnRyp3cL1ydRU2ULjYMfNNAfZ5+j727CyHuXMsdBn8U84KGkq/avb9/cig8Hg3dRTR4cM1rWv3D4u+H+CGTDp4isl18RjG4NnmfWsnXJIxSKAAA="); }
   .rw-model.is-left { left: 34.190%; width: 10.136%; top: 25.048%; height: 57.759%; }
@@ -85,3 +88,9 @@
 }
 /* Dots above the look's click area (the outfit itself lets clicks through to it). */
 .rw-fig { z-index: 3; }
+
+/* When the stage is shorter than the photo (very wide screens), keep the top: crop the floor. */
+@media (min-width: 768px) and (orientation: landscape) {
+  .rw-canvas { top: 0; transform: translate(-50%, 0); }
+  .mahib-runway.is-open .rw-canvas { transform: translate(calc(-50% - 12%), 0); }
+}
