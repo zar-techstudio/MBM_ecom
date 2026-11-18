@@ -18,7 +18,8 @@ Contents: 1. Where things stand · 2. Before launch · 3. Owner decisions · 4. 
   (with photo search), bag, checkout, orders, invoices, account, loyalty points, reviews, WhatsApp
   choices. No website code is waiting.
 - **It cannot take orders yet**, only because of keys and settings on the ERP side (section 2):
-  sign-in codes are in test mode, and Razorpay, WhatsApp, SMS, email and Shiprocket keys are not in.
+  sign-in codes are in test mode, and Razorpay, WhatsApp, SMS and Shiprocket keys are not in (email:
+  Resend is set up, per the owner on 18 Nov 2026).
 - **Catalogue today:** 32 products, all MAHIB; the main shop (Maqdoom's) has none. 5 pieces are
   picked for the home page.
 - **Security: done (18 Nov 2026).** All six security headers are live and match the ERP; every
@@ -40,7 +41,7 @@ needs website work.
 ### Keys
 - **Sign-in codes are in test mode.** Switch them live only after a sender has its keys, or no code
   is sent and nobody can sign in:
-  - email (Resend; quickest, the mail domain is ready): shoppers can **sign in**;
+  - email (Resend): **set up (owner, 18 Nov 2026)**; shoppers can sign in by email once codes go live;
   - SMS (MSG91 with DLT) or WhatsApp (Meta, with templates): needed to **confirm a mobile**, and an
     order cannot be placed without one. So taking orders needs SMS or WhatsApp, not email alone.
 - **Razorpay**: until set, online payment says it isn't available yet.
