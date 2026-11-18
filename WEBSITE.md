@@ -250,8 +250,18 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
 
 ### 5.4 How it works
 - **Freshness:** catalogue content is kept in memory for a minute, settings for an hour
-  (`remember()` in `src/lib/catalogue.ts`); pages are built on each visit, so staff changes show
-  within a minute without a deploy. Sizes and stock on product pages are read live.
+  (`remember()` in `src/lib/catalogue.ts`), so staff changes show within a minute without a
+  deploy. Sizes and stock on product pages are read live.
+- **Edge copy of pages** (`worker.ts`, since 18 Nov 2026): pages are the same for every visitor, so
+  Cloudflare keeps a copy in each city. A copy under a minute old is served as is; an older one is
+  served at once while a fresh one is built in the background (visitors never wait for a build;
+  first byte ~0.2 s instead of 1.2–2.4 s). The key includes the deployed version
+  (`version_metadata` binding), so after a deploy the first visit in each city builds the page.
+  Never copied: anything with a query (search, `?look=`), `/api`, `/_next`, account, bag,
+  checkout, orders, invoice, review, wishlist, in-app navigation data, signed-in shoppers ("mbs"
+  cookie), and any answer that is not a plain 200 HTML page. The response header `x-mbm-edge`
+  says HIT, STALE or MISS. **Rule: a page must never show anything specific to one visitor in
+  its HTML**; if one ever must, add its path to `SKIP` in `worker.ts`.
 - **Guests browse freely.** Bag, wishlist and recently viewed are kept on the device
   (`src/lib/shop-store.ts`, localStorage key `mbm-shop-v1`). Signing in merges them into the
   account and keeps them in sync (`src/lib/account.ts`). Other device keys: `mbm-recent-searches`,

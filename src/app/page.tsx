@@ -184,9 +184,11 @@ export default async function HomePage() {
                   <img
                     key={o.src}
                     className={`model-outfit${i === 0 ? " active" : ""}`}
-                    src={o.src}
+                    // the first outfit comes with the page; HeroCycler gives the other three their
+                    // photo once the page has loaded, so they never slow the first screen
+                    src={i === 0 ? o.src : undefined}
+                    data-src={i === 0 ? undefined : o.src}
                     alt={o.alt}
-                    // the first outfit comes first; the other three load after the page
                     fetchPriority={i === 0 ? "high" : "low"}
                     decoding="async"
                   />

@@ -14,6 +14,18 @@ export function HeroCycler() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
+  // The other outfits get their photos only after the page has loaded (see page.tsx).
+  useEffect(() => {
+    const fill = () =>
+      document.querySelectorAll<HTMLImageElement>(".model-outfit[data-src]").forEach((img) => {
+        img.src = img.dataset.src!;
+        img.removeAttribute("data-src");
+      });
+    if (document.readyState === "complete") fill();
+    else window.addEventListener("load", fill, { once: true });
+    return () => window.removeEventListener("load", fill);
+  }, []);
+
   useEffect(() => {
     const onVis = () => setVisible(document.visibilityState === "visible");
     document.addEventListener("visibilitychange", onVis);
