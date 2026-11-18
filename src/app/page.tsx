@@ -7,7 +7,7 @@ import {
   getSettings,
   type Category,
 } from "@/lib/catalogue";
-import { SITE_NAME, imageUrl, sectionPath, whatsappLink } from "@/lib/site";
+import { MAPS_URL, SITE_NAME, SITE_URL, STORE, imageUrl, sectionPath, whatsappLink } from "@/lib/site";
 import { HeroCycler } from "@/components/HeroCycler";
 import { CategoryRing } from "@/components/CategoryRing";
 import { GoldenThread } from "@/components/GoldenThread";
@@ -83,6 +83,51 @@ const TAILORING_STEPS = [
 
 const HERO_BG_BLUR = "data:image/webp;base64,UklGRrwAAABXRUJQVlA4ILAAAACQBACdASoYAA0APtFUo0uoJKMhsAgBABoJbACdMoRwACLYxJzIf+uuDLdjongA/sjQ/IEi3j/ue/gX7TIFyB0GZiSpjD0vgGy7MFCGYwjpneWHiP2rC3PjIl1AqtpAbdjYYD1V+Ha9X8eaMNYH4KeX8rM2e7L7N3NoWUINglusujfELwPEhWwf+33dT+6Q27C6cXfd/9DtAZJsZ7LXFzmnEjIUSfTaLv9ef17neQYAAA==";
 
+const HOME_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      alternateName: ["Maqdoom's Big Mall", "Maqdooms Big Mall", "Maqdoom's"],
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/search?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "ClothingStore",
+      "@id": `${SITE_URL}/#store`,
+      name: SITE_NAME,
+      alternateName: ["Maqdoom's Big Mall", "Maqdooms Big Mall"],
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/header_navbar.webp`,
+      image: `${SITE_URL}/images/hero_bg.webp`,
+      description: "Premium Indian menswear, fine fabrics and bespoke tailoring near Charminar, Hyderabad, since 1895.",
+      telephone: STORE.phone.replace(/\s/g, ""),
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: STORE.street,
+        addressLocality: "Hyderabad",
+        addressRegion: "Telangana",
+        postalCode: "500002",
+        addressCountry: "IN",
+      },
+      openingHoursSpecification: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "09:00",
+        closes: "23:00",
+      },
+      hasMap: MAPS_URL,
+      sameAs: STORE.instagram.map((i) => i.href),
+    },
+  ],
+};
+
 const isFabric = (c: Category) =>
   /fabric|thaan/.test(`${c.slug} ${c.name}`.toLowerCase());
 
@@ -105,6 +150,11 @@ export default async function HomePage() {
 
   return (
     <main className="home">
+      <script
+        type="application/ld+json"
+        // Tells search engines this is the shop's main page (name, logo, address, hours, Instagram).
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_LD).replace(/</g, "\\u003c") }}
+      />
       {/* 1. HERO */}
       <section
         className="hero-section"

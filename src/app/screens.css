@@ -587,3 +587,5 @@ html[data-strip="off"] .topstrip { display: block; }
 .pr-zoom,
 .sg-back { top: var(--strip-h); }
 .sg { max-height: calc(88vh - var(--strip-h)); }
+/* The menu panel sits inside its backdrop, which already starts below the strip: no second push. */
+.drawer-backdrop .drawer-panel { top: 0; }

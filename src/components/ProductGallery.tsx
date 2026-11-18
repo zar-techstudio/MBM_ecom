@@ -43,6 +43,18 @@ export function ProductGallery({ images, title, overlay }: { images: Img[]; titl
 
   const step = useCallback((d: number) => setIndex((i) => (i + d + count) % count), [count]);
 
+  // Once the first photo is in, the others download in the background, so swiping shows them at once.
+  const warmed = useRef(false);
+  const warmOthers = useCallback(() => {
+    if (warmed.current) return;
+    warmed.current = true;
+    images.forEach((img) => {
+      const pre = new Image();
+      pre.decoding = "async";
+      pre.src = img.large;
+    });
+  }, [images]);
+
   if (!count) return <div className="sf-gallery-main sf-gallery-empty" aria-hidden="true" />;
   const at = Math.min(index, count - 1);
   const current = images[at];
@@ -104,6 +116,7 @@ export function ProductGallery({ images, title, overlay }: { images: Img[]; titl
           height={2000}
           fetchPriority="high"
           draggable={false}
+          onLoad={warmOthers}
         />
         {count > 1 ? (
           <>

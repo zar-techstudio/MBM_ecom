@@ -252,6 +252,12 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
 - **Freshness:** catalogue content is kept in memory for a minute, settings for an hour
   (`remember()` in `src/lib/catalogue.ts`), so staff changes show within a minute without a
   deploy. Sizes and stock on product pages are read live.
+- **Search engines:** each page has its own title, description and canonical link; `robots.txt`
+  and `sitemap.xml` list the pages. The home page carries business details (WebSite and
+  ClothingStore: name, alternate spellings, logo, address, hours, Instagram) as JSON-LD;
+  product pages carry Product data. Which page Google shows is Google's choice; Google Search
+  Console (owner's Google account) is where the site is verified, the sitemap submitted and
+  the home page asked to be indexed.
 - **Edge copy of pages** (`worker.ts`, since 18 Nov 2026): pages are the same for every visitor, so
   Cloudflare keeps a copy in each city. A copy under a minute old is served as is; an older one is
   served at once while a fresh one is built in the background (visitors never wait for a build;
@@ -359,6 +365,12 @@ the existing storefront functions (same names and arguments).
 9. **Damage claims:** a place in the ERP to attach the shopper's unboxing video to the order.
 10. **Occasion on looks:** fill in `occasion` for each look, so the runway shows "01 / Wedding".
 11. **Filters:** size and colour data per product, for size and colour filters on listings.
+12. **Product photos load slowly (18 Nov 2026):** photos in storage are 320–550 KB each and are
+   served with `Cache-Control: private, no-cache`, so browsers download them again on every visit
+   (0.8–3 s each on a phone). On upload, the ERP should (a) set `cacheControl` to a year
+   (`31536000`; file names are unique, so a photo never changes under the same name) and (b) save
+   the large photo at most ~1200 px wide, ~150–250 KB WebP. Existing photos: re-save once with
+   the new settings. The website already downloads a product's other photos in the background.
 
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
