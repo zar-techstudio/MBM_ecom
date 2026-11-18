@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { TOP_STRIP_BOOT, TopStrip } from "@/components/TopStrip";
 import { IntroSplash } from "@/components/IntroSplash";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./design.css";
@@ -41,9 +42,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // data-scroll-behavior: page changes jump straight to the top instead of smooth-scrolling there
     <html lang="en" data-scroll-behavior="smooth" className={`${cinzel.variable} ${cormorant.variable} ${jakarta.variable}`}>
       <body>
+        {/* Hides the top strip before the first paint when the shopper closed it earlier. */}
+        <script dangerouslySetInnerHTML={{ __html: TOP_STRIP_BOOT }} />
         <a href="#content" className="sr-only">
           Skip to content
         </a>
+        <TopStrip />
         <SiteHeader />
         <div id="content">{children}</div>
         <SiteFooter />

@@ -96,6 +96,10 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
 
 ### Look
 - Colours: warm ivory, deep maroon buttons and bands, thin gold lines; serif headings.
+- **Top strip** (every page, `TopStrip`): thin dark teal bar above the header: "Premium Ethnic
+  Wear | Since 1895 · Hyderabad | Delivered across India & abroad", a MAHIB link in the middle,
+  "Style. Tradition. You." and a close button (remembered on the device, no flash). Phones show
+  only the MAHIB link. Only true statements go here.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;
@@ -119,7 +123,8 @@ newest); custom tailoring with step icons; Recently viewed.
   reference (centre 388 × 542 at 1672 px wide), niche colour `#c4ae97`, double gold line, shaded
   top corners; outfits step from arch to arch every 5 seconds (paused only while a piece or the
   panel is open); "01 / Occasion" and the name under each arch; piece dots with a product card;
-  bar with the look, its pieces, price, Shop complete look, Customize your look (side panel).
+  dark teal band (from the owner's reference) with "Featured look 01 / 13", the look's name in spaced
+  capitals, price, a gold Shop the look and an outlined Customize your look (side panel).
 - Listing head: spaced label, large MAHIB, gold ornament, "Complete Looks. Timeless Details.",
   section search, category bubbles.
 

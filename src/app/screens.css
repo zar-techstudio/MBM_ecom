@@ -479,3 +479,33 @@
 .signin-send { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; }
 .signin-send svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .signin-send svg .fill { fill: currentColor; stroke: none; }
+
+/* ---------- Top strip (every page), from the owner's reference ---------- */
+:root { --strip-teal: #0e3b3e; --strip-gold: #d4a957; }
+.topstrip { background: var(--strip-teal); color: #f3ead8; font-family: var(--font-sans); font-size: 0.78rem; letter-spacing: 0.02em; }
+html[data-strip="off"] .topstrip { display: none; }
+.topstrip-in {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  min-height: 34px;
+  padding: 0 clamp(1rem, 2.5vw, 2.25rem);
+}
+.topstrip-side { display: flex; align-items: center; gap: 0.55rem; margin: 0; white-space: nowrap; overflow: hidden; }
+.topstrip-side i { font-style: normal; opacity: 0.6; }
+.topstrip-side.is-right { justify-content: flex-end; padding-right: 1.6rem; }
+.topstrip-crown { flex: none; width: 16px; height: 16px; fill: var(--strip-gold); }
+.topstrip-mid { display: inline-flex; align-items: center; gap: 0.6rem; color: #f3ead8; text-decoration: none; letter-spacing: 0.04em; }
+.topstrip-mid b { font-weight: 600; letter-spacing: 0.12em; color: var(--strip-gold); }
+.topstrip-mid span { font-size: 0.65rem; color: var(--strip-gold); }
+.topstrip-mid:hover { color: #fff; }
+.topstrip-close { position: absolute; right: clamp(0.5rem, 1.5vw, 1.25rem); top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; background: none; color: #c9bfae; cursor: pointer; }
+.topstrip-close:hover { color: #fff; }
+.topstrip-close svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+@media (max-width: 900px) {
+  .topstrip-in { grid-template-columns: 1fr; justify-items: center; padding: 0 2.5rem; }
+  .topstrip-side { display: none; }
+  .topstrip { font-size: 0.74rem; }
+}

@@ -360,34 +360,33 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
         </aside>
       </div>
 
-      <div className="container runway-bar" aria-live="polite">
-        <div className="runway-feat">
+      {/* Dark band under the arches: the look in turn, its price and the two actions. */}
+      <div className="runway-band">
+        <div className="container runway-bar" aria-live="polite">
           <span className="runway-eyebrow">
             Featured look <i>&middot;</i> {pad(lookNo + 1)} / {pad(count)}
           </span>
           <h3 className="runway-name" key={look.slug}>
             {look.name}
           </h3>
-          {look.occasion ? <p className="runway-occasion">{look.occasion}</p> : null}
-        </div>
-        <div className="runway-contents">
-          <span className="runway-eyebrow">
-            Complete look <i>&middot;</i> {look.pieces.length} {look.pieces.length === 1 ? "piece" : "pieces"}
-          </span>
-          <span className="runway-roles">{look.pieces.map((p) => p.role).join(" · ")}</span>
-        </div>
-        <div className="runway-buy">
-          {total ? <span className="runway-total-price">{total}</span> : null}
-          <button type="button" className="runway-shop" onClick={buyLook}>
-            Shop complete look <span aria-hidden="true">&rarr;</span>
-          </button>
-          <button type="button" className="runway-custom" onClick={() => setOpen(true)}>
-            Customize your look
-          </button>
+          <div className="runway-buy">
+            {total ? <span className="runway-total-price">{total}</span> : null}
+            <button type="button" className="runway-shop" onClick={buyLook}>
+              Shop the look <span aria-hidden="true">&rarr;</span>
+            </button>
+            <button type="button" className="runway-custom" onClick={() => setOpen(true)}>
+              Customize your look
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="6" cy="18" r="2.6" />
+                <circle cx="18" cy="18" r="2.6" />
+                <path d="M7.8 16 17 3M16.2 16 7 3" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="runway-tabs-spacer" />
+
     </section>
   );
 }

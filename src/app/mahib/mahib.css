@@ -642,3 +642,84 @@ button.runway-card-btn { background: none; cursor: pointer; }
 }
 /* A lighter floor at the bottom of each niche, as in the reference. */
 .runway-slot .runway-arch::after { background: linear-gradient(180deg, #c4ae97 0%, #c4ae97 88%, #d6c7b3 88.4%, #ddd0be 100%); }
+
+/* ---------- Bottom band (owner's reference): dark teal, gold eyebrow, the look's name in spaced
+   capitals, price, a gold "Shop the look" and an outlined "Customize your look" ---------- */
+.runway-band { background: #0e3b3e; color: #f3ead8; }
+.runway-bar {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 clamp(1.25rem, 3vw, 3rem);
+  margin-top: 0;
+  padding-top: 1.05rem;
+  padding-bottom: 1.05rem;
+  border-top: 0;
+}
+.runway-band .runway-eyebrow { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.22em; color: var(--color-gold, #c5a869); white-space: nowrap; }
+.runway-band .runway-eyebrow i { margin: 0 0.6em; }
+.runway-band .runway-name {
+  grid-column: 2;
+  margin: 0;
+  padding-left: clamp(1.25rem, 3vw, 3rem);
+  border-left: 1px solid rgba(212, 169, 87, 0.55);
+  font-family: var(--font-sans);
+  font-size: clamp(0.95rem, 1.2vw, 1.12rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  line-height: 1.9;
+  text-transform: uppercase;
+  color: #e6c886;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.runway-band .runway-buy { grid-column: 4; display: flex; align-items: center; gap: 1.25rem; }
+.runway-band .runway-total-price { margin-right: 0.75rem; font-family: var(--font-sans); font-size: clamp(1.15rem, 1.5vw, 1.35rem); font-weight: 500; color: #f3ead8; }
+.runway-band .runway-shop,
+.runway-band .runway-custom {
+  gap: 0.55rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.runway-band .runway-shop { border: 1px solid #d4a957; background: #d4a957; color: #1d1a14; }
+.runway-band .runway-shop:hover { background: #e2bb6d; border-color: #e2bb6d; }
+.runway-band .runway-custom { border: 1px solid rgba(243, 234, 216, 0.75); background: transparent; color: #f3ead8; }
+.runway-band .runway-custom:hover { border-color: #fff; background: rgba(255, 255, 255, 0.06); }
+.runway-band .runway-custom svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+@media (max-width: 1100px) {
+  .runway-bar { grid-template-columns: auto minmax(0, 1fr); row-gap: 0.8rem; }
+  .runway-band .runway-buy { grid-column: 1 / -1; justify-content: flex-start; }
+}
+@media (max-width: 768px) {
+  .runway-bar { grid-template-columns: minmax(0, 1fr); row-gap: 0.45rem; padding-top: 1rem; padding-bottom: 1.1rem; }
+  .runway-band .runway-name { grid-column: 1; padding-left: 0; border-left: 0; letter-spacing: 0.18em; white-space: normal; line-height: 1.4; }
+  .runway-band .runway-buy { grid-column: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.4rem; }
+  .runway-band .runway-total-price { grid-column: 1 / -1; margin: 0; }
+  .runway-band .runway-shop, .runway-band .runway-custom { padding: 0.8rem 0.4rem; font-size: 0.72rem; letter-spacing: 0.05em; }
+}
+/* Fit with the top strip: the band shows on the first screen; long names get the room they need. */
+@media (min-width: 769px) {
+  .runway-stage { --arch-h: min(32vw, calc(100vh - 450px), 640px); }
+}
+.runway-bar { grid-template-columns: auto minmax(0, 1fr) auto; }
+.runway-band .runway-buy { grid-column: 3; }
+.runway-band .runway-name { letter-spacing: 0.2em; }
+@media (max-width: 1100px) {
+  .runway-bar { grid-template-columns: auto minmax(0, 1fr); }
+  .runway-band .runway-buy { grid-column: 1 / -1; }
+}
+@media (max-width: 768px) {
+  .runway-bar { grid-template-columns: minmax(0, 1fr); }
+  .runway-band .runway-buy { grid-column: 1; }
+  .runway-band .runway-shop, .runway-band .runway-custom { white-space: nowrap; }
+}
+@media (max-width: 400px) {
+  .runway-band .runway-buy { grid-template-columns: minmax(0, 1fr); }
+  .runway-band .runway-shop, .runway-band .runway-custom { font-size: 0.78rem; padding: 0.85rem 0.5rem; }
+}
