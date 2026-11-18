@@ -99,7 +99,8 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
 - **Top strip** (every page, `TopStrip`): thin dark teal bar above the header: "Premium Ethnic
   Wear | Since 1895 · Hyderabad | Delivered across India & abroad", a MAHIB link in the middle,
   "Style. Tradition. You." and a close button (remembered on the device, no flash). Phones show
-  only the MAHIB link. Only true statements go here.
+  only the MAHIB link. Only true statements go here. It stays pinned above the header while
+  scrolling (`--strip-h`, 0 when closed); pinned columns and section jumps sit below both.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;

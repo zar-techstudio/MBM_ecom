@@ -516,3 +516,15 @@ html[data-strip="off"] .topstrip { display: none; }
 @media (max-width: 1150px) {
   .topstrip-side.is-right { display: none; }
 }
+
+/* ---------- The top strip stays pinned above the header while scrolling ---------- */
+:root { --strip-h: 34px; }
+html[data-strip="off"] { --strip-h: 0px; }
+.topstrip { position: sticky; top: 0; z-index: 101; }
+.topstrip-in { height: var(--strip-h); min-height: 0; }
+.site-header { top: var(--strip-h); }
+/* Everything else that stays in place (or is jumped to) sits below strip + header. */
+.sf-product-info { top: calc(var(--strip-h) + var(--header-height) + 1.5rem); }
+#catalogue, #runway, #orders { scroll-margin-top: calc(var(--strip-h) + var(--header-height) + 0.5rem); }
+.sf-bag-summary, .co-summary { top: calc(var(--strip-h) + var(--header-height) + 1rem); }
+@media (min-width: 900px) { .bx-side { top: calc(var(--strip-h) + var(--header-height, 80px) + 1rem); } }
