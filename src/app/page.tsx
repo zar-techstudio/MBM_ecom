@@ -13,6 +13,7 @@ import { CategoryRing } from "@/components/CategoryRing";
 import { GoldenThread } from "@/components/GoldenThread";
 import { HERO_OUTFITS } from "@/lib/hero";
 import { FeaturedRail } from "@/components/FeaturedRail";
+import { ShimmerLink } from "@/components/ShimmerLink";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { HomeLooks } from "@/components/HomeLooks";
 
@@ -314,10 +315,10 @@ export default async function HomePage() {
                 Elevated designs. Exceptional fabrics. A refined selection for
                 those who appreciate the extraordinary.
               </p>
-              <Link href="/mahib" className="btn-mahib">
+              <ShimmerLink href="/mahib" className="btn-mahib">
                 <span>Explore MAHIB</span>
-                <span>&rarr;</span>
-              </Link>
+                <span className="btn-mahib-arrow" aria-hidden="true">&rarr;</span>
+              </ShimmerLink>
             </div>
             <div />
             <div className="mahib-editorial-col">

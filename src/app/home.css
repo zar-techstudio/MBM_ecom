@@ -549,3 +549,51 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
 
 /* Hero: the blurred preview fills the space until the background photo arrives. */
 .home .hero-background-wrap { background-size: cover; background-position: center 30%; }
+
+/* ---------- "Explore MAHIB": gold button with a slow shimmer (owner's request) ---------- */
+.home .btn-mahib {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 52px;
+  padding: 0.95rem 2.1rem;
+  border: 1px solid #e2c27a;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #b8893a 0%, #e8c77e 45%, #c9a052 70%, #a87a2e 100%);
+  color: #1d1408;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 245, 220, 0.6);
+  transition: transform 0.25s var(--ease-luxury), box-shadow 0.25s ease, filter 0.25s ease;
+}
+/* light sweeping across, like gold thread catching the light: every few seconds, only on screen */
+.home .btn-mahib::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 252, 240, 0.85) 48%, transparent 66%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+.home .btn-mahib.is-live::after { animation: mahib-shimmer 4.2s ease-in-out 0.6s infinite; }
+@keyframes mahib-shimmer { 0%, 62% { transform: translateX(-130%); } 92%, 100% { transform: translateX(130%); } }
+.btn-mahib-arrow { display: inline-block; transition: transform 0.25s var(--ease-luxury); }
+@media (hover: hover) {
+  .home .btn-mahib:hover {
+    background: linear-gradient(135deg, #c39443 0%, #f0d48f 45%, #d4ab5c 70%, #b48535 100%);
+    color: #1d1408;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 26px rgba(232, 199, 126, 0.45), inset 0 1px 0 rgba(255, 245, 220, 0.7);
+  }
+  .home .btn-mahib:hover .btn-mahib-arrow { transform: translateX(5px); }
+}
+/* touch: a short press and glow */
+.home .btn-mahib:active { transform: scale(0.97); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 22px rgba(232, 199, 126, 0.55); }
+.home .btn-mahib:focus-visible { outline: 2px solid #f0d48f; outline-offset: 3px; }
+@media (max-width: 767px) {
+  .home .btn-mahib { display: flex; width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home .btn-mahib.is-live::after { animation: none; }
+}
