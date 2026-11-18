@@ -546,3 +546,6 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
 .home .ring .ring-card { border-radius: 36px; }
 .home .ring .ring-card .category-img-box { border-radius: 34px 34px 0 0; }
 .home .ring .ring-card .category-info-box { border-radius: 0 0 34px 34px; }
+
+/* Hero: the blurred preview fills the space until the background photo arrives. */
+.home .hero-background-wrap { background-size: cover; background-position: center 30%; }

@@ -80,6 +80,8 @@ const TAILORING_STEPS = [
   },
 ];
 
+const HERO_BG_BLUR = "data:image/webp;base64,UklGRrwAAABXRUJQVlA4ILAAAACQBACdASoYAA0APtFUo0uoJKMhsAgBABoJbACdMoRwACLYxJzIf+uuDLdjongA/sjQ/IEi3j/ue/gX7TIFyB0GZiSpjD0vgGy7MFCGYwjpneWHiP2rC3PjIl1AqtpAbdjYYD1V+Ha9X8eaMNYH4KeX8rM2e7L7N3NoWUINglusujfELwPEhWwf+33dT+6Q27C6cXfd/9DtAZJsZ7LXFzmnEjIUSfTaLv9ef17neQYAAA==";
+
 const isFabric = (c: Category) =>
   /fabric|thaan/.test(`${c.slug} ${c.name}`.toLowerCase());
 
@@ -108,7 +110,8 @@ export default async function HomePage() {
         id="heroSection"
         aria-label="Hero Showcase"
       >
-        <div className="hero-background-wrap">
+        {/* A tiny blurred copy of the background shows at once while the real one loads. */}
+        <div className="hero-background-wrap" style={{ backgroundImage: `url(${HERO_BG_BLUR})` }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="hero-bg-img"
@@ -182,7 +185,9 @@ export default async function HomePage() {
                     className={`model-outfit${i === 0 ? " active" : ""}`}
                     src={o.src}
                     alt={o.alt}
-                    fetchPriority={i === 0 ? "high" : "auto"}
+                    // the first outfit comes first; the other three load after the page
+                    fetchPriority={i === 0 ? "high" : "low"}
+                    decoding="async"
                   />
                 ))}
                 {/* gold edge of the curtain: the same cutout, tinted gold, shown only as a thin band */}
