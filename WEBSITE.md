@@ -38,6 +38,27 @@ Keys are secrets on the ERP server, added by whoever has the server login (with 
 Owner); settings are in the ERP. Each feature says "not set up" until its key is in. None of this
 needs website work.
 
+### Launch audit (19 Nov 2026)
+Checked against the owner's launch checklist on the live site (crawl of all 51 sitemap pages and
+65 internal links; 15 main pages on 340 px and 390 px phones and desktop; Cloudflare logs).
+- **Blocker: Cloudflare plan.** About 1 in 10 freshly built pages fails with "Worker exceeded
+  resource limits" (Cloudflare log: `exceededCpu`). A product page needs ~31 ms of CPU (up to
+  56 ms); the Workers **Free** plan allows about 10 ms. Fix: Workers **Paid** plan (US$5/month,
+  owner's Cloudflare account), nothing to change in the code. The edge copy hides it for most
+  visits, but search engines and the first visit to a page hit it.
+- **Done / fine:** no sideways scrolling, no browser errors, every form field labelled, every
+  image has alt text, one h1 per page, unique titles, descriptions and canonicals, no broken
+  internal links, robots.txt and sitemap, http → https, 404 returns 404, security headers,
+  sign-in cookie (httpOnly, secure, SameSite=lax, 60 days), sign-in codes expire in 5 minutes
+  with ERP limits on requests, images compressed and cached, edge copy of pages.
+- **Fixed in this audit:** `www.maqdoomsbigmall.com` now redirects to `maqdoomsbigmall.com`
+  (`worker.ts`); the 404 page is titled "Page not found" and is not indexed.
+- **Not set up (owner's choice):** Google Analytics / Tag Manager / Microsoft Clarity (only
+  Cloudflare's cookieless Web Analytics runs today, so no cookie banner is needed); Google Search
+  Console and Bing Webmaster Tools; uptime and error alerts for the website.
+- **Still to do before launch:** the items in this section (keys, settings, clean start, policy
+  approval, a full test order, real iPhone and Android).
+
 ### Keys
 - **Sign-in codes are in test mode.** Switch them live only after a sender has its keys, or no code
   is sent and nobody can sign in:
@@ -239,6 +260,8 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
   a fallback if that setting is ever turned off (301 for GET and HEAD, 308 for anything else),
   then runs the OpenNext build (`.open-next/worker.js`); it is left out of the app's type check
   (`tsconfig.json`).
+- **www:** `www.maqdoomsbigmall.com` redirects to `maqdoomsbigmall.com` in `worker.ts` (301 for GET
+  and HEAD, 308 otherwise).
 - **Security headers** on every page and API answer (`next.config.ts`): HSTS (1 year, subdomains),
   `nosniff`, `X-Frame-Options: SAMEORIGIN`, CSP `frame-ancestors 'self'; base-uri 'self';
   object-src 'none'`, `strict-origin-when-cross-origin`, and a Permissions-Policy that turns off

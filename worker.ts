@@ -80,9 +80,20 @@ function withState(res: Response, state: string): Response {
   return out;
 }
 
+/** www.maqdoomsbigmall.com goes to maqdoomsbigmall.com (one address for shoppers and search
+ * engines; the canonical links already name it). 301 for GET and HEAD, 308 for anything else. */
+function toApex(request: Request): Response | null {
+  const url = new URL(request.url);
+  if (url.hostname !== "www.maqdoomsbigmall.com") return null;
+  url.hostname = "maqdoomsbigmall.com";
+  url.protocol = "https:";
+  const status = request.method === "GET" || request.method === "HEAD" ? 301 : 308;
+  return new Response(null, { status, headers: { Location: url.toString() } });
+}
+
 const worker = {
   async fetch(request: Request, env: Env, ctx: Ctx) {
-    return toHttps(request) ?? page(request, env, ctx);
+    return toApex(request) ?? toHttps(request) ?? page(request, env, ctx);
   },
 };
 export default worker;
