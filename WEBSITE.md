@@ -402,6 +402,15 @@ the existing storefront functions (same names and arguments).
    Existing large photos keep their old size until staff upload them again; the test products go
    at the clean start, and the 12 category photos can be re-uploaded from the ERP if needed.
 
+13. **AI product text for Google (19 Nov 2026):** the ERP's AI suggestions (product editor,
+   Gemini, `ai-suggest.functions.ts`) end every `seo_description` with "Order on WhatsApp", which
+   is out of date now that the website sells online; change it to something like "Shop online or
+   visit our Charminar showroom". One live description is cut mid-sentence ("…fitted bottoms,
+   available to. Order on WhatsApp." on `/product/sherwani-3`): check the 140–155 character trim.
+   After the change, staff re-run AI suggestions (or edit) for the real products after the clean
+   start. The website shows `seo_title`/`seo_description` as each product page's Google title and
+   description, uses `tags` for site search and product data, and lists every published product
+   in `sitemap.xml` automatically.
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
 ---
