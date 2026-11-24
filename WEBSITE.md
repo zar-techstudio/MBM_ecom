@@ -423,6 +423,15 @@ answer size and fit doubts before they become questions; thumb-reachable actions
 instant feedback; give before you ask; raise order value with outfits; bring people back with the
 wishlist, recently viewed, WhatsApp updates (with consent) and loyalty.
 
+**From e-commerce research reels (@levilayernn, Baymard Institute tests; reviewed 25 Nov 2026):**
+already done: size buttons, not a dropdown; checkout in steps with a progress bar (Mobile ·
+Address · Payment). Not done yet: (1) header that hides while scrolling down and comes back on
+the first scroll up (tested: +15.5% add to bag vs always-fixed +6%; website only); (2) "Fit
+from buyers" on the product page ("Most buyers say: true to size"), from a fit question in
+reviews [ERP]; (3) product highlights that say what the piece does for the wearer, not only
+what it has (+13% add to bag) [ERP AI text]; (4) 4–5 key facts as icons first (fabric, fit,
+work, occasion, care), full details folded below [ERP item 4].
+
 **Ideas:** size finder, outfit builder, scratch-card welcome offer, family matching sets, gift
 cards, showroom fitting appointments, analytics with consent, `storefront_products_page` for very
 large catalogues (the site pages in the browser today, fine for hundreds of products).
