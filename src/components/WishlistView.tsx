@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { shop, useShop, type SavedProduct } from "@/lib/shop-store";
+import { announceAdded, shop, type SavedProduct, useShop } from "@/lib/shop-store";
 import { imageUrl, priceText } from "@/lib/site";
 import { pickable, useLive } from "@/lib/use-live";
 
@@ -15,6 +15,7 @@ export function WishlistView() {
 
   const add = (p: SavedProduct, size: string | null) => {
     shop.add(p, size);
+    announceAdded(p, size);
     setChoosing(null);
     setAdded(p.slug);
     window.setTimeout(() => setAdded((a) => (a === p.slug ? null : a)), 2500);

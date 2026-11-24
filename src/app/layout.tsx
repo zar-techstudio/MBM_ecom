@@ -3,6 +3,7 @@ import { Cinzel, Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google"
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { TopStrip } from "@/components/TopStrip";
+import { AddedSheet } from "@/components/AddedSheet";
 import { IntroSplash } from "@/components/IntroSplash";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./design.css";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteFooter />
         <IntroSplash />
         <ScrollToTop />
+        <AddedSheet />
       </body>
     </html>
   );

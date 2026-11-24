@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
-import { shop, toSaved, useShop } from "@/lib/shop-store";
+import { announceAdded, shop, toSaved, useShop } from "@/lib/shop-store";
 import { imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
 import { Stars } from "./Stars";
@@ -62,7 +62,7 @@ export function AddToBag({ product }: { product: Card }) {
       </Link>
     );
   return (
-    <button type="button" className="pc-add" onClick={() => shop.add(toSaved(product), null)}>
+    <button type="button" className="pc-add" onClick={() => { shop.add(toSaved(product), null); announceAdded(toSaved(product), null); }}>
       Add to Bag
     </button>
   );

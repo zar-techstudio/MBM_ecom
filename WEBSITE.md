@@ -358,6 +358,10 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
 - **Piece photos:** each item alone on a plain background, 4:5. Photo 1 the whole piece (front);
   photo 2 a close-up of embroidery or the back (shown on hold/hover); shoes at a 3/4 angle with
   space around them; safa on a head form.
+- **Same light, same angle, every time** (Airbnb re-shot listings and doubled bookings): one
+  setup in the showroom, light from the front, camera at chest height, so the catalogue looks like
+  one collection. Photo 1 decides the click (Netflix picks the thumbnail people click most): the
+  clearest, most complete view, never a detail.
 - **Video (optional):** one 5–8 second clip per product, played on hold/hover.
 - **Intro video:** 720×1280, no sound; send it in and it is compressed to about 1–2 MB.
 
@@ -413,6 +417,12 @@ the existing storefront functions (same names and arguments).
    start. The website shows `seo_title`/`seo_description` as each product page's Google title and
    description, uses `tags` for site search and product data, and lists every published product
    in `sitemap.xml` automatically.
+14. **Fit from buyers (reels review, 25 Nov 2026):** ask "How did it fit? Small / True to size /
+   Large" in the review form; `storefront_product` gets `fit_votes: { small, true, large }`.
+   Website: "Most buyers say: true to size" next to the sizes.
+15. **Free-delivery amount for the bag:** send `free_delivery_from_paise` with the public settings
+   (not only in the checkout quote), so the bag can show "₹X away from free delivery" before an
+   address is entered. Needs the owner's free-delivery amount first (section 3).
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
 ---
@@ -425,14 +435,27 @@ answer size and fit doubts before they become questions; thumb-reachable actions
 instant feedback; give before you ask; raise order value with outfits; bring people back with the
 wishlist, recently viewed, WhatsApp updates (with consent) and loyalty.
 
-**From e-commerce research reels (@levilayernn, Baymard Institute tests; reviewed 25 Nov 2026):**
-already done: size buttons, not a dropdown; checkout in steps with a progress bar (Mobile ·
-Address · Payment). Also done (25 Nov 2026): header that hides while scrolling down and
-comes back on the first scroll up. Not done yet: (2) "Fit
-from buyers" on the product page ("Most buyers say: true to size"), from a fit question in
-reviews [ERP]; (3) product highlights that say what the piece does for the wearer, not only
-what it has (+13% add to bag) [ERP AI text]; (4) 4–5 key facts as icons first (fabric, fit,
-work, occasion, care), full details folded below [ERP item 4].
+**From @levilayernn's research reels (all 33 reviewed 25 Nov 2026; Baymard, Nielsen Norman
+Group, Spiegel Research Center and company tests).** Kept only what suits a premium menswear shop.
+- Already on the site: size buttons, not a dropdown; checkout in named steps with progress; browse
+  freely and sign in only to pay (Duolingo: value before the form); visible labels above form
+  fields; sold-out pieces stay visible with "More like this" and "Tell me when it's back"; every
+  review shown, 4-star ones included (buying peaks at 4.2–4.5 stars); one fixed hero, not a
+  rotating banner; shop menu plus search, wishlist and bag visible on phones; delivery and COD
+  stated on the product page.
+- Built 25 Nov 2026: header and strip hide on scroll down, return on scroll up (Joseph Joseph,
+  +15.5% add to bag); "Added to your bag" panel that slides in and stays with Continue shopping
+  and View bag (NN/g: never pull shoppers away from shopping; `AddedSheet`, shown by
+  `announceAdded()` from product pages, cards, wishlist and the runway; not for Buy now or Shop
+  the look); skeleton screens while product, shop, MAHIB category and search pages are built
+  (`Skeletons.tsx`, `loading.tsx`).
+- Needs the ERP (section 6): fit from buyers next to the sizes (83% of clothing sites give too
+  little size information); outcome-first highlights (+13% add to bag; item 13); 4–5 key facts
+  first (item 4); MRP only as a real former price (item 1; fake "was" prices are now illegal in
+  the EU); "₹X away from free delivery" in the bag once a free-delivery amount is set (more than
+  half of shoppers add items to reach it, but only when they can see they are close).
+- Not used: no "₹" symbol (a restaurant-menu finding; shops need the price clear), decoy price
+  plans, grey partner logos, real-estate and app-design reels.
 
 **Ideas:** size finder, outfit builder, scratch-card welcome offer, family matching sets, gift
 cards, showroom fitting appointments, analytics with consent, `storefront_products_page` for very

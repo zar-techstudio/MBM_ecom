@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Look, LookPiece } from "@/lib/catalogue";
-import { shop, toSaved } from "@/lib/shop-store";
+import { announceAdded, shop, toSaved } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText } from "@/lib/site";
 import "@/app/mahib/runway-photo.css";
 
@@ -280,6 +280,7 @@ export function MahibRunway({ looks }: { looks: Look[] }) {
                       className="runway-card-btn"
                       onClick={() => {
                         shop.add(toSaved(picked.product), null, 1, look.name);
+                        announceAdded(toSaved(picked.product), null);
                         setAdded(picked.product.slug);
                       }}
                     >

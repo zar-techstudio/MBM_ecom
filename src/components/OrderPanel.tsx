@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { ProductCard, SizeOption } from "@/lib/catalogue";
-import { shop, toSaved } from "@/lib/shop-store";
+import { announceAdded, shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
 import { NotifyBack } from "./NotifyBack";
 import { SizeGuide, guideFor } from "./SizeGuide";
@@ -65,6 +65,7 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
           return;
         }
         shop.add(toSaved(card), picked);
+        announceAdded(toSaved(card), picked);
         setAdded(true);
       },
     };

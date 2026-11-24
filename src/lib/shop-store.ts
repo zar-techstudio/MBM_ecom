@@ -183,6 +183,12 @@ export function shopSnapshot() {
 export const bagCount = (s: State) => s.bag.reduce((n, l) => n + l.qty, 0);
 
 /** Card data in the shape the lists keep. */
+/** Tells the "Added to your bag" panel (AddedSheet) what was just added. Called by the buttons that
+ * keep the shopper on the page; Buy now and Shop the look go to the bag instead. */
+export function announceAdded(p: SavedProduct, size: string | null) {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("mbm:added", { detail: { p, size } }));
+}
+
 export function toSaved(p: {
   slug: string;
   title: string;
