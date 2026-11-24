@@ -118,8 +118,10 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
 
 ### Look
 - Colours: warm ivory, deep maroon buttons and bands, thin gold lines; serif headings.
-- **Top strip** (every page, `TopStrip`): thin dark teal bar pinned above the header, always
-  shown (no close button). Its text scrolls slowly right to left: "Premium Ethnic Wear · Since
+- **Top strip** (every page, `TopStrip`): thin dark teal bar above the header, always shown (no
+  close button). Strip and header slide away while scrolling down and come back on the first
+  scroll up (`chrome-hidden` class on `<html>`, set in `HeaderClient`; stays near the top and while
+  a menu is open; from Baymard research: +15.5% add to bag). Its text scrolls slowly right to left: "Premium Ethnic Wear · Since
   1895 · Hyderabad · MAHIB — The Exclusive Edit (link) · Delivered across India & abroad · Style.
   Tradition. You."; pauses on hover, still for reduced motion. Only true statements go here.
   Every overlay (search, side menu, drawers, photo viewer, size guide) starts below it
@@ -425,8 +427,8 @@ wishlist, recently viewed, WhatsApp updates (with consent) and loyalty.
 
 **From e-commerce research reels (@levilayernn, Baymard Institute tests; reviewed 25 Nov 2026):**
 already done: size buttons, not a dropdown; checkout in steps with a progress bar (Mobile ·
-Address · Payment). Not done yet: (1) header that hides while scrolling down and comes back on
-the first scroll up (tested: +15.5% add to bag vs always-fixed +6%; website only); (2) "Fit
+Address · Payment). Also done (25 Nov 2026): header that hides while scrolling down and
+comes back on the first scroll up. Not done yet: (2) "Fit
 from buyers" on the product page ("Most buyers say: true to size"), from a fit question in
 reviews [ERP]; (3) product highlights that say what the piece does for the wearer, not only
 what it has (+13% add to bag) [ERP AI text]; (4) 4–5 key facts as icons first (fabric, fit,

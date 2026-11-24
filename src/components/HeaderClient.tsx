@@ -93,6 +93,29 @@ export function HeaderClient({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // The top strip and header slide away while scrolling down and come back on the first scroll up
+  // (class "chrome-hidden" on <html>; screens.css). Near the top, or with a menu open, they stay.
+  useEffect(() => {
+    const root = document.documentElement;
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const d = y - last;
+      if (Math.abs(d) < 8) return; // ignore tiny wobbles (touch, bounce)
+      last = y;
+      const hide = d > 0 && y > 140;
+      root.classList.toggle("chrome-hidden", hide);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      root.classList.remove("chrome-hidden");
+    };
+  }, []);
+  useEffect(() => {
+    if (open || menu) document.documentElement.classList.remove("chrome-hidden");
+  }, [open, menu]);
+
   // close any open menu after moving to another page
   useEffect(() => {
     (document.activeElement as HTMLElement | null)?.blur?.();
