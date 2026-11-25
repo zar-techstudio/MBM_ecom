@@ -152,6 +152,13 @@ ${url}`);
           <li>Cash on delivery available</li>
           <li>Delivered across India and abroad</li>
           <li>
+            Wedding soon?{" "}
+            <a href={whatsappLink(whatsappNumber, `Hello, I need this by a date: ${title}
+${url}`)} target="_blank" rel="noopener noreferrer">
+              Ask us for delivery by your date
+            </a>
+          </li>
+          <li>
             Online orders are not exchanged. Not sure about the size?{" "}
             <a href={ask} target="_blank" rel="noopener noreferrer">
               Ask us on WhatsApp

@@ -357,7 +357,6 @@ export default async function HomePage() {
         <div className="container mahib-container">
           <div className="mahib-grid">
             <div className="mahib-content">
-              <div className="mahib-badge">A MAQDOOM&rsquo;S EXCLUSIVE</div>
               <h2 className="mahib-title">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/mahib.webp" alt="MAHIB" loading="lazy" />
@@ -421,7 +420,6 @@ export default async function HomePage() {
         <div className="container fabrics-container">
           <div className="fabrics-grid">
             <div className="fabrics-content">
-              <div className="fabrics-label home-label-lined">OUR FABRICS</div>
               <h2 className="fabrics-title">
                 THAANS
                 <br />

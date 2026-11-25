@@ -64,7 +64,12 @@ export function ProductReviews({ slug, initial }: { slug: string; initial: Revie
           ))}
         </ul>
       ) : (
-        <p className="co-small">No reviews yet. Reviews come only from customers who bought this piece.</p>
+        // No reviews yet: what a shopper can trust instead (reviews only come from real buyers).
+        <p className="pr-trust">
+          <span>Since 1895</span>
+          <span>Showroom near Charminar</span>
+          <span>See it on a video call</span>
+        </p>
       )}
       {more ? (
         <button type="button" className="co-link pr-more" onClick={() => void loadMore()} disabled={busy}>

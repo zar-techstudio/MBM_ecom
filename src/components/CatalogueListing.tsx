@@ -67,7 +67,7 @@ export async function CatalogueListing({
       {lead}
       <section className="sf-page-head" id="catalogue">
         <div className="container">
-          <div className="section-label">{copy.label}</div>
+          {section === "mahib" ? null : <div className="section-label">{copy.label}</div>}
           <h1 className="sf-page-title">{current ? current.name.toUpperCase() : copy.title}</h1>
           <span className="lx-ornament" aria-hidden="true">
             <svg viewBox="0 0 120 12">
@@ -76,7 +76,7 @@ export async function CatalogueListing({
               <path d="M50 6c2.5-3 5-3 7.5 0M70 6c-2.5-3-5-3-7.5 0" />
             </svg>
           </span>
-          <p className="lx-tagline">{current?.description || copy.tagline}</p>
+          {section === "mahib" && !current ? null : <p className="lx-tagline">{current?.description || copy.tagline}</p>}
           <p className="sf-page-intro">{copy.intro}</p>
           <SearchBar placeholder={copy.search} />
           {categories.length ? (

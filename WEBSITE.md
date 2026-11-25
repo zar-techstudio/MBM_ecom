@@ -128,6 +128,16 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   (`top: var(--strip-h)`); a new full-screen overlay must do the same.
 - **Footer drawing:** the showroom line drawing (`mall-line.svg`, used as a mask so its colour can
   change) is on every footer: darker gold on the light home footer, brighter gold on the dark ones.
+- **Look refresh (26 Nov 2026, owner's references):** home featured cards are one gold-outlined
+  arched card with a maroon "Add to bag" (bag icon); "Shop by ceremony" shows "02 / 13" instead of
+  dots; tailoring steps sit in one row on phones under a full-width button; listing pages have a
+  curved light head (gold-outlined search, gold-ringed category circles, the chosen one in
+  maroon) over a dark product area (MAHIB teal, Maqdoom's maroon) with icon pills, cream cards,
+  a bag button on the photo and a small gold ornament under the price; the footer is light on
+  every page with a curved top edge, named Instagram buttons and the copyright on a maroon band.
+  Products with no reviews show "Since 1895 · Showroom near Charminar · See it on a video call"
+  instead of "No reviews yet" (no Google rating on the site: owner's choice). The top strip is
+  30 px.
 - **Phone tab bar** (`TabBar`, phones up to 860 px): Home · Shop · MAHIB · Bag (with count) ·
   Account along the bottom, the current one in maroon with a gold underline. Not shown on product,
   bag, checkout, review and invoice pages (they have their own buy bar). On the home page it slides

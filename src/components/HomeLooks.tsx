@@ -97,7 +97,11 @@ export function HomeLooks({ looks }: { looks: Look[] }) {
                 <Chevron dir="right" />
               </button>
             ) : null}
-            {count > 1 ? (
+            {count > 5 ? (
+              <p className="ls-count" aria-live="polite">
+                <b>{String(at + 1).padStart(2, "0")}</b> / {String(count).padStart(2, "0")}
+              </p>
+            ) : count > 1 ? (
               <div className="ls-dots" role="tablist" aria-label="Looks">
                 {looks.map((l, i) => (
                   <button

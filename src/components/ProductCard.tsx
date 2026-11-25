@@ -41,6 +41,7 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
             <span className={`pc-price${product.sold_out ? " is-out" : sale ? " is-sale" : ""}`}>{priceText(product)}</span>
             {sale ? <s className="pc-mrp">{formatINR(sale.mrp)}</s> : null}
           </span>
+          <span className="pc-orn" aria-hidden="true" />
           {product.rating?.count ? (
             <span className="pc-rating" aria-label={`Rated ${product.rating.average.toFixed(1)} from ${product.rating.count} reviews`}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -90,7 +91,8 @@ function QuickAdd({ product }: { product: Card }) {
       }}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 5v14M5 12h14" />
+        <path d="M5.5 8h13l-1 12h-11zM9 8V6.5a3 3 0 0 1 6 0V8" />
+        <path className="pc-quick-plus" d="M12 11.5v5M9.5 14h5" />
       </svg>
     </button>
   );
@@ -192,6 +194,7 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
         // One scrolling row of pills: Sort and Price open the phone's own picker, In stock toggles.
         <div className="sf-tools sf-pills">
           <label className={`sf-pill${sort !== "featured" ? " on" : ""}`}>
+            <PillIcon d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" />
             <span>{sort === "low" ? "Price ↑" : sort === "high" ? "Price ↓" : "Sort"}</span>
             <Chevron />
             <select aria-label="Sort" value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
@@ -202,6 +205,7 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
           </label>
           {usable.length > 1 ? (
             <label className={`sf-pill${range ? " on" : ""}`}>
+              <PillIcon d="M3.5 12.5V4h8.5l8.5 8.5-8.5 8.5zM8 8.5h.01" />
               <span>{RANGES.find((x) => x.id === range)?.label ?? "Price"}</span>
               <Chevron />
               <select aria-label="Price" value={range} onChange={(e) => reset(setRange)(e.target.value)}>
@@ -220,6 +224,7 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
             aria-pressed={inStock}
             onClick={() => reset(setInStock)(!inStock)}
           >
+            <PillIcon d="M12 3 20 7.5v9L12 21l-8-4.5v-9zM4 7.5 12 12l8-4.5M12 12v9" />
             In stock
           </button>
           {sort !== "featured" || range || inStock ? (
@@ -290,6 +295,14 @@ function Chevron() {
   return (
     <svg className="sf-pill-chev" viewBox="0 0 24 24" aria-hidden="true">
       <path d="m7 10 5 5 5-5" />
+    </svg>
+  );
+}
+
+function PillIcon({ d }: { d: string }) {
+  return (
+    <svg className="sf-pill-ic" viewBox="0 0 24 24" aria-hidden="true">
+      <path d={d} />
     </svg>
   );
 }

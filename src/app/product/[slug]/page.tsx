@@ -76,7 +76,6 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             overlay={<PhotoActions product={{ ...product, rating: reviews.rating ?? product.rating }} url={url} />}
           />
           <div className="sf-product-info">
-            <div className="section-label">{product.category.name.toUpperCase()}</div>
             <h1 className="sf-product-title">{product.title}</h1>
             {reviews.rating?.count ? (
               <a href="#reviews" className="sf-product-rating">
