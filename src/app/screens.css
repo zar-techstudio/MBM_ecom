@@ -745,3 +745,6 @@ html.chrome-hidden .sf-bag-summary, html.chrome-hidden .co-summary { top: 1rem; 
 /* Phones: where the tab bar shows, the bag lives there only (no duplicate in the header). Product,
    bag and checkout pages have no tab bar, so their header keeps the bag. */
 @media (max-width: 860px) { html.has-tabbar .shop-icon-bag { display: none; } }
+
+/* One bar at a time: scrolling up brings the header back and tucks the tab bar away. */
+@media (max-width: 860px) { html.chrome-up .tabbar { transform: translateY(100%); } }

@@ -136,6 +136,9 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   research reels: visible tabs beat a hidden menu. Each place appears once: where the bar shows,
   the header has no bag icon (Amazon and Flipkart keep the cart only at the bottom); the header
   keeps ☰ (categories, tailoring, contact), the logo, search and the wishlist.
+  One bar at a time while scrolling: down hides the header and keeps the tab bar, up brings the
+  header back and tucks the tab bar away (`chrome-up` on `<html>`); near the top both show. The
+  MAHIB tab and menu icon is the ornament above the "i" in the MAHIB logo.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;

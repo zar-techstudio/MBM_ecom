@@ -28,7 +28,16 @@ const TABS: Tab[] = [
     href: "/mahib",
     label: "MAHIB",
     match: /^\/mahib(\/|$)/,
-    icon: <path d="M5 14.5c0-4.1 3.1-7.5 7-7.5s7 3.4 7 7.5M3.5 14.5h17M7 14.5c0-2.8 2.2-5 5-5M12 4.5V7M8.5 18.5h7" />,
+    // the ornament above the "i" in the MAHIB logo
+    icon: (
+      <>
+        <circle cx="12" cy="7" r="3.6" />
+        <circle cx="17" cy="12" r="3.6" />
+        <circle cx="12" cy="17" r="3.6" />
+        <circle cx="7" cy="12" r="3.6" />
+        <path d="M12 9.4 14.6 12 12 14.6 9.4 12z" />
+      </>
+    ),
   },
   {
     href: "/bag",

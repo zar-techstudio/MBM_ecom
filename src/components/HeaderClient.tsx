@@ -27,11 +27,14 @@ const DM_ICON = {
       <path d="M12 7v14M9 3l3 4 3-4" />
     </svg>
   ),
-  turban: (
+  /* the ornament above the "i" in the MAHIB logo: four interlocking loops around a diamond */
+  mahib: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 15c0-5 3.6-9 8-9s8 4 8 9" />
-      <path d="M4 15c2 3 14 3 16 0M5 11.5c3-2 11-2 14 0M7.5 7.8c2.5 1.8 6.5 4.5 8.5 8.2" />
-      <path d="M12 6c.6-1.6 2-2.4 3.5-2" />
+      <circle cx="12" cy="7" r="3.6" />
+      <circle cx="17" cy="12" r="3.6" />
+      <circle cx="12" cy="17" r="3.6" />
+      <circle cx="7" cy="12" r="3.6" />
+      <path d="M12 9.4 14.6 12 12 14.6 9.4 12z" />
     </svg>
   ),
   scissors: (
@@ -93,8 +96,9 @@ export function HeaderClient({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // The top strip and header slide away while scrolling down and come back on the first scroll up
-  // (class "chrome-hidden" on <html>; screens.css). Near the top, or with a menu open, they stay.
+  // One bar at a time while scrolling (screens.css): scrolling down hides the top strip and header
+  // ("chrome-hidden" on <html>) and keeps the phone tab bar; scrolling up brings the header back and
+  // tucks the tab bar away ("chrome-up"). Near the top, or with a menu open, both stay.
   useEffect(() => {
     const root = document.documentElement;
     let last = window.scrollY;
@@ -103,17 +107,18 @@ export function HeaderClient({
       const d = y - last;
       if (Math.abs(d) < 8) return; // ignore tiny wobbles (touch, bounce)
       last = y;
-      const hide = d > 0 && y > 140;
-      root.classList.toggle("chrome-hidden", hide);
+      const far = y > 140;
+      root.classList.toggle("chrome-hidden", far && d > 0);
+      root.classList.toggle("chrome-up", far && d < 0);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
-      root.classList.remove("chrome-hidden");
+      root.classList.remove("chrome-hidden", "chrome-up");
     };
   }, []);
   useEffect(() => {
-    if (open || menu) document.documentElement.classList.remove("chrome-hidden");
+    if (open || menu) document.documentElement.classList.remove("chrome-hidden", "chrome-up");
   }, [open, menu]);
 
   // close any open menu after moving to another page
@@ -235,7 +240,7 @@ export function HeaderClient({
                 .map((item) => (
                   <details key={item.href} className="dm-group" open={!item.mahib}>
                     <summary>
-                      <span className="dm-icon">{item.mahib ? DM_ICON.turban : DM_ICON.jacket}</span>
+                      <span className="dm-icon">{item.mahib ? DM_ICON.mahib : DM_ICON.jacket}</span>
                       <span className="dm-group-text">
                         <span className="dm-group-name">{item.label}</span>
                         {item.mahib ? <span className="dm-group-sub">Complete Looks &amp; Accessories</span> : null}
