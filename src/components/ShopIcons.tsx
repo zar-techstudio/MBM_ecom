@@ -64,7 +64,7 @@ export function ShopIcons() {
       <Link href="/account" className="shop-icon shop-icon-user" aria-label="My account">
         {Icon.user}
       </Link>
-      <Link href="/bag" className="shop-icon" aria-label={`Bag, ${bag} items`}>
+      <Link href="/bag" className="shop-icon shop-icon-bag" aria-label={`Bag, ${bag} items`}>
         {Icon.bag}
         <span className={`shop-count${bag ? "" : " is-zero"}`} key={bag}>
           {bag}

@@ -133,7 +133,9 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   bag, checkout, review and invoice pages (they have their own buy bar). On the home page it slides
   up once the shopper scrolls, so the full-screen hero keeps both buttons. Floating WhatsApp,
   toasts and the "Added to your bag" panel sit above it (`has-tabbar` on `<html>`). From the
-  research reels: visible tabs beat a hidden menu.
+  research reels: visible tabs beat a hidden menu. Each place appears once: where the bar shows,
+  the header has no bag icon (Amazon and Flipkart keep the cart only at the bottom); the header
+  keeps ☰ (categories, tailoring, contact), the logo, search and the wishlist.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;
