@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import type { Look, ProductCard } from "@/lib/catalogue";
+import type { Look, PointsRules, ProductCard } from "@/lib/catalogue";
 import { shop, useShop, type BagLine } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
 import { pickable, priceOf, useLive, type Live } from "@/lib/use-live";
+import { EarnPoints } from "./EarnPoints";
 import { AddToBag } from "./ProductCard";
 import { recommend } from "@/lib/recommend";
 import { RecentlyViewed } from "./RecentlyViewed";
@@ -79,6 +80,7 @@ export function BagView({
   looks = [],
   suggest = [],
   browseHref = "/mahib",
+  points = null,
 }: {
   whatsappNumber: string;
   siteUrl: string;
@@ -87,6 +89,8 @@ export function BagView({
   suggest?: ProductCard[];
   /** Where "Continue shopping" and "View all" go (the section that has products). */
   browseHref?: string;
+  /** Points rules from the ERP, for "Earn X points on this order". */
+  points?: PointsRules | null;
 }) {
   const { bag } = useShop();
   const live = useLive(bag.map((l) => l.slug));
@@ -249,6 +253,7 @@ export function BagView({
                 <span>Total</span>
                 <span>{ready ? formatINR(subtotal) : "…"}</span>
               </div>
+              {ready ? <EarnPoints amountPaise={subtotal} rules={points} what="on this order" /> : null}
               <Link href="/checkout" className={`bx-btn is-block${off ? " is-off" : ""}`} aria-disabled={off}>
                 {I.lock}
                 {blocked ? "Fix your bag to continue" : "Proceed to Checkout"} {I.arrow}

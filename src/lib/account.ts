@@ -73,6 +73,12 @@ export type Points = {
   min_bill_paise: number | null;
   max_share_bps: number | null;
   expiry_months: number | null;
+  /** ERP item 16f (absent until sent): points waiting for the return window, when they become usable,
+   * and the next points to expire. */
+  pending?: number;
+  pending_until?: string | null;
+  next_expiry_at?: string | null;
+  next_expiry_points?: number | null;
   history: { kind: "earn" | "take_back" | "use" | "give_back" | "expire" | "adjust"; points: number; at: string; expires_at: string | null; bill: string | null; order: string | null }[];
 };
 

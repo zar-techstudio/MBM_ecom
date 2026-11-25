@@ -68,6 +68,52 @@ const POLICIES: Record<string, Policy> = {
       },
     ],
   },
+  points: {
+    title: "Loyalty points",
+    intro: "One points balance for the showroom and the website, linked to your mobile number.",
+    sections: [
+      {
+        h: "Earning points",
+        p: [
+          "Earn 1 point for every ₹100 you pay, in the showroom or online, on ready-made pieces, tailoring and fabric. Points are worked out on the amount you actually pay, after any discount or points used.",
+          "Showroom bills earn when they are fully paid. Online orders earn once they are shipped (cash on delivery: once delivered).",
+          "Points become usable after the return window: 2 days after a showroom bill, 7 days after an online order is delivered.",
+          "Delivery charges, gift cards and credit notes do not earn points.",
+        ],
+      },
+      {
+        h: "Using points",
+        p: [
+          "1 point is worth ₹1 off. Use points on bills of ₹1,000 or more, for up to 10% of the bill.",
+          "Points come off the price before GST, so GST is charged only on what you pay.",
+          "Online, choose to use your points at checkout. In the showroom, tell us your mobile number when you pay.",
+        ],
+      },
+      {
+        h: "Returns and cancellations",
+        p: [
+          "If you return or cancel all of a purchase, the money you paid is refunded and the points you used come back to your balance.",
+          "If you return part of a purchase, points you used come back in proportion to what you return. For example, return half the value of a bill on which you used 300 points, and 150 points come back.",
+          "Points you used keep their original expiry date when they come back. Points earned on the returned part are taken away.",
+        ],
+      },
+      {
+        h: "Expiry",
+        p: [
+          "Points last 12 months from the day they are earned. The oldest points are used first.",
+          "You can see your balance, points waiting to become usable and the next expiry date on your account page.",
+        ],
+      },
+      {
+        h: "Good to know",
+        p: [
+          "Points have no cash value and cannot be transferred or exchanged for money.",
+          "We may change these rules; points you already hold keep the rules they were earned under until they expire.",
+          `Questions about your points: ${CONTACT}.`,
+        ],
+      },
+    ],
+  },
   privacy: {
     title: "Privacy policy",
     intro: `This policy explains how ${STORE.name} (${STORE.legalName}) uses the details you share with us.`,

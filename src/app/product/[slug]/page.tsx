@@ -60,6 +60,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
       sizes={p.sizes}
       soldOut={p.sold_out}
       whatsappNumber={settings.whatsapp_number}
+      points={settings.points ?? null}
       checking={checking}
       card={p}
     />

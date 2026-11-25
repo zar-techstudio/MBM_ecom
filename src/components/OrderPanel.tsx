@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { ProductCard, SizeOption } from "@/lib/catalogue";
+import type { PointsRules, ProductCard, SizeOption } from "@/lib/catalogue";
 import { announceAdded, shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
+import { EarnPoints } from "./EarnPoints";
 import { NotifyBack } from "./NotifyBack";
 import { saving } from "./ProductCard";
 import { SizeGuide, guideFor } from "./SizeGuide";
@@ -21,13 +22,15 @@ type Props = {
   checking?: boolean;
   /** The product, for the bag and wishlist. */
   card: ProductCard;
+  /** Points rules from the ERP, for "Earn X points" (absent until the ERP sends them). */
+  points?: PointsRules | null;
 };
 
 type Action = { label: string; href?: string; onClick?: () => void; disabled?: boolean; dark?: boolean };
 
 /** Size picker, Add to bag / Buy now and the wishlist heart, plus a sticky bar on phones.
  * Fabric is enquire-only (cut to length in the showroom); sold-out pieces offer a WhatsApp ask. */
-export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsappNumber, checking, card }: Props) {
+export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsappNumber, checking, card, points }: Props) {
   const router = useRouter();
   const [added, setAdded] = useState(false);
   const [nudge, setNudge] = useState(0); // shakes the sizes when Add is tapped without one
@@ -97,6 +100,7 @@ ${url}`);
           </>
         ) : null}
       </p>
+      {kind === "garment" && !soldOut ? <EarnPoints amountPaise={choice?.price_paise ?? card.price_min_paise} rules={points} /> : null}
       {kind === "fabric" ? (
         <p className="sf-order-note">Fabric is cut to your length in the showroom. Ask us for shades, width and pricing.</p>
       ) : null}

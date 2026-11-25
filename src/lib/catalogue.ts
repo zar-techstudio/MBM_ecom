@@ -164,6 +164,10 @@ export async function getReviews(slug: string): Promise<Reviews> {
   });
 }
 
-export async function getSettings(): Promise<{ whatsapp_number: string }> {
-  return remember("settings", HOUR, () => call<{ whatsapp_number: string }>("storefront_settings"));
+/** The points rules, public (ERP item 16f; absent until the ERP sends them). */
+export type PointsRules = { enabled: boolean; earn_per_paise: number; point_value_paise: number; min_bill_paise: number | null; max_share_bps: number | null; expiry_months: number | null };
+export type Settings = { whatsapp_number: string; points?: PointsRules | null };
+
+export async function getSettings(): Promise<Settings> {
+  return remember("settings", HOUR, () => call<Settings>("storefront_settings"));
 }

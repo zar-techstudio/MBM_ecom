@@ -222,6 +222,8 @@ const KIND: Record<Points["history"][number]["kind"], string> = {
   adjust: "Adjusted",
 };
 
+const day = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+
 /** Loyalty points: the same balance online and at the showroom. */
 function PointsBox({ p }: { p: Points }) {
   const worth = p.balance * p.point_value_paise;
@@ -231,11 +233,21 @@ function PointsBox({ p }: { p: Points }) {
       <p className="acc-points-bal">
         <strong>{p.balance}</strong> points{worth ? <span> · worth {formatINR(worth)}</span> : null}
       </p>
+      {p.pending ? (
+        <p className="acc-points-note">
+          + {p.pending} points waiting{p.pending_until ? `, usable from ${day(p.pending_until)}` : ""} (after the return window)
+        </p>
+      ) : null}
+      {p.next_expiry_at && p.next_expiry_points ? (
+        <p className="acc-points-note is-warn">
+          {p.next_expiry_points} points expire on {day(p.next_expiry_at)}. Use them before then.
+        </p>
+      ) : null}
       <p className="co-small">
         Earn 1 point for every {formatINR(p.earn_per_paise)} you spend, online or at the showroom. Use them at checkout
         {p.min_bill_paise ? ` on orders from ${formatINR(p.min_bill_paise)}` : ""}
         {p.max_share_bps ? `, for up to ${p.max_share_bps / 100}% of the order` : ""}.
-        {p.expiry_months ? ` Points last ${p.expiry_months} months.` : ""}
+        {p.expiry_months ? ` Points last ${p.expiry_months} months.` : ""} <Link href="/policies/points">How points work</Link>
       </p>
       {p.history.length ? (
         <ul className="acc-points-hist">

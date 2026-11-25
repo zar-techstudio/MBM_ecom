@@ -92,6 +92,7 @@ export function SiteFooter() {
             <Link href="/contact">Contact</Link>
             <Link href="/policies/shipping">Shipping</Link>
             <Link href="/policies/returns">Returns</Link>
+            <Link href="/policies/points">Loyalty points</Link>
           </nav>
           <nav className="sf-footer-col" aria-label="About">
             <h4 className="sf-footer-title">About</h4>

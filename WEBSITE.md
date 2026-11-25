@@ -446,20 +446,38 @@ the existing storefront functions (same names and arguments).
    (not only in the checkout quote), so the bag can show "₹X away from free delivery" before an
    address is entered. Needs the owner's free-delivery amount first (section 3).
 16. **Loyalty: scale and completeness (26 Nov 2026; design: https://claude.ai/artifact/9ffQD6jzoPtJmTpDZuMyKj).**
-   Keep the 12 Nov rules. (a) `loyalty_balance()` sums the whole ledger, takes a lock and may
-   insert on every read: add `loyalty_accounts` (one row per customer: available, pending,
-   lifetime, next expiry) updated in the same transaction by one `loyalty_post()`; unique
-   `(kind, source, ref)` for retries; spending as `UPDATE ... WHERE available >= n`. (b) Earn lots
-   with `remaining` and `available_at`; FIFO by expiry. (c) Pending period: showroom 2 days,
-   online 7 days after delivery. (d) Nightly expiry and 15-minute pending jobs (pg_cron, partial
-   indexes); weekly ledger-vs-account check reported to the Owner. (e) Welcome 100 points after
-   the first paid bill; one-time code for Counter redemptions above ₹500; Owner's daily summary
-   and monthly outstanding-points figure. (f) Send `available`, `pending`, next expiry and the
-   earn rate to the website, which will show "You'll earn X points" and expiry dates.
-   (g) Returns, one rule for both channels: today a website return gives back points used, but a
-   showroom return or exchange refund does not. Recommended: give back points used in proportion
-   to what is returned (full return: all of them), keeping their original expiry; take back points
-   earned on the returned part, as now. Write the rule on the shopper's rules page.
+   Keep the 12 Nov rules (1 pt per ₹100 paid, 1 pt = ₹1, bills from ₹1,000, up to 10%, 12 months).
+   - **Data (bank-account pattern):** keep `loyalty_ledger` as the never-edited history; add
+     `loyalty_accounts` (one row per customer: available, pending, lifetime_earned,
+     next_expiry_at, next_expiry_points, updated_at). Every change goes through one
+     `loyalty_post()` that writes the ledger row and updates the account row in the same
+     transaction. Earn rows get `remaining` and `available_at` (lots); use takes from lots
+     oldest-expiry first and records which lots (`loyalty_lot_uses`), so a return gives back the
+     same lots. Spending: `UPDATE loyalty_accounts SET available = available - n WHERE customer_id
+     = $1 AND available >= n`. Unique `(kind, source, ref)` so retries add nothing. Balance reads
+     are one primary-key row and never write.
+   - **Jobs (pg_cron, partial indexes):** every 15 min pending -> available where `available_at`
+     has passed; nightly expiry of lots with `expires_at < now() AND remaining > 0`; weekly
+     account-vs-ledger check reported to the Owner (not silently fixed).
+   - **Pending period:** showroom bills 2 days, online 7 days after delivery.
+   - **Returns, one rule for both channels:** full return or cancellation: refund the money paid
+     and give back all points used; partial return: give back points used in proportion to the
+     value returned (round down), and take back points earned on the returned part. Points given
+     back keep their original expiry (not a fresh 12 months). Today a showroom return or exchange
+     refund does not give back points used; website orders give them back with a fresh 12 months.
+   - **GST:** keep points as a discount shown on the invoice before GST (CGST Act s.15(3)(a)); GST
+     inclusive pricing, slab per piece after the discount, as now. On a return, the credit note
+     (s.34) is for the money actually refunded, with GST in proportion; points given back are not
+     money and carry no GST. Earning points carries no GST. Owner's CA to confirm, and to say
+     whether Ind AS 115 deferral of points applies to the business's books.
+   - **Owner:** daily summary (issued, used, adjusted, expired) and the monthly figure of points
+     outstanding x ₹1; one-time code for showroom redemptions above ₹500; welcome 100 points
+     after the first paid bill (not at sign-up).
+   - **What the website reads (already built to show these):** `storefront_settings.points =
+     { enabled, earn_per_paise, point_value_paise, min_bill_paise, max_share_bps, expiry_months }`
+     (public; shows "Earn X points" on the product page and bag); `storefront_points` adds
+     `pending, pending_until, next_expiry_at, next_expiry_points` (account page). The shopper
+     rules page is `/policies/points`; keep the ERP's behaviour the same as it says.
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
 ---

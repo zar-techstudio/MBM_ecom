@@ -14,6 +14,7 @@ export default async function BagPage() {
   return (
     <BagView
       whatsappNumber={settings.whatsapp_number}
+      points={settings.points ?? null}
       siteUrl={SITE_URL}
       looks={[...mahib, ...main]}
       suggest={suggest}
