@@ -454,6 +454,14 @@ Group, Spiegel Research Center and company tests).** Kept only what suits a prem
   first (item 4); MRP only as a real former price (item 1; fake "was" prices are now illegal in
   the EU); "₹X away from free delivery" in the bag once a free-delivery amount is set (more than
   half of shoppers add items to reach it, but only when they can see they are close).
+- Second pass (26 Nov 2026; profile has 45 items: 35 reels, 10 photo posts; the 4 reels whose
+  result is only in the video were watched): one fixed hero beats a sliding banner (almost all
+  clicks on slide 1), so the MAHIB runway's 5-second auto-advance is worth reconsidering; visible
+  tabs beat a hidden hamburger menu (phones: categories only in the menu); infinite scroll lowered
+  Etsy's purchases, so add "Load more" once listings grow; Expedia earned $12M a year by removing
+  one optional field (our Area and Landmark stay: couriers need them); a clear headline before
+  the slogan (home hero top line is a slogan); real photos beat stock (+41–45%; the home hero
+  models look generated; real showroom, team and customer photos are the owner's to supply).
 - Not used: no "₹" symbol (a restaurant-menu finding; shops need the price clear), decoy price
   plans, grey partner logos, real-estate and app-design reels.
 
