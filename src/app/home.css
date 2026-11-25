@@ -597,3 +597,6 @@ body:has(main.home) .sf-footer-copy { color: var(--text-muted); border-color: rg
 @media (prefers-reduced-motion: reduce) {
   .home .btn-mahib.is-live::after { animation: none; }
 }
+/* Featured row: slightly smaller cards (owner): 4 across on desktop, 2 plus a peek on phones */
+@media (min-width: 901px) { .home .fr-row { grid-auto-columns: calc((100% - 3 * 1.25rem) / 4); gap: 1.25rem; } }
+@media (max-width: 900px) { .home .fr-row { grid-auto-columns: 44%; gap: 0.8rem; } }

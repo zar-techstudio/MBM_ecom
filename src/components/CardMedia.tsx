@@ -37,6 +37,28 @@ export function CardMedia({
   const start = useRef<{ x: number; y: number } | null>(null);
   const held = useRef(false); // a touch hold happened, so swallow the click that follows
   const vid = useRef<HTMLVideoElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false); // second photo downloaded, so the swap is instant
+
+  // Like Shopify's themes and Myntra: the second photo downloads quietly once the card is near the
+  // screen, so hover / hold only swaps two photos that are already there. Videos (heavy) still
+  // wait for the first hover / hold, and nothing is fetched early when the shopper saves data.
+  useEffect(() => {
+    const el = box.current;
+    if (!el || !hover || loaded) return;
+    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
+    if (nav.connection?.saveData) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e?.isIntersecting) return;
+        io.disconnect();
+        setLoaded(true);
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hover, loaded]);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -122,10 +144,10 @@ export function CardMedia({
       }
     : {};
 
-  const showing = on && (video ? playing : true);
+  const showing = on && (video ? playing : ready);
 
   return (
-    <div className={`product-media-box${extra ? " has-preview" : ""}${showing ? " is-previewing" : ""}`} {...handlers}>
+    <div ref={box} className={`product-media-box${extra ? " has-preview" : ""}${showing ? " is-previewing" : ""}`} {...handlers}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img className="product-img" src={src} alt={alt} loading="lazy" width={600} height={750} draggable={false} />
@@ -145,7 +167,19 @@ export function CardMedia({
         />
       ) : loaded && hover ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="card-preview" src={hover} alt="" aria-hidden="true" draggable={false} />
+        <img
+          className="card-preview"
+          src={hover}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          decoding="async"
+          fetchPriority="low"
+          ref={(el) => {
+            if (el?.complete && el.naturalWidth && !ready) setReady(true);
+          }}
+          onLoad={() => setReady(true)}
+        />
       ) : null}
       {video ? (
         <span className="card-play" aria-hidden="true">
