@@ -675,3 +675,70 @@ html.chrome-hidden .sf-bag-summary, html.chrome-hidden .co-summary { top: 1rem; 
 @keyframes sk-shine { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 @media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
 @media (max-width: 899px) { .added-keep, .added-go { font-size: 0.76rem; letter-spacing: 0.04em; } }
+
+/* ---------- Phone tab bar (TabBar): Home, Shop, MAHIB, Bag, Account ---------- */
+:root { --tabbar-h: 60px; }
+.tabbar { display: none; }
+@media (max-width: 860px) {
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 92;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(253, 251, 247, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--color-ivory-sand, #eadfcd);
+    box-shadow: 0 -4px 16px rgba(20, 17, 14, 0.06);
+  }
+  .tabbar-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    color: #6b6258;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tabbar-tab:active { background: rgba(110, 31, 42, 0.05); }
+  .tabbar-icon { position: relative; display: grid; place-items: center; width: 26px; height: 26px; }
+  .tabbar-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .tabbar-label { font-family: var(--font-sans); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; }
+  .tabbar-tab.is-on { color: #6e1f2a; }
+  .tabbar-tab.is-on .tabbar-icon svg { stroke-width: 2; }
+  .tabbar-tab.is-on .tabbar-label::after { content: ""; display: block; width: 16px; height: 2px; margin: 2px auto 0; border-radius: 2px; background: #b38e46; }
+  .tabbar-count {
+    position: absolute;
+    top: -4px;
+    right: -9px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: #6e1f2a;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+  }
+  /* make room: page bottom, WhatsApp button, toasts and the added panel sit above the bar */
+  html.has-tabbar body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); }
+  html.has-tabbar .wa-float { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 0.75rem); }
+  html.has-tabbar .fabric-toast { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 0.75rem); }
+  html.has-tabbar .added { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 340px) { .tabbar-label { font-size: 0.62rem; letter-spacing: 0.02em; } }
+/* Home page: the bar waits below the screen until the shopper starts scrolling, so the hero
+   (sized to the full screen, both buttons at its foot) looks as designed. */
+@media (max-width: 860px) {
+  .tabbar { transition: transform 0.3s var(--ease-luxury); }
+  .tabbar.is-tucked { transform: translateY(100%); }
+}

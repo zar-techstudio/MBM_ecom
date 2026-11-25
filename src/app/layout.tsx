@@ -4,6 +4,7 @@ import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { TopStrip } from "@/components/TopStrip";
 import { AddedSheet } from "@/components/AddedSheet";
+import { TabBar } from "@/components/TabBar";
 import { IntroSplash } from "@/components/IntroSplash";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./design.css";
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <IntroSplash />
         <ScrollToTop />
         <AddedSheet />
+        <TabBar />
       </body>
     </html>
   );

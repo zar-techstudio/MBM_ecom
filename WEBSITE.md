@@ -128,6 +128,12 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   (`top: var(--strip-h)`); a new full-screen overlay must do the same.
 - **Footer drawing:** the showroom line drawing (`mall-line.svg`, used as a mask so its colour can
   change) is on every footer: darker gold on the light home footer, brighter gold on the dark ones.
+- **Phone tab bar** (`TabBar`, phones up to 860 px): Home · Shop · MAHIB · Bag (with count) ·
+  Account along the bottom, the current one in maroon with a gold underline. Not shown on product,
+  bag, checkout, review and invoice pages (they have their own buy bar). On the home page it slides
+  up once the shopper scrolls, so the full-screen hero keeps both buttons. Floating WhatsApp,
+  toasts and the "Added to your bag" panel sit above it (`has-tabbar` on `<html>`). From the
+  research reels: visible tabs beat a hidden menu.
 - **Phone header:** menu on the left, logo, search, wishlist, bag (count shown, also 0). Desktop:
   menus, Feel the Fabric, search, wishlist, account, bag.
 - **Phone menu:** slides in from the left; Shop and MAHIB as cards with icons that open and close;
@@ -457,7 +463,7 @@ Group, Spiegel Research Center and company tests).** Kept only what suits a prem
 - Second pass (26 Nov 2026; profile has 45 items: 35 reels, 10 photo posts; the 4 reels whose
   result is only in the video were watched): one fixed hero beats a sliding banner (almost all
   clicks on slide 1), so the MAHIB runway's 5-second auto-advance is worth reconsidering; visible
-  tabs beat a hidden hamburger menu (phones: categories only in the menu); infinite scroll lowered
+  tabs beat a hidden hamburger menu (built: phone tab bar, 26 Nov 2026); infinite scroll lowered
   Etsy's purchases, so add "Load more" once listings grow; Expedia earned $12M a year by removing
   one optional field (our Area and Landmark stay: couriers need them); a clear headline before
   the slogan (home hero top line is a slogan); real photos beat stock (+41–45%; the home hero
