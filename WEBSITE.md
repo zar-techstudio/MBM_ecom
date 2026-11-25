@@ -445,6 +445,17 @@ the existing storefront functions (same names and arguments).
 15. **Free-delivery amount for the bag:** send `free_delivery_from_paise` with the public settings
    (not only in the checkout quote), so the bag can show "₹X away from free delivery" before an
    address is entered. Needs the owner's free-delivery amount first (section 3).
+16. **Loyalty: scale and completeness (26 Nov 2026; design: https://claude.ai/artifact/9ffQD6jzoPtJmTpDZuMyKj).**
+   Keep the 12 Nov rules. (a) `loyalty_balance()` sums the whole ledger, takes a lock and may
+   insert on every read: add `loyalty_accounts` (one row per customer: available, pending,
+   lifetime, next expiry) updated in the same transaction by one `loyalty_post()`; unique
+   `(kind, source, ref)` for retries; spending as `UPDATE ... WHERE available >= n`. (b) Earn lots
+   with `remaining` and `available_at`; FIFO by expiry. (c) Pending period: showroom 2 days,
+   online 7 days after delivery. (d) Nightly expiry and 15-minute pending jobs (pg_cron, partial
+   indexes); weekly ledger-vs-account check reported to the Owner. (e) Welcome 100 points after
+   the first paid bill; one-time code for Counter redemptions above ₹500; Owner's daily summary
+   and monthly outstanding-points figure. (f) Send `available`, `pending`, next expiry and the
+   earn rate to the website, which will show "You'll earn X points" and expiry dates.
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
 ---
