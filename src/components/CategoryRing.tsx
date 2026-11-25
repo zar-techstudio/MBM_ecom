@@ -201,6 +201,29 @@ export function CategoryRing({ cards }: { cards: RingCard[] }) {
     };
   }, [n, step]);
 
+  // Cards fit their text: every card's name-and-description area takes the height of the tallest
+  // one (so the ring stays even), and the stage grows to the tallest card, so a long name or
+  // description is never cut off under the next section. Measured again when fonts load or the
+  // screen size changes.
+  useEffect(() => {
+    const st = stage.current;
+    if (!st) return;
+    const fit = () => {
+      const infos = [...st.querySelectorAll<HTMLElement>(".category-info-box")];
+      if (!infos.length) return;
+      infos.forEach((el) => (el.style.minHeight = ""));
+      const tallest = Math.max(...infos.map((el) => el.offsetHeight));
+      infos.forEach((el) => (el.style.minHeight = `${tallest}px`));
+      const card = Math.max(...[...st.querySelectorAll<HTMLElement>(".ring-card")].map((el) => el.offsetHeight));
+      st.style.height = `${card + 12}px`;
+    };
+    fit();
+    document.fonts?.ready.then(fit).catch(() => {});
+    const ro = new ResizeObserver(fit);
+    ro.observe(st);
+    return () => ro.disconnect();
+  }, [items.length]);
+
   return (
     <>
       <div className="ring-nav">
