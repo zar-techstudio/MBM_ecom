@@ -837,3 +837,14 @@ html.chrome-hidden .sf-bag-summary, html.chrome-hidden .co-summary { top: 1rem; 
 .wish-card .wish-btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; border: 1px solid rgba(20, 17, 14, 0.35); border-radius: 999px; background: transparent; color: var(--color-espresso); font-size: 0.8rem; letter-spacing: 0.08em; }
 .wish-card .wish-btn:hover { border-color: #6e1f2a; color: #6e1f2a; }
 .wish-card .wish-btn.is-done { border-color: #6e1f2a; background: #6e1f2a; color: #fff; }
+
+/* ---------- Phone buy bar (product pages): shorter, and never covering the footer ---------- */
+@media (max-width: 860px) {
+  :root { --obar-h: 60px; }
+  .sf-order-bar { min-height: var(--obar-h); padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+  .sf-order-bar-2 button { min-height: 44px; padding: 0.6rem 0.5rem; font-size: 0.76rem; letter-spacing: 0.12em; }
+  .sf-order-bar-btn { min-height: 44px; padding: 0.55rem 1rem; }
+  /* the page ends with room for the bar, so the whole footer can be scrolled into view above it */
+  body:has(.sf-order-bar) { padding-bottom: calc(var(--obar-h) + env(safe-area-inset-bottom)); }
+  body:has(.sf-order-bar) .wa-float { bottom: calc(var(--obar-h) + env(safe-area-inset-bottom) + 0.75rem); }
+}
