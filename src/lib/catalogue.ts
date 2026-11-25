@@ -38,6 +38,9 @@ export type ProductCard = {
   video?: string | null;
   /** Average stars from verified reviews, or null when there are none yet. */
   rating?: { average: number; count: number } | null;
+  /** Real MRP printed on the tag (ERP, entered by staff). When it is above the price, cards and
+   * the product page show the price in red, the MRP crossed out and "x% off". Not sent yet. */
+  mrp_paise?: number | null;
 };
 
 /** One piece of a complete outfit, e.g. role "Safa" with its product card. The product may come

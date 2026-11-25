@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-/* What the strip says, in order; the line repeats so it scrolls without a gap. Only true statements. */
+/* What the strip says, in order; the line repeats so it scrolls without a gap. Only true facts, no
+ * slogans. */
 const ITEMS: { text: string; href?: string; strong?: string }[] = [
   { text: "Premium Ethnic Wear" },
   { text: "Since 1895 · Hyderabad" },
   { strong: "MAHIB", text: "The Exclusive Edit", href: "/mahib" },
   { text: "Delivered across India & abroad" },
-  { text: "Style. Tradition. You." },
 ];
 
 function Line({ hidden }: { hidden?: boolean }) {

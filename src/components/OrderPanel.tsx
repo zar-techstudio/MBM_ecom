@@ -7,6 +7,7 @@ import type { ProductCard, SizeOption } from "@/lib/catalogue";
 import { announceAdded, shop, toSaved } from "@/lib/shop-store";
 import { formatINR, whatsappLink } from "@/lib/site";
 import { NotifyBack } from "./NotifyBack";
+import { saving } from "./ProductCard";
 import { SizeGuide, guideFor } from "./SizeGuide";
 
 type Props = {
@@ -40,6 +41,8 @@ export function OrderPanel({ title, url, kind, priceText, sizes, soldOut, whatsa
   const actionRef = useRef<HTMLDivElement>(null);
   const showBar = useOutOfView(actionRef, !checking);
 
+  // Real MRP from the ERP, shown only while the price shown is the card's single price.
+  const sale = kind === "garment" && !soldOut && (choice?.price_paise == null || choice.price_paise === card.price_min_paise) ? saving(card) : null;
   const needsSize = kind !== "fabric" && named.length > 0 && !picked;
   let action: Action;
   if (kind === "fabric") {
@@ -85,7 +88,15 @@ ${url}`);
 
   return (
     <div className="sf-order">
-      <p className="sf-order-price">{price}</p>
+      <p className={`sf-order-price${sale ? " is-sale" : ""}`}>
+        {price}
+        {sale ? (
+          <>
+            {" "}
+            <s className="sf-order-mrp">MRP {formatINR(sale.mrp)}</s> <span className="sf-order-off">{sale.off}% off</span>
+          </>
+        ) : null}
+      </p>
       {kind === "fabric" ? (
         <p className="sf-order-note">Fabric is cut to your length in the showroom. Ask us for shades, width and pricing.</p>
       ) : null}

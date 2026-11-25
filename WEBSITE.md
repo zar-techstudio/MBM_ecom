@@ -123,7 +123,7 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   scroll up (`chrome-hidden` class on `<html>`, set in `HeaderClient`; stays near the top and while
   a menu is open; from Baymard research: +15.5% add to bag). Its text scrolls slowly right to left: "Premium Ethnic Wear · Since
   1895 · Hyderabad · MAHIB — The Exclusive Edit (link) · Delivered across India & abroad · Style.
-  Tradition. You."; pauses on hover, still for reduced motion. Only true statements go here.
+  Tradition. You." was removed 26 Nov 2026 (slogan); pauses on hover, still for reduced motion. Only true statements go here.
   Every overlay (search, side menu, drawers, photo viewer, size guide) starts below it
   (`top: var(--strip-h)`); a new full-screen overlay must do the same.
 - **Footer drawing:** the showroom line drawing (`mall-line.svg`, used as a mask so its colour can
@@ -388,8 +388,12 @@ For the ERP project (`mbm_inv_v2`). The website side of each is ready to build a
 sends the data; until then the website shows nothing for it. Please add each as **new keys** on
 the existing storefront functions (same names and arguments).
 
-1. **MRP and % off:** `mrp_paise` on cards and the product page (null when none). Website shows
-   ~~₹3,999~~ **₹2,999** and "25% off".
+1. **MRP and % off:** `mrp_paise` on cards and the product page (null when none). **The website
+   side is built (26 Nov 2026):** when `mrp_paise` is above a single selling price, cards and the
+   product page show the price in red, the MRP crossed out and "x% off"; otherwise nothing. **Rule
+   (owner agreed): the MRP is the real price printed on the tag, entered by staff.** AI may suggest
+   it, but a person confirms it; an invented or inflated "was" price is an unfair trade practice
+   under the Consumer Protection Act and against the Legal Metrology rules.
 2. **Colour variants:** `storefront_product` gets `variants: [{ slug, colour, thumbnail, sold_out }]`.
    Website: "Colour: Tan" with photo swatches.
 3. **Size chart per category (or product):** `size_chart: { unit, columns, rows, note }` on
@@ -473,6 +477,14 @@ Group, Spiegel Research Center and company tests).** Kept only what suits a prem
   one optional field (our Area and Landmark stay: couriers need them); a clear headline before
   the slogan (home hero top line is a slogan); real photos beat stock (+41–45%; the home hero
   models look generated; real showroom, team and customer photos are the owner's to supply).
+- Search-results slides (@appbrainy) and the "AI tells" video, built 26 Nov 2026: product cards
+  lead with the photo, with a round + on it (✓ once in the bag) instead of a big Add to Bag
+  button, no category label, a bold price and "★ 4.7 (318)"; listing filters as one scrolling row
+  of pills (Sort, Price, In stock, Clear) above the piece count; fewer "AI tells" on the home
+  page: plain facts instead of slogans (hero line "Menswear — Tailoring — Hyderabad since 1895",
+  side lists of what is sold, no "Style. Tradition. You." in the strip), and section labels kept
+  only where they say something ("Since 1895", "A Maqdoom's exclusive", "Shop by ceremony",
+  "Our fabrics", "The MAHIB Edit").
 - Not used: no "₹" symbol (a restaurant-menu finding; shops need the price clear), decoy price
   plans, grey partner logos, real-estate and app-design reels.
 

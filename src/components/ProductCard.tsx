@@ -4,14 +4,24 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { ProductCard as Card } from "@/lib/catalogue";
 import { announceAdded, shop, toSaved, useShop } from "@/lib/shop-store";
-import { imageUrl, priceText } from "@/lib/site";
+import { formatINR, imageUrl, priceText } from "@/lib/site";
 import { CardMedia } from "./CardMedia";
-import { Stars } from "./Stars";
 import { WishHeart } from "./WishHeart";
 
-/** Product card: 4:5 photo (hold or hover shows the 2nd photo or video), wishlist heart, then
- * category, a two-line title, the price and Add to bag. */
+/** The saving, when the real MRP (from the ERP) is above a single selling price; else null. */
+export function saving(p: { mrp_paise?: number | null; price_min_paise: number | null; price_max_paise: number | null }) {
+  const price = p.price_min_paise;
+  if (!p.mrp_paise || price == null || (p.price_max_paise != null && p.price_max_paise !== price)) return null;
+  if (p.mrp_paise <= price) return null;
+  const off = Math.round(((p.mrp_paise - price) / p.mrp_paise) * 100);
+  return off >= 1 ? { mrp: p.mrp_paise, off } : null;
+}
+
+/** Product card: 4:5 photo (hold or hover shows the 2nd photo or video) with the wishlist heart
+ * and a round + to add it, then the name, the price and the rating. No big button under every
+ * card, so the photo leads and more pieces fit on a phone screen. */
 export function ProductCard({ product, hint }: { product: Card; hint?: boolean }) {
+  const sale = product.sold_out ? null : saving(product);
   return (
     <article className="pc">
       <Link href={`/product/${product.slug}`} className="pc-link" aria-label={product.title}>
@@ -23,24 +33,58 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
           hint={hint}
         >
           <WishHeart product={product} />
-          {product.sold_out ? <span className="pc-flag">Sold out</span> : null}
+          {product.sold_out ? <span className="pc-flag">Sold out</span> : sale ? <span className="pc-flag pc-off">{sale.off}% off</span> : null}
         </CardMedia>
         <div className="pc-info">
-          <span className="pc-cat">{product.category.name}</span>
           <h3 className="pc-title">{product.title}</h3>
-          <span className="pc-bottom">
-            <span className={`pc-price${product.sold_out ? " is-out" : ""}`}>{priceText(product)}</span>
-            {product.rating?.count ? (
-              <span className="pc-rating" aria-label={`Rated ${product.rating.average.toFixed(1)} from ${product.rating.count} reviews`}>
-                <Stars value={product.rating.average} size={11} />
-                <span>({product.rating.count})</span>
-              </span>
-            ) : null}
+          <span className="pc-prices">
+            <span className={`pc-price${product.sold_out ? " is-out" : sale ? " is-sale" : ""}`}>{priceText(product)}</span>
+            {sale ? <s className="pc-mrp">{formatINR(sale.mrp)}</s> : null}
           </span>
+          {product.rating?.count ? (
+            <span className="pc-rating" aria-label={`Rated ${product.rating.average.toFixed(1)} from ${product.rating.count} reviews`}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z" />
+              </svg>
+              {product.rating.average.toFixed(1)} <span>({product.rating.count})</span>
+            </span>
+          ) : null}
         </div>
       </Link>
-      <AddToBag product={product} />
+      <span className="pc-zone">
+        <QuickAdd product={product} />
+      </span>
     </article>
+  );
+}
+
+/** The round + on the photo: adds a garment (the bag asks for the size), shows a tick once it is in
+ * the bag (tap opens the bag). Fabric (sold by length) and sold-out pieces have none. */
+function QuickAdd({ product }: { product: Card }) {
+  const { bag } = useShop();
+  if (product.sold_out || product.kind !== "garment") return null;
+  if (bag.some((l) => l.slug === product.slug))
+    return (
+      <Link href="/bag" className="pc-quick is-in" aria-label={`${product.title} is in your bag. View bag`}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m5 12.5 4.5 4.5L19 7.5" />
+        </svg>
+      </Link>
+    );
+  return (
+    <button
+      type="button"
+      className="pc-quick"
+      aria-label={`Add ${product.title} to bag`}
+      onClick={() => {
+        shop.add(toSaved(product), null);
+        announceAdded(toSaved(product), null);
+      }}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </button>
   );
 }
 
@@ -137,36 +181,53 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
   return (
     <>
       {products.length > 4 ? (
-        <div className="sf-tools">
-          <label className="sf-tool">
-            <span className="sr-only">Sort</span>
-            <select value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
-              <option value="featured">Sort: Recommended</option>
+        // One scrolling row of pills: Sort and Price open the phone's own picker, In stock toggles.
+        <div className="sf-tools sf-pills">
+          <label className={`sf-pill${sort !== "featured" ? " on" : ""}`}>
+            <span>{sort === "low" ? "Price ↑" : sort === "high" ? "Price ↓" : "Sort"}</span>
+            <Chevron />
+            <select aria-label="Sort" value={sort} onChange={(e) => reset(setSort)(e.target.value)}>
+              <option value="featured">Recommended</option>
               <option value="low">Price: low to high</option>
               <option value="high">Price: high to low</option>
             </select>
           </label>
+          {usable.length > 1 ? (
+            <label className={`sf-pill${range ? " on" : ""}`}>
+              <span>{RANGES.find((x) => x.id === range)?.label ?? "Price"}</span>
+              <Chevron />
+              <select aria-label="Price" value={range} onChange={(e) => reset(setRange)(e.target.value)}>
+                <option value="">Any price</option>
+                {usable.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <button
             type="button"
-            className={`sf-fchip${inStock ? " on" : ""}`}
+            className={`sf-pill${inStock ? " on" : ""}`}
             aria-pressed={inStock}
             onClick={() => reset(setInStock)(!inStock)}
           >
             In stock
           </button>
-          {usable.length > 1
-            ? usable.map((x) => (
-                <button
-                  key={x.id}
-                  type="button"
-                  className={`sf-fchip${range === x.id ? " on" : ""}`}
-                  aria-pressed={range === x.id}
-                  onClick={() => reset(setRange)(range === x.id ? "" : x.id)}
-                >
-                  {x.label}
-                </button>
-              ))
-            : null}
+          {sort !== "featured" || range || inStock ? (
+            <button
+              type="button"
+              className="sf-pill sf-pill-clear"
+              onClick={() => {
+                setSort("featured");
+                setRange("");
+                setInStock(false);
+                setShown(PAGE);
+              }}
+            >
+              Clear
+            </button>
+          ) : null}
         </div>
       ) : null}
       {products.length > 4 ? (
@@ -214,5 +275,13 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
         <p className="sf-end">You&rsquo;ve seen all {list.length} pieces</p>
       ) : null}
     </>
+  );
+}
+
+function Chevron() {
+  return (
+    <svg className="sf-pill-chev" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m7 10 5 5 5-5" />
+    </svg>
   );
 }

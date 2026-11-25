@@ -176,11 +176,11 @@ export default async function HomePage() {
           <div className="hero-grid">
             <div className="hero-content">
               <div className="hero-eyebrow">
-                <span>TRADITION</span>
+                <span>MENSWEAR</span>
                 <span className="divider-dash" />
-                <span>CRAFTSMANSHIP</span>
+                <span>TAILORING</span>
                 <span className="divider-dash" />
-                <span>A TIMELESS PRESENCE</span>
+                <span>HYDERABAD SINCE 1895</span>
               </div>
               <div className="hero-title-group">
                 <h1 className="sr-only">{SITE_NAME}</h1>
@@ -255,11 +255,11 @@ export default async function HomePage() {
             </div>
             <div className="hero-editorial-col">
               <div className="editorial-pillars">
-                <span>HERITAGE</span>
+                <span>SHERWANIS</span>
+                <span>SUITS</span>
+                <span>KURTAS</span>
                 <span>FABRICS</span>
-                <span>MODERN FITS</span>
-                <span>TIMELESS</span>
-                <span>OCCASIONS</span>
+                <span>TAILORING</span>
               </div>
               <Link
                 href={fabricsHref}
@@ -289,7 +289,6 @@ export default async function HomePage() {
           <div className="container">
             <div className="section-header-row">
               <div>
-                <div className="section-label">CURATED WARDROBE</div>
                 <h2 className="section-title-light">CATEGORIES</h2>
               </div>
             </div>
@@ -375,11 +374,10 @@ export default async function HomePage() {
             <div />
             <div className="mahib-editorial-col">
               <div className="mahib-pillars">
-                <span>EXCLUSIVE</span>
-                <span>DESIGNS</span>
-                <span>FINEST FABRICS</span>
-                <span>ELEVATED</span>
-                <span>CRAFTSMANSHIP</span>
+                <span>IN-HOUSE LABEL</span>
+                <span>HAND-EMBROIDERED</span>
+                <span>COMPLETE LOOKS</span>
+                <span>SAFA TO MOJRI</span>
               </div>
               <Link
                 href="/mahib"
@@ -500,9 +498,6 @@ export default async function HomePage() {
         <div className="container tailoring-container">
           <div className="tailoring-grid">
             <div className="tailoring-content">
-              <div className="tailoring-label home-label-lined">
-                Custom experience
-              </div>
               <h2 className="tailoring-title">
                 CUSTOM
                 <br />

@@ -748,3 +748,69 @@ html.chrome-hidden .sf-bag-summary, html.chrome-hidden .co-summary { top: 1rem; 
 
 /* One bar at a time: scrolling up brings the header back and tucks the tab bar away. */
 @media (max-width: 860px) { html.chrome-up .tabbar { transform: translateY(100%); } }
+
+/* ---------- Product cards: round + on the photo, no big button, real MRP when sent ---------- */
+.pc-zone { position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 4 / 5; pointer-events: none; z-index: 3; }
+.pc-quick {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--color-espresso);
+  box-shadow: 0 4px 14px rgba(20, 17, 14, 0.18);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s var(--ease-luxury), background-color 0.2s ease;
+}
+.pc-quick svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pc-quick:hover { transform: scale(1.06); }
+.pc-quick:active { transform: scale(0.94); }
+.pc-quick.is-in { background: #6e1f2a; color: #fff; }
+.pc-quick:focus-visible { outline: 2px solid #b38e46; outline-offset: 2px; }
+.pc-grid.is-list .pc-zone { right: auto; width: 132px; }
+@media (min-width: 768px) { .pc-grid.is-list .pc-zone { width: 170px; } }
+.pc-prices { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.25rem; }
+.pc-prices .pc-price { margin-top: 0; padding-top: 0; }
+.pc-price.is-sale { color: #b3261e; }
+.pc-mrp { font-size: 0.82rem; color: var(--text-muted); }
+.pc-flag.pc-off { background: #b3261e; color: #fff; }
+.pc-info > .pc-rating { display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.15rem; font-size: 0.8rem; color: var(--text-secondary); }
+.pc-rating svg { width: 13px; height: 13px; fill: var(--color-espresso); }
+.pc-rating span { color: var(--text-muted); }
+.sf-order-price.is-sale { color: #b3261e; }
+.sf-order-mrp { margin-left: 0.35rem; font-size: 0.6em; font-weight: 500; color: var(--text-muted); }
+.sf-order-off { display: inline-block; margin-left: 0.35rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #b3261e; color: #fff; font-size: 0.45em; font-weight: 700; vertical-align: middle; }
+
+/* ---------- Listing filters: one scrolling row of pills ---------- */
+.sf-tools.sf-pills { display: flex; flex-wrap: nowrap; gap: 0.5rem; overflow-x: auto; scrollbar-width: none; padding: 0.15rem 0 0.35rem; margin-bottom: 0.4rem; -webkit-overflow-scrolling: touch; }
+.sf-pills::-webkit-scrollbar { display: none; }
+.sf-pill {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 40px;
+  padding: 0 1rem;
+  border: 1px solid rgba(20, 17, 14, 0.18);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sf-pill select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.sf-pill-chev { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sf-pill.on { border-color: #6e1f2a; background: #6e1f2a; color: #fff; }
+.sf-pill:focus-within { outline: 2px solid #b38e46; outline-offset: 2px; }
+.sf-pill-clear { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; color: var(--text-secondary); }
