@@ -185,7 +185,9 @@ function SearchOverlay({ onClose, photo }: { onClose: () => void; photo?: File }
           {Icon.camera}
         </label>
         <button type="button" className="search-close" onClick={onClose} aria-label="Close search">
-          &times;
+          <svg className="x-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
         </button>
       </form>
       <div className="search-results">

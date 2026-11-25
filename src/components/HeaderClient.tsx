@@ -27,16 +27,8 @@ const DM_ICON = {
       <path d="M12 7v14M9 3l3 4 3-4" />
     </svg>
   ),
-  /* the ornament above the "i" in the MAHIB logo: four interlocking loops around a diamond */
-  mahib: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="7" r="3.6" />
-      <circle cx="17" cy="12" r="3.6" />
-      <circle cx="12" cy="17" r="3.6" />
-      <circle cx="7" cy="12" r="3.6" />
-      <path d="M12 9.4 14.6 12 12 14.6 9.4 12z" />
-    </svg>
-  ),
+  /* the owner's MAHIB knot (public/images/mahib-icon.svg) */
+  mahib: <span className="mahib-mark" aria-hidden="true" />,
   scissors: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="6" cy="18" r="2.6" />

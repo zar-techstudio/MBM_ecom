@@ -293,7 +293,9 @@ function Viewer({
         />
       </div>
       <button type="button" className="sf-viewer-close" aria-label="Close" onClick={onClose}>
-        &times;
+        <svg className="x-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
       </button>
       {count > 1 ? (
         <>

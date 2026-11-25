@@ -9,7 +9,7 @@ import { useShop } from "@/lib/shop-store";
  * get the tab bar. */
 const HIDDEN = /^\/(product|bag|checkout|review)(\/|$)|^\/orders\/[^/]+\/invoice/;
 
-type Tab = { href: string; label: string; match: RegExp; icon: React.ReactNode };
+type Tab = { href: string; label: string; match: RegExp; icon: React.ReactNode | null };
 
 const TABS: Tab[] = [
   {
@@ -28,16 +28,8 @@ const TABS: Tab[] = [
     href: "/mahib",
     label: "MAHIB",
     match: /^\/mahib(\/|$)/,
-    // the ornament above the "i" in the MAHIB logo
-    icon: (
-      <>
-        <circle cx="12" cy="7" r="3.6" />
-        <circle cx="17" cy="12" r="3.6" />
-        <circle cx="12" cy="17" r="3.6" />
-        <circle cx="7" cy="12" r="3.6" />
-        <path d="M12 9.4 14.6 12 12 14.6 9.4 12z" />
-      </>
-    ),
+    // the owner's MAHIB knot (public/images/mahib-icon.svg), coloured like the other icons
+    icon: null,
   },
   {
     href: "/bag",
@@ -92,9 +84,13 @@ export function TabBar() {
         return (
           <Link key={t.href} href={t.href} className={`tabbar-tab${on ? " is-on" : ""}`} aria-current={on ? "page" : undefined}>
             <span className="tabbar-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                {t.icon}
-              </svg>
+              {t.icon ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  {t.icon}
+                </svg>
+              ) : (
+                <span className="mahib-mark" aria-hidden="true" />
+              )}
               {t.href === "/bag" && pieces ? <span className="tabbar-count">{pieces > 9 ? "9+" : pieces}</span> : null}
             </span>
             <span className="tabbar-label">{t.label}</span>

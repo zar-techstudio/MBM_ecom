@@ -814,3 +814,26 @@ html.chrome-hidden .sf-bag-summary, html.chrome-hidden .co-summary { top: 1rem; 
 .sf-pill.on { border-color: #6e1f2a; background: #6e1f2a; color: #fff; }
 .sf-pill:focus-within { outline: 2px solid #b38e46; outline-offset: 2px; }
 .sf-pill-clear { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; color: var(--text-secondary); }
+
+/* ---------- Close buttons: one drawn × in a round button (viewer, search, wishlist) ---------- */
+.x-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+/* Photo viewer: a bar at the top holds the ×; the photo starts right under it, not floating mid-screen */
+.sf-viewer-close { top: 10px; right: 12px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: #fff; box-shadow: 0 2px 10px rgba(20, 17, 14, 0.15); }
+.sf-viewer-stage { top: 64px; }
+@media (orientation: portrait) { .sf-viewer-stage { align-items: flex-start; } }
+/* Search screen: fully opaque (the header no longer shows through); × lined up with the camera */
+.search-overlay { background: #fdfbf7; }
+.search-close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%; background: rgba(197, 168, 105, 0.12); color: var(--color-espresso); }
+.search-close:hover { background: rgba(197, 168, 105, 0.22); }
+.search-cam { width: 44px; height: 44px; }
+/* Wishlist: the remove × is the same size and place as the heart on every other card */
+.wish-remove { top: 10px; right: 10px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; background: rgba(253, 251, 247, 0.92); box-shadow: var(--shadow-sm); color: var(--color-espresso); }
+.wish-remove .x-icon { width: 16px; height: 16px; }
+
+/* The MAHIB knot (owner's SVG), drawn in the current text colour like the other icons */
+.mahib-mark { display: block; width: 25px; height: 25px; background: currentColor; -webkit-mask: url("/images/mahib-icon.svg") center / contain no-repeat; mask: url("/images/mahib-icon.svg") center / contain no-repeat; }
+.dm-icon .mahib-mark { width: 28px; height: 28px; }
+/* Wishlist: the add button matches the new cards (outlined, not a heavy black block) */
+.wish-card .wish-btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; border: 1px solid rgba(20, 17, 14, 0.35); border-radius: 999px; background: transparent; color: var(--color-espresso); font-size: 0.8rem; letter-spacing: 0.08em; }
+.wish-card .wish-btn:hover { border-color: #6e1f2a; color: #6e1f2a; }
+.wish-card .wish-btn.is-done { border-color: #6e1f2a; background: #6e1f2a; color: #fff; }

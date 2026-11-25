@@ -52,13 +52,14 @@ export function WishlistView() {
                         {gone ? <span className="pc-flag">Sold out</span> : null}
                       </div>
                       <div className="pc-info">
-                        <span className="pc-cat">{p.category}</span>
                         <h3 className="pc-title">{p.title}</h3>
                         <span className="pc-price">{priceText({ ...p, price_from_paise_per_m: null })}</span>
                       </div>
                     </Link>
                     <button type="button" className="wish-remove" aria-label={`Remove ${p.title}`} onClick={() => shop.toggleWish(p)}>
-                      &times;
+                      <svg className="x-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6 6 18" />
+                      </svg>
                     </button>
                     <div className="wish-actions">
                       {p.kind === "fabric" ? (

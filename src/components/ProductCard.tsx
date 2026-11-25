@@ -58,18 +58,26 @@ export function ProductCard({ product, hint }: { product: Card; hint?: boolean }
   );
 }
 
-/** The round + on the photo: adds a garment (the bag asks for the size), shows a tick once it is in
- * the bag (tap opens the bag). Fabric (sold by length) and sold-out pieces have none. */
+/** The round + on the photo: adds a garment (the bag asks for the size) and turns into a tick; tapping
+ * the tick takes the piece out of the bag again. Fabric (sold by length) and sold-out pieces have
+ * none. */
 function QuickAdd({ product }: { product: Card }) {
   const { bag } = useShop();
   if (product.sold_out || product.kind !== "garment") return null;
-  if (bag.some((l) => l.slug === product.slug))
+  const lines = bag.filter((l) => l.slug === product.slug);
+  if (lines.length)
     return (
-      <Link href="/bag" className="pc-quick is-in" aria-label={`${product.title} is in your bag. View bag`}>
+      <button
+        type="button"
+        className="pc-quick is-in"
+        aria-label={`Remove ${product.title} from bag`}
+        aria-pressed="true"
+        onClick={() => lines.forEach((l) => shop.remove(l.slug, l.size))}
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="m5 12.5 4.5 4.5L19 7.5" />
         </svg>
-      </Link>
+      </button>
     );
   return (
     <button
