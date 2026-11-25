@@ -7,6 +7,7 @@ import { SITE_NAME, SITE_URL, imageUrl, priceText } from "@/lib/site";
 import { ProductGallery } from "@/components/ProductGallery";
 import { OrderPanel } from "@/components/OrderPanel";
 import { CompleteTheLook } from "@/components/CompleteTheLook";
+import { recommend } from "@/lib/recommend";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Stars } from "@/components/Stars";
 import { PhotoActions } from "@/components/PhotoActions";
@@ -39,11 +40,9 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
     getReviews(slug),
   ]);
   if (!product) notFound();
-  // "More like this": other pieces in the same category, in stock first.
-  const similar = (await getProducts(product.category.section, product.category.slug))
-    .filter((p) => p.slug !== slug)
-    .sort((a, b) => Number(a.sold_out) - Number(b.sold_out))
-    .slice(0, 12);
+  // "More like this": every in-stock piece scored against this one (same category, similar
+  // price, the same colour and style words, the same store); see src/lib/recommend.ts.
+  const similar = recommend([product], await getProducts(), [...mahibLooks, ...mainLooks], "similar", 12);
   // Outfits this piece belongs to: their other pieces are offered as "Complete the look".
   const looks = [...mahibLooks, ...mainLooks].filter((l) => l.pieces.some((p) => p.product.slug === slug));
 

@@ -7,7 +7,8 @@ export const metadata: Metadata = { title: "Your bag", robots: { index: false } 
 
 export default async function BagPage() {
   const [settings, mahib, main, products] = await Promise.all([getSettings(), getLooks("mahib"), getLooks("main"), getProducts()]);
-  const suggest = products.filter((p) => !p.sold_out && p.kind === "garment").slice(0, 6);
+  // Every in-stock garment; the bag ranks them against what is in it (src/lib/recommend.ts).
+  const suggest = products.filter((p) => !p.sold_out && p.kind === "garment");
   // "Continue shopping" goes to the section that has products.
   const browseHref = products.some((p) => p.category.section === "main") ? "/shop" : "/mahib";
   return (

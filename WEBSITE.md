@@ -295,6 +295,13 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
   product pages carry Product data. Which page Google shows is Google's choice; Google Search
   Console (owner's Google account) is where the site is verified, the sitemap submitted and
   the home page asked to be indexed.
+- **Recommendations** (`src/lib/recommend.ts`, 26 Nov 2026): scored by content, no tracking.
+  "More like this" (product page): same category, similar price, shared colour and style words in
+  the name, same store. Bag ("Complete Your Look" / "You May Also Like"): pieces from the same
+  outfits, then categories that staff put together in outfits (sherwani + safa + mojri), matching
+  colours, a similar price; a second piece of a category already in the bag counts against; at
+  most two per category. "Complete the look" (product page), "Recently viewed" and "Featured"
+  are unchanged. Next step once real orders exist: add "often bought together" as one more score.
 - **Edge copy of pages** (`worker.ts`, since 18 Nov 2026): pages are the same for every visitor, so
   Cloudflare keeps a copy in each city. A copy under a minute old is served as is; an older one is
   served at once while a fresh one is built in the background (visitors never wait for a build;

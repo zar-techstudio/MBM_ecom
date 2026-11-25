@@ -7,6 +7,7 @@ import { shop, useShop, type BagLine } from "@/lib/shop-store";
 import { formatINR, imageUrl, priceText, whatsappLink } from "@/lib/site";
 import { pickable, priceOf, useLive, type Live } from "@/lib/use-live";
 import { AddToBag } from "./ProductCard";
+import { recommend } from "@/lib/recommend";
 import { RecentlyViewed } from "./RecentlyViewed";
 import { WishHeart } from "./WishHeart";
 
@@ -82,7 +83,7 @@ export function BagView({
   whatsappNumber: string;
   siteUrl: string;
   looks?: Look[];
-  /** Pieces to suggest ("You may also like"), newest first. */
+  /** Every in-stock garment, newest first; ranked here against what is in the bag. */
   suggest?: ProductCard[];
   /** Where "Continue shopping" and "View all" go (the section that has products). */
   browseHref?: string;
@@ -153,7 +154,7 @@ export function BagView({
             </div>
           </div>
           <RecentlyViewed variant="cards" />
-          <AlsoLike title="You May Also Like" products={suggest} href={browseHref} />
+          <AlsoLike title="You May Also Like" products={suggest.slice(0, 6)} href={browseHref} />
         </div>
       </main>
     );
@@ -314,23 +315,16 @@ function AlsoLike({ title, products, href }: { title: string; products: ProductC
   );
 }
 
-/** Pieces from outfits that a bag item belongs to, which are not in the bag yet; else other
- * pieces the shopper may like. */
+/** Pieces that go with what is in the bag: from the same outfits first, then categories that are
+ * worn together, matching colours and a similar price (src/lib/recommend.ts). Titled "Complete
+ * Your Look" when something in the bag belongs to an outfit. */
 function CompleteYourLook({ looks, inBag, suggest, href }: { looks: Look[]; inBag: string[]; suggest: ProductCard[]; href: string }) {
   const have = new Set(inBag);
-  const seen = new Set<string>();
-  const picks: ProductCard[] = [];
-  for (const l of looks) {
-    if (!l.pieces.some((p) => have.has(p.product.slug))) continue;
-    for (const p of l.pieces) {
-      const slug = p.product.slug;
-      if (!slug || have.has(slug) || seen.has(slug) || p.product.sold_out) continue;
-      seen.add(slug);
-      picks.push(p.product);
-    }
-  }
-  // Fewer than three pieces from the outfit: other pieces fill the row.
-  const more = suggest.filter((p) => !have.has(p.slug) && !seen.has(p.slug));
-  if (picks.length) return <AlsoLike title="Complete Your Look" products={[...picks, ...more].slice(0, Math.max(3, picks.length))} href={href} />;
-  return <AlsoLike title="You May Also Like" products={suggest.filter((p) => !have.has(p.slug))} href={href} />;
+  const basis = suggest.filter((p) => have.has(p.slug));
+  for (const l of looks) for (const piece of l.pieces) if (have.has(piece.product.slug) && !basis.some((b) => b.slug === piece.product.slug)) basis.push(piece.product);
+  const pool = [...suggest];
+  for (const l of looks) for (const piece of l.pieces) if (!pool.some((p) => p.slug === piece.product.slug)) pool.push(piece.product);
+  const picks = recommend(basis, pool, looks, "complete", 6);
+  const inOutfit = looks.some((l) => l.pieces.some((p) => have.has(p.product.slug)));
+  return <AlsoLike title={inOutfit ? "Complete Your Look" : "You May Also Like"} products={picks} href={href} />;
 }
