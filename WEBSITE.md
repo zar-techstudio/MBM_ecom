@@ -456,6 +456,10 @@ the existing storefront functions (same names and arguments).
    the first paid bill; one-time code for Counter redemptions above ₹500; Owner's daily summary
    and monthly outstanding-points figure. (f) Send `available`, `pending`, next expiry and the
    earn rate to the website, which will show "You'll earn X points" and expiry dates.
+   (g) Returns, one rule for both channels: today a website return gives back points used, but a
+   showroom return or exchange refund does not. Recommended: give back points used in proportion
+   to what is returned (full return: all of them), keeping their original expiry; take back points
+   earned on the returned part, as now. Write the rule on the shopper's rules page.
 Done: home featured for both sections (staff pick any piece; the website shows exactly those).
 
 ---
