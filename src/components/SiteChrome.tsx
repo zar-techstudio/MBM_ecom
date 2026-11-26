@@ -30,12 +30,9 @@ export async function SiteHeader() {
 }
 
 /** Footer: a cream panel (rounded gold-edged top corners, a wavy gold bottom edge) over a dark band
- * with the copyright. Brand, address (opens Google Maps), phone and hours; Instagram and WhatsApp
- * circles; three short link columns. It never lists categories, so it stays the same size. */
-export async function SiteFooter() {
-  const settings = await getSettings();
-  const wa = whatsappLink(settings.whatsapp_number, `Hello ${SITE_NAME}, I have a question.`);
-  const insta = STORE.instagram[0];
+ * with the copyright. Brand, address (opens Google Maps), phone and hours; both Instagram
+ * accounts as circles (WhatsApp is the floating button); three short link columns. It never lists categories, so it stays the same size. */
+export function SiteFooter() {
   return (
     <footer className="site-footer sf-footer" id="siteFooter">
       <div className="sf-foot-panel">
@@ -69,20 +66,17 @@ export async function SiteFooter() {
                 <span>{STORE.hours}</span>
               </span>
             </div>
+            {/* Both Instagram accounts (WhatsApp is the floating button, so it is not repeated here). */}
             <div className="sf-footer-social">
-              <a href={insta.href} target="_blank" rel="noopener noreferrer" aria-label={insta.label} title={insta.handle}>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="1" className="dot" />
-                </svg>
-              </a>
-              <a href={wa} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp us">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3.2a8.7 8.7 0 0 0-7.5 13.1L3.3 20.8l4.6-1.2A8.7 8.7 0 1 0 12 3.2z" />
-                  <path className="dot" d="M8.9 7.9c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.4l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.6 1 1.4 1.8 2.4 2.3.3.2.4.1.6-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.4.4 0 .5-.2 1.1-.6 1.4-.5.4-1.4.7-2.3.5-1-.2-2.4-.8-3.7-2-1.3-1.2-2.1-2.6-2.3-3.5-.2-.9 0-1.7.4-2.1z" />
-                </svg>
-              </a>
+              {STORE.instagram.map((i) => (
+                <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.label} title={i.handle}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1" className="dot" />
+                  </svg>
+                </a>
+              ))}
             </div>
           </div>
           <span className="sf-foot-rule" aria-hidden="true" />
