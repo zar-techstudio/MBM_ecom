@@ -1172,3 +1172,15 @@ html.has-tabbar #siteFooter .sf-footer-copy { padding-bottom: 1rem !important; }
 }
 @media (max-width: 360px) { #siteFooter .sf-footer-hours, #siteFooter .sf-footer-phone, #siteFooter .sf-footer-addr { font-size: 0.64rem; } #siteFooter .sf-footer-cols { max-width: 92%; } }
 .home .fr-title { font-size: 0.92rem; }
+/* Featured cards, round 5 (owner): the photo's round arch IS the card's top edge; the card's two
+   side lines run down from it and meet under the button; slimmer, wider buttons */
+.home .fr-card { padding: 0 0 12px; overflow: hidden; border: 1px solid #d9bf8c; border-radius: 50% 50% 16px 16px / 23% 23% 16px 16px; }
+.home .fr-media { border: 0; border-bottom: 1px solid #d9bf8c; border-radius: 0 0 14px 14px; aspect-ratio: 0.8; }
+.home .fr-card .wish-heart { top: 11%; right: 11%; }
+.home .fr-card .pc-add { width: 88%; min-height: 36px; padding: 0.4rem 0.5rem; }
+@media (max-width: 900px) { .btn-tailoring { width: 92%; min-height: 46px; } }
+/* titles always take two lines so every card lines up; the button sits at the bottom */
+.home .fr-title { min-height: calc(2 * 1.22em); display: -webkit-box; align-content: center; }
+.home .fr-card .pc-add { margin-top: auto; }
+.home .fr-meta { margin-bottom: 0.75rem; }
+@media (max-width: 900px) { .tailoring-steps li > span:last-child { max-width: 7.5em; } }
