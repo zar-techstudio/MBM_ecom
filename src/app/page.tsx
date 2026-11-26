@@ -497,9 +497,8 @@ export default async function HomePage() {
           <div className="tailoring-grid">
             <div className="tailoring-content">
               <h2 className="tailoring-title">
-                CUSTOM
-                <br />
-                TAILORING
+                <span className="tailoring-kicker">Custom</span>
+                Tailoring
               </h2>
               <p className="tailoring-desc">
                 Your fabric. Your measurements.

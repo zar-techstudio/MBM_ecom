@@ -92,7 +92,6 @@ function QuickAdd({ product }: { product: Card }) {
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M5.5 8h13l-1 12h-11zM9 8V6.5a3 3 0 0 1 6 0V8" />
-        <path className="pc-quick-plus" d="M12 11.5v5M9.5 14h5" />
       </svg>
     </button>
   );
@@ -285,7 +284,10 @@ export function ProductGrid({ products, empty }: { products: Card[]; empty: stri
           <span className="sr-only">Loading more pieces</span>
         </div>
       ) : list.length > PAGE ? (
-        <p className="sf-end">You&rsquo;ve seen all {list.length} pieces</p>
+        <div className="sf-end-wrap">
+          <p className="sf-end">You&rsquo;ve seen all {list.length} pieces</p>
+          <span className="sf-end-orn" aria-hidden="true" />
+        </div>
       ) : null}
     </>
   );
