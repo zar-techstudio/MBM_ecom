@@ -138,6 +138,10 @@ Still open: loyalty rates (points per ₹100, value, expiry), international deli
   Products with no reviews show "Since 1895 · Showroom near Charminar · See it on a video call"
   instead of "No reviews yet" (no Google rating on the site: owner's choice). The top strip is
   30 px.
+- **Icons (27 Nov 2026, owner):** browser tab, bookmarks and phone home screen use the round MAHIB
+  knot from `public/images/favicon.webp` (`src/app/icon.png`, `apple-icon.png`, `favicon.ico`);
+  link previews on WhatsApp and social apps keep the Maqdoom's BIG MALL name image
+  (`opengraph-image.jpg`, `twitter-image.jpg`). Only these two images are used for icons.
 - **Phone tab bar** (`TabBar`, phones up to 860 px): Home · Shop · MAHIB · Bag (with count) ·
   Account along the bottom, the current one in maroon with a gold underline. Not shown on product,
   bag, checkout, review and invoice pages (they have their own buy bar). On the home page it slides
