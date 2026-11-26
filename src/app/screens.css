@@ -1184,3 +1184,8 @@ html.has-tabbar #siteFooter .sf-footer-copy { padding-bottom: 1rem !important; }
 .home .fr-card .pc-add { margin-top: auto; }
 .home .fr-meta { margin-bottom: 0.75rem; }
 @media (max-width: 900px) { .tailoring-steps li > span:last-child { max-width: 7.5em; } }
+
+/* Footer: the two named Instagram buttons, as before, in a row under the contact details */
+#siteFooter .sf-footer-brand { grid-template-columns: auto minmax(0, 1fr); }
+#siteFooter .sf-footer-social { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 0.6rem; }
+#siteFooter .sf-footer-social a.sf-social-named { width: auto; height: 36px; padding: 0 0.85rem 0 0.6rem; display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
