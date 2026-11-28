@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { Faq } from "@/components/Faq";
 import { getSettings } from "@/lib/catalogue";
 import { MAPS_EMBED, MAPS_URL, SITE_NAME, STORE, whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact & store location",
-  description: `Visit ${STORE.name} near Charminar, Hyderabad, or reach us on WhatsApp or phone.`,
+  title: "Showroom near Charminar, Hyderabad",
+  description: `Visit ${STORE.name}, ${STORE.street}, near Charminar, Hyderabad. ${STORE.hours}. Call or WhatsApp ${STORE.phone}.`,
   alternates: { canonical: "/contact" },
 };
 
@@ -62,6 +63,7 @@ export default async function ContactPage() {
           ))}
         </p>
       </div>
+      <Faq tone="plain" />
     </main>
   );
 }

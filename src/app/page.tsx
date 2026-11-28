@@ -14,6 +14,7 @@ import { GoldenThread } from "@/components/GoldenThread";
 import { HERO_OUTFITS } from "@/lib/hero";
 import { FeaturedRail } from "@/components/FeaturedRail";
 import { ShimmerLink } from "@/components/ShimmerLink";
+import { Faq } from "@/components/Faq";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { HomeLooks } from "@/components/HomeLooks";
 
@@ -535,6 +536,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      <Faq />
     </main>
   );
 }

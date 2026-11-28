@@ -1194,3 +1194,17 @@ html.has-tabbar #siteFooter .sf-footer-copy { padding-bottom: 1rem !important; }
 #siteFooter .sf-footer-social a.sf-social-named { width: auto; height: 36px; padding: 0 0.85rem 0 0.6rem; display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
 /* "10 / 13" sits under the arch, centred and on one line, where the dots were */
 .ls-stage .ls-count { position: absolute; left: 50%; bottom: 1.1rem; z-index: 1; transform: translateX(-50%); margin: 0; white-space: nowrap; }
+
+/* ---------- FAQ (home, contact) ---------- */
+.faq { padding-block: clamp(2.5rem, 6vw, 4rem); background: linear-gradient(180deg, #fbf6ee, #f5eadb); }
+.faq-plain { background: transparent; }
+.faq-inner { max-width: 820px; }
+.faq-title { margin: 0 0 1.2rem; text-align: center; font-family: var(--font-serif-editorial); font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: #6e1f2a; }
+.faq-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.faq-item { border: 1px solid rgba(179, 142, 70, 0.4); border-radius: 12px; background: #fffdf8; }
+.faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.95rem 1.1rem; cursor: pointer; list-style: none; font-family: var(--font-serif-editorial); font-size: 1.08rem; font-weight: 600; color: #241912; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary svg { flex: none; width: 18px; height: 18px; fill: none; stroke: #b07d2e; stroke-width: 1.8; stroke-linecap: round; transition: transform 0.25s ease; }
+.faq-item[open] summary svg { transform: rotate(45deg); }
+.faq-item p { margin: 0; padding: 0 1.1rem 1rem; font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+.faq-item summary:focus-visible { outline: 2px solid #b38e46; outline-offset: 2px; border-radius: 12px; }

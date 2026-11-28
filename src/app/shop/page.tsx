@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { CatalogueListing, SECTION_COPY } from "@/components/CatalogueListing";
+import { CatalogueListing } from "@/components/CatalogueListing";
 
 export const metadata: Metadata = {
-  title: "Shop All",
-  description: SECTION_COPY.main.intro,
+  title: "Men's Ethnic Wear in Hyderabad",
+  description:
+    "Sherwanis, kurta sets, indo-westerns, suits, waistcoats and fabrics from our showroom near Charminar, Hyderabad. Every piece is in stock today; delivered across India.",
   alternates: { canonical: "/shop" },
 };
 

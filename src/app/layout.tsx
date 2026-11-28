@@ -23,8 +23,10 @@ const cormorant = Cormorant_Garamond({
 });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-jakarta" });
 
+/* Search wording (titles and descriptions): what local buyers type, e.g. "sherwani shop in Hyderabad",
+ * "wedding sherwani near Charminar", "groom wear Hyderabad". Only true facts about the showroom. */
 const DESCRIPTION =
-  "Premium Indian menswear, fine fabrics and bespoke tailoring from MAQDOOM'S Big Mall. Sherwanis, kurtas, waistcoats and the MAHIB exclusive edit.";
+  "Wedding sherwanis, kurtas, indo-westerns, safas and fabrics with same-day tailoring at MAQDOOM'S Big Mall, near Charminar, Hyderabad, since 1895. Shop online, delivered across India.";
 
 /** Pages are built on each visit (the catalogue is kept in memory for a minute, see src/lib/catalogue.ts),
  * so new and sold-out products show without a rebuild. */
@@ -32,7 +34,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${SITE_NAME} — Premium Indian Menswear`, template: `%s | ${SITE_NAME}` },
+  title: { default: `${SITE_NAME} — Sherwanis & Menswear, Charminar, Hyderabad`, template: `%s | ${SITE_NAME}` },
   description: DESCRIPTION,
   openGraph: { type: "website", siteName: SITE_NAME, locale: "en_IN", description: DESCRIPTION },
   twitter: { card: "summary_large_image" },

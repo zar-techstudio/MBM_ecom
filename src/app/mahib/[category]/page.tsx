@@ -8,8 +8,8 @@ export async function generateMetadata({ params }: PageProps<"/mahib/[category]"
   const c = (await getCategories("mahib")).find((x) => x.slug === category);
   if (!c) return {};
   return {
-    title: c.name,
-    description: c.description ?? `${c.name} at MAQDOOM'S Big Mall.`,
+    title: `${c.name} in Hyderabad${" · MAHIB"}`,
+    description: `${c.description ? `${c.description.replace(/\.?$/, ".")} ` : ""}Shop ${c.name.toLowerCase()} at MAQDOOM'S Big Mall near Charminar, Hyderabad, since 1895: in our showroom today, delivered across India.`,
     alternates: { canonical: `/mahib/${c.slug}` },
   };
 }

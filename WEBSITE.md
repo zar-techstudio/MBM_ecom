@@ -303,6 +303,14 @@ listed with `npx wrangler secret list --name mbm-website`; keep `.env` and the W
 - **Freshness:** catalogue content is kept in memory for a minute, settings for an hour
   (`remember()` in `src/lib/catalogue.ts`), so staff changes show within a minute without a
   deploy. Sizes and stock on product pages are read live.
+- **Search wording (28 Nov 2026):** titles and descriptions target what local buyers type:
+  "sherwanis in Hyderabad", "near Charminar", "groom wear", "wedding looks", "since 1895"
+  (home, shop, MAHIB, every category as "<name> in Hyderabad", contact as "Showroom near
+  Charminar, Hyderabad"). A visible FAQ on the home and contact pages (`Faq.tsx`, with FAQPage
+  data) answers location, history, same-day tailoring, MAHIB, delivery, video calls and returns;
+  keep its answers in step with the policies. `public/llms.txt` summarises the shop for AI search.
+  **The old name "Maqdoom Brothers" is not used anywhere** (another family member's business uses
+  it today; owner's decision).
 - **Search engines:** each page has its own title, description and canonical link; `robots.txt`
   and `sitemap.xml` list the pages. The home page carries business details (WebSite and
   ClothingStore: name, alternate spellings, logo, address, hours, Instagram) as JSON-LD;
